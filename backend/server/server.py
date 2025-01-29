@@ -1,12 +1,11 @@
 import logging
-
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
+from server.logger import setup_logger
+from .routes import health
 
-logging.basicConfig(
-    format="%(name)s - %(levelname)s - %(asctime)s - %(message)s",
-    level=logging.DEBUG,
-)
+
+setup_logger()
 logger = logging.getLogger(__name__)
 
 
@@ -16,7 +15,11 @@ async def lifespan(_: FastAPI):
     yield
 
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(
+    lifespan=lifespan,
+    title="EduWiz API",
+)
+app.include_router(health.router)
 
 
 @app.get("/")

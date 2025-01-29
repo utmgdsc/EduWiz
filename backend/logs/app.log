@@ -1,0 +1,389 @@
+Started server process [102312]
+Waiting for application startup.
+Application startup complete.
+hi
+hi
+hi
+hi
+Will watch for changes in these directories: ['C:\\Users\\Patea\\Desktop\\EduWiz\\backend']
+Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+Started reloader process [91748] using WatchFiles
+Started server process [83216]
+Waiting for application startup.
+Application startup complete.
+1 change detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log')}
+7 changes detected: {(<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\logger.py'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\4913'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\logger.py~'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\logger.py'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\4913'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\logger.py~')}
+WatchFiles detected changes in 'server\logger.py'. Reloading...
+Shutting down
+Waiting for application shutdown.
+Application shutdown complete.
+Finished server process [83216]
+1 change detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log')}
+Started server process [102720]
+Waiting for application startup.
+App ready 🚀
+Application startup complete.
+5 changes detected: {(<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\logger.cpython-313.pyc'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\logger.cpython-313.pyc'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\logger.cpython-313.pyc.1994100529584'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\logger.cpython-313.pyc.1994100529584')}
+7 changes detected: {(<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\logger.py'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\4913'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\logger.py~'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\logger.py'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\4913'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\logger.py~')}
+WatchFiles detected changes in 'server\logger.py'. Reloading...
+Shutting down
+Waiting for application shutdown.
+Application shutdown complete.
+Finished server process [102720]
+8 changes detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\logger.py'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\4913'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\logger.py~'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\logger.py'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\4913'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\logger.py~')}
+WatchFiles detected changes in 'server\logger.py'. Reloading...
+uvicorn.error - INFO - 2025-01-28 22:40:48,694 - Started server process [103292]
+uvicorn.error - INFO - 2025-01-28 22:40:48,696 - Waiting for application startup.
+server.server - INFO - 2025-01-28 22:40:48,697 - App ready 🚀
+uvicorn.error - INFO - 2025-01-28 22:40:48,697 - Application startup complete.
+uvicorn.error - ERROR - 2025-01-28 22:40:48,725 - Traceback (most recent call last):
+  File "C:\Users\Patea\AppData\Roaming\uv\python\cpython-3.13.1-windows-x86_64-none\Lib\asyncio\runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\Patea\AppData\Roaming\uv\python\cpython-3.13.1-windows-x86_64-none\Lib\asyncio\base_events.py", line 720, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+asyncio.exceptions.CancelledError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Patea\AppData\Roaming\uv\python\cpython-3.13.1-windows-x86_64-none\Lib\asyncio\runners.py", line 194, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "C:\Users\Patea\AppData\Roaming\uv\python\cpython-3.13.1-windows-x86_64-none\Lib\asyncio\runners.py", line 123, in run
+    raise KeyboardInterrupt()
+KeyboardInterrupt
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Patea\Desktop\EduWiz\backend\.venv\Lib\site-packages\starlette\routing.py", line 700, in lifespan
+    await receive()
+  File "C:\Users\Patea\Desktop\EduWiz\backend\.venv\Lib\site-packages\uvicorn\lifespan\on.py", line 137, in receive
+    return await self.receive_queue.get()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Patea\AppData\Roaming\uv\python\cpython-3.13.1-windows-x86_64-none\Lib\asyncio\queues.py", line 186, in get
+    await getter
+asyncio.exceptions.CancelledError
+
+6 changes detected: {(<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\logger.cpython-313.pyc'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\logger.cpython-313.pyc.2523822315952'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\logger.cpython-313.pyc'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\logger.cpython-313.pyc.2523822315952')}
+uvicorn.error - INFO - 2025-01-28 22:40:49,252 - Started server process [87396]
+uvicorn.error - INFO - 2025-01-28 22:40:49,254 - Waiting for application startup.
+server.server - INFO - 2025-01-28 22:40:49,255 - App ready 🚀
+uvicorn.error - INFO - 2025-01-28 22:40:49,255 - Application startup complete.
+uvicorn.error - INFO - 2025-01-28 22:40:55,621 - Shutting down
+uvicorn.error - INFO - 2025-01-28 22:40:55,730 - Waiting for application shutdown.
+uvicorn.error - INFO - 2025-01-28 22:40:55,731 - Application shutdown complete.
+uvicorn.error - INFO - 2025-01-28 22:40:55,731 - Finished server process [87396]
+Stopping reloader process [91748]
+uvicorn.error - INFO - 2025-01-28 22:40:57,567 - Will watch for changes in these directories: ['C:\\Users\\Patea\\Desktop\\EduWiz\\backend']
+uvicorn.error - INFO - 2025-01-28 22:40:57,568 - Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+uvicorn.error - INFO - 2025-01-28 22:40:57,568 - Started reloader process [93404] using WatchFiles
+uvicorn.error - INFO - 2025-01-28 22:40:58,073 - Started server process [101704]
+uvicorn.error - INFO - 2025-01-28 22:40:58,075 - Waiting for application startup.
+server.server - INFO - 2025-01-28 22:40:58,075 - App ready 🚀
+uvicorn.error - INFO - 2025-01-28 22:40:58,075 - Application startup complete.
+server.server - INFO - 2025-01-28 22:41:03,716 - hi
+watchfiles.main - DEBUG - 2025-01-28 22:41:09,634 - 1 change detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log')}
+watchfiles.main - DEBUG - 2025-01-28 22:41:09,992 - 1 change detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log')}
+watchfiles.main - DEBUG - 2025-01-28 22:41:12,710 - 1 change detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log')}
+watchfiles.main - DEBUG - 2025-01-28 22:41:13,067 - 1 change detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log')}
+watchfiles.main - DEBUG - 2025-01-28 22:41:17,847 - 1 change detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log')}
+watchfiles.main - DEBUG - 2025-01-28 22:41:18,203 - 1 change detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log')}
+watchfiles.main - DEBUG - 2025-01-28 22:41:19,973 - 7 changes detected: {(<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py~'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\4913'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\4913'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py~'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server')}
+uvicorn.error - WARNING - 2025-01-28 22:41:19,973 - WatchFiles detected changes in 'server\server.py'. Reloading...
+uvicorn.error - INFO - 2025-01-28 22:41:23,229 - Shutting down
+uvicorn.error - INFO - 2025-01-28 22:41:23,339 - Waiting for application shutdown.
+uvicorn.error - INFO - 2025-01-28 22:41:23,339 - Application shutdown complete.
+uvicorn.error - INFO - 2025-01-28 22:41:23,340 - Finished server process [101704]
+watchfiles.main - DEBUG - 2025-01-28 22:41:23,735 - 6 changes detected: {(<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc.2828361557040'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc.2828361557040'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc')}
+uvicorn.error - INFO - 2025-01-28 22:41:23,864 - Started server process [101916]
+uvicorn.error - INFO - 2025-01-28 22:41:23,867 - Waiting for application startup.
+server.server - INFO - 2025-01-28 22:41:23,867 - App ready 🚀
+uvicorn.error - INFO - 2025-01-28 22:41:23,867 - Application startup complete.
+watchfiles.main - DEBUG - 2025-01-28 22:42:45,422 - 2 changes detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\api')}
+watchfiles.main - DEBUG - 2025-01-28 22:42:49,296 - 2 changes detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\api'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\api\\__init__.py')}
+uvicorn.error - WARNING - 2025-01-28 22:42:49,296 - WatchFiles detected changes in 'server\api\__init__.py'. Reloading...
+uvicorn.error - INFO - 2025-01-28 22:42:58,286 - Shutting down
+uvicorn.error - INFO - 2025-01-28 22:42:58,396 - Waiting for application shutdown.
+uvicorn.error - INFO - 2025-01-28 22:42:58,396 - Application shutdown complete.
+uvicorn.error - INFO - 2025-01-28 22:42:58,397 - Finished server process [101916]
+watchfiles.main - DEBUG - 2025-01-28 22:42:58,790 - 1 change detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log')}
+uvicorn.error - INFO - 2025-01-28 22:42:58,948 - Started server process [102124]
+uvicorn.error - INFO - 2025-01-28 22:42:58,950 - Waiting for application startup.
+server.server - INFO - 2025-01-28 22:42:58,950 - App ready 🚀
+uvicorn.error - INFO - 2025-01-28 22:42:58,950 - Application startup complete.
+watchfiles.main - DEBUG - 2025-01-28 22:43:55,884 - 2 changes detected: {(<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\api\\health.py'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\api')}
+uvicorn.error - WARNING - 2025-01-28 22:43:55,884 - WatchFiles detected changes in 'server\api\health.py'. Reloading...
+uvicorn.error - INFO - 2025-01-28 22:43:58,358 - Shutting down
+uvicorn.error - INFO - 2025-01-28 22:43:58,467 - Waiting for application shutdown.
+uvicorn.error - INFO - 2025-01-28 22:43:58,467 - Application shutdown complete.
+uvicorn.error - INFO - 2025-01-28 22:43:58,468 - Finished server process [102124]
+watchfiles.main - DEBUG - 2025-01-28 22:43:58,863 - 1 change detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log')}
+uvicorn.error - INFO - 2025-01-28 22:43:59,004 - Started server process [101772]
+uvicorn.error - INFO - 2025-01-28 22:43:59,005 - Waiting for application startup.
+server.server - INFO - 2025-01-28 22:43:59,006 - App ready 🚀
+uvicorn.error - INFO - 2025-01-28 22:43:59,006 - Application startup complete.
+watchfiles.main - DEBUG - 2025-01-28 22:44:06,364 - 2 changes detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\api'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\api\\services')}
+watchfiles.main - DEBUG - 2025-01-28 22:44:07,481 - 1 change detected: {(<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\api\\services')}
+watchfiles.main - DEBUG - 2025-01-28 22:44:07,838 - 1 change detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\api')}
+watchfiles.main - DEBUG - 2025-01-28 22:44:10,255 - 2 changes detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\services')}
+watchfiles.main - DEBUG - 2025-01-28 22:44:56,202 - 2 changes detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\services'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\services\\__init__.py')}
+uvicorn.error - WARNING - 2025-01-28 22:44:56,203 - WatchFiles detected changes in 'server\services\__init__.py'. Reloading...
+uvicorn.error - INFO - 2025-01-28 22:45:01,069 - Shutting down
+uvicorn.error - INFO - 2025-01-28 22:45:01,181 - Waiting for application shutdown.
+uvicorn.error - INFO - 2025-01-28 22:45:01,181 - Application shutdown complete.
+uvicorn.error - INFO - 2025-01-28 22:45:01,182 - Finished server process [101772]
+watchfiles.main - DEBUG - 2025-01-28 22:45:01,578 - 1 change detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log')}
+uvicorn.error - INFO - 2025-01-28 22:45:01,735 - Started server process [98916]
+uvicorn.error - INFO - 2025-01-28 22:45:01,737 - Waiting for application startup.
+server.server - INFO - 2025-01-28 22:45:01,737 - App ready 🚀
+uvicorn.error - INFO - 2025-01-28 22:45:01,737 - Application startup complete.
+watchfiles.main - DEBUG - 2025-01-28 22:45:14,763 - 2 changes detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas')}
+watchfiles.main - DEBUG - 2025-01-28 22:45:17,286 - 2 changes detected: {(<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas\\__init__.py'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas')}
+uvicorn.error - WARNING - 2025-01-28 22:45:17,287 - WatchFiles detected changes in 'server\schemas\__init__.py'. Reloading...
+uvicorn.error - INFO - 2025-01-28 22:45:39,148 - Shutting down
+uvicorn.error - INFO - 2025-01-28 22:45:39,258 - Waiting for application shutdown.
+uvicorn.error - INFO - 2025-01-28 22:45:39,259 - Application shutdown complete.
+uvicorn.error - INFO - 2025-01-28 22:45:39,259 - Finished server process [98916]
+watchfiles.main - DEBUG - 2025-01-28 22:45:39,659 - 1 change detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log')}
+uvicorn.error - INFO - 2025-01-28 22:45:39,828 - Started server process [88980]
+uvicorn.error - INFO - 2025-01-28 22:45:39,830 - Waiting for application startup.
+server.server - INFO - 2025-01-28 22:45:39,830 - App ready 🚀
+uvicorn.error - INFO - 2025-01-28 22:45:39,830 - Application startup complete.
+watchfiles.main - DEBUG - 2025-01-28 22:56:12,491 - 1 change detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log')}
+watchfiles.main - DEBUG - 2025-01-28 22:56:12,851 - 1 change detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log')}
+watchfiles.main - DEBUG - 2025-01-28 22:56:13,210 - 1 change detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log')}
+watchfiles.main - DEBUG - 2025-01-28 22:56:13,569 - 1 change detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log')}
+watchfiles.main - DEBUG - 2025-01-28 23:09:34,107 - 1 change detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log')}
+watchfiles.main - DEBUG - 2025-01-28 23:09:34,467 - 1 change detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log')}
+watchfiles.main - DEBUG - 2025-01-28 23:09:39,497 - 1 change detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log')}
+watchfiles.main - DEBUG - 2025-01-28 23:09:40,050 - 1 change detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log')}
+watchfiles.main - DEBUG - 2025-01-28 23:09:40,410 - 1 change detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log')}
+watchfiles.main - DEBUG - 2025-01-28 23:09:41,774 - 1 change detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log')}
+watchfiles.main - DEBUG - 2025-01-28 23:09:44,501 - 1 change detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log')}
+watchfiles.main - DEBUG - 2025-01-28 23:09:44,853 - 1 change detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log')}
+watchfiles.main - DEBUG - 2025-01-28 23:09:47,271 - 1 change detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log')}
+watchfiles.main - DEBUG - 2025-01-28 23:09:47,632 - 1 change detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log')}
+watchfiles.main - DEBUG - 2025-01-28 23:13:40,477 - 3 changes detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\api'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes')}
+watchfiles.main - DEBUG - 2025-01-28 23:13:40,937 - 7 changes detected: {(<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\health.py'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\4913'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\4913'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\health.py~'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\health.py'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\health.py~')}
+uvicorn.error - WARNING - 2025-01-28 23:13:40,937 - WatchFiles detected changes in 'server\routes\health.py'. Reloading...
+uvicorn.error - INFO - 2025-01-28 23:14:38,191 - Shutting down
+uvicorn.error - INFO - 2025-01-28 23:14:38,300 - Waiting for application shutdown.
+uvicorn.error - INFO - 2025-01-28 23:14:38,300 - Application shutdown complete.
+uvicorn.error - INFO - 2025-01-28 23:14:38,301 - Finished server process [88980]
+watchfiles.main - DEBUG - 2025-01-28 23:14:38,698 - 3 changes detected: {(<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\api.py'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log')}
+uvicorn.error - WARNING - 2025-01-28 23:14:38,698 - WatchFiles detected changes in 'server\routes\api.py'. Reloading...
+uvicorn.error - INFO - 2025-01-28 23:14:38,850 - Started server process [104124]
+uvicorn.error - INFO - 2025-01-28 23:14:38,852 - Waiting for application startup.
+server.server - INFO - 2025-01-28 23:14:38,852 - App ready 🚀
+uvicorn.error - INFO - 2025-01-28 23:14:38,852 - Application startup complete.
+uvicorn.error - ERROR - 2025-01-28 23:14:38,885 - Traceback (most recent call last):
+  File "C:\Users\Patea\AppData\Roaming\uv\python\cpython-3.13.1-windows-x86_64-none\Lib\asyncio\runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\Patea\AppData\Roaming\uv\python\cpython-3.13.1-windows-x86_64-none\Lib\asyncio\base_events.py", line 720, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+asyncio.exceptions.CancelledError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Patea\AppData\Roaming\uv\python\cpython-3.13.1-windows-x86_64-none\Lib\asyncio\runners.py", line 194, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "C:\Users\Patea\AppData\Roaming\uv\python\cpython-3.13.1-windows-x86_64-none\Lib\asyncio\runners.py", line 123, in run
+    raise KeyboardInterrupt()
+KeyboardInterrupt
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Patea\Desktop\EduWiz\backend\.venv\Lib\site-packages\starlette\routing.py", line 700, in lifespan
+    await receive()
+  File "C:\Users\Patea\Desktop\EduWiz\backend\.venv\Lib\site-packages\uvicorn\lifespan\on.py", line 137, in receive
+    return await self.receive_queue.get()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Patea\AppData\Roaming\uv\python\cpython-3.13.1-windows-x86_64-none\Lib\asyncio\queues.py", line 186, in get
+    await getter
+asyncio.exceptions.CancelledError
+
+watchfiles.main - DEBUG - 2025-01-28 23:14:39,276 - 1 change detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log')}
+uvicorn.error - INFO - 2025-01-28 23:14:39,402 - Started server process [97876]
+uvicorn.error - INFO - 2025-01-28 23:14:39,404 - Waiting for application startup.
+server.server - INFO - 2025-01-28 23:14:39,405 - App ready 🚀
+uvicorn.error - INFO - 2025-01-28 23:14:39,405 - Application startup complete.
+watchfiles.main - DEBUG - 2025-01-28 23:16:04,120 - 3 changes detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\api.py'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes')}
+uvicorn.error - WARNING - 2025-01-28 23:16:04,121 - WatchFiles detected changes in 'server\routes\api.py'. Reloading...
+uvicorn.error - INFO - 2025-01-28 23:18:49,964 - Shutting down
+uvicorn.error - INFO - 2025-01-28 23:18:50,073 - Waiting for application shutdown.
+uvicorn.error - INFO - 2025-01-28 23:18:50,073 - Application shutdown complete.
+uvicorn.error - INFO - 2025-01-28 23:18:50,074 - Finished server process [97876]
+watchfiles.main - DEBUG - 2025-01-28 23:18:50,472 - 1 change detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log')}
+uvicorn.error - INFO - 2025-01-28 23:18:50,638 - Started server process [88676]
+uvicorn.error - INFO - 2025-01-28 23:18:50,640 - Waiting for application startup.
+server.server - INFO - 2025-01-28 23:18:50,640 - App ready 🚀
+uvicorn.error - INFO - 2025-01-28 23:18:50,640 - Application startup complete.
+watchfiles.main - DEBUG - 2025-01-28 23:20:36,511 - 7 changes detected: {(<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\health.py'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\4913'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\4913'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\health.py~'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\health.py'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\health.py~')}
+uvicorn.error - WARNING - 2025-01-28 23:20:36,512 - WatchFiles detected changes in 'server\routes\health.py'. Reloading...
+uvicorn.error - INFO - 2025-01-28 23:23:50,135 - Shutting down
+uvicorn.error - INFO - 2025-01-28 23:23:50,244 - Waiting for application shutdown.
+uvicorn.error - INFO - 2025-01-28 23:23:50,244 - Application shutdown complete.
+uvicorn.error - INFO - 2025-01-28 23:23:50,245 - Finished server process [88676]
+watchfiles.main - DEBUG - 2025-01-28 23:23:50,642 - 1 change detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log')}
+uvicorn.error - INFO - 2025-01-28 23:23:50,752 - Started server process [101060]
+uvicorn.error - INFO - 2025-01-28 23:23:50,754 - Waiting for application startup.
+server.server - INFO - 2025-01-28 23:23:50,754 - App ready 🚀
+uvicorn.error - INFO - 2025-01-28 23:23:50,754 - Application startup complete.
+watchfiles.main - DEBUG - 2025-01-28 23:25:40,105 - 7 changes detected: {(<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\health.py'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\4913'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\4913'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\health.py~'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\health.py'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\health.py~')}
+uvicorn.error - WARNING - 2025-01-28 23:25:40,105 - WatchFiles detected changes in 'server\routes\health.py'. Reloading...
+uvicorn.error - INFO - 2025-01-28 23:28:50,367 - Shutting down
+uvicorn.error - INFO - 2025-01-28 23:28:50,476 - Waiting for application shutdown.
+uvicorn.error - INFO - 2025-01-28 23:28:50,476 - Application shutdown complete.
+uvicorn.error - INFO - 2025-01-28 23:28:50,477 - Finished server process [101060]
+watchfiles.main - DEBUG - 2025-01-28 23:28:50,872 - 24 changes detected: {(<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py~'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\health.py'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\4913'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\4913'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\health.py~'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py~'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas\\healthcheck.py'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc.2727752262704'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\4913'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas\\healthcheck.py'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\health.py'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\4913'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc.2727752262704'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\health.py~'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas\\health.py')}
+uvicorn.error - WARNING - 2025-01-28 23:28:50,872 - WatchFiles detected changes in 'server\schemas\healthcheck.py', 'server\routes\health.py', 'server\schemas\health.py', 'server\server.py'. Reloading...
+uvicorn.error - INFO - 2025-01-28 23:28:51,006 - Started server process [102764]
+uvicorn.error - INFO - 2025-01-28 23:28:51,008 - Waiting for application startup.
+server.server - INFO - 2025-01-28 23:28:51,008 - App ready 🚀
+uvicorn.error - INFO - 2025-01-28 23:28:51,009 - Application startup complete.
+uvicorn.error - ERROR - 2025-01-28 23:28:51,038 - Traceback (most recent call last):
+  File "C:\Users\Patea\AppData\Roaming\uv\python\cpython-3.13.1-windows-x86_64-none\Lib\asyncio\runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\Patea\AppData\Roaming\uv\python\cpython-3.13.1-windows-x86_64-none\Lib\asyncio\base_events.py", line 720, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+asyncio.exceptions.CancelledError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Patea\AppData\Roaming\uv\python\cpython-3.13.1-windows-x86_64-none\Lib\asyncio\runners.py", line 194, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "C:\Users\Patea\AppData\Roaming\uv\python\cpython-3.13.1-windows-x86_64-none\Lib\asyncio\runners.py", line 123, in run
+    raise KeyboardInterrupt()
+KeyboardInterrupt
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Patea\Desktop\EduWiz\backend\.venv\Lib\site-packages\starlette\routing.py", line 700, in lifespan
+    await receive()
+  File "C:\Users\Patea\Desktop\EduWiz\backend\.venv\Lib\site-packages\uvicorn\lifespan\on.py", line 137, in receive
+    return await self.receive_queue.get()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Patea\AppData\Roaming\uv\python\cpython-3.13.1-windows-x86_64-none\Lib\asyncio\queues.py", line 186, in get
+    await getter
+asyncio.exceptions.CancelledError
+
+watchfiles.main - DEBUG - 2025-01-28 23:28:51,428 - 1 change detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log')}
+uvicorn.error - INFO - 2025-01-28 23:28:51,543 - Started server process [105264]
+uvicorn.error - INFO - 2025-01-28 23:28:51,545 - Waiting for application startup.
+server.server - INFO - 2025-01-28 23:28:51,545 - App ready 🚀
+uvicorn.error - INFO - 2025-01-28 23:28:51,545 - Application startup complete.
+watchfiles.main - DEBUG - 2025-01-28 23:28:59,724 - 7 changes detected: {(<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\health.py'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\4913'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\4913'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\health.py~'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\health.py'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\health.py~')}
+uvicorn.error - WARNING - 2025-01-28 23:28:59,724 - WatchFiles detected changes in 'server\routes\health.py'. Reloading...
+uvicorn.error - INFO - 2025-01-28 23:31:30,922 - Shutting down
+uvicorn.error - INFO - 2025-01-28 23:31:31,031 - Waiting for application shutdown.
+uvicorn.error - INFO - 2025-01-28 23:31:31,032 - Application shutdown complete.
+uvicorn.error - INFO - 2025-01-28 23:31:31,032 - Finished server process [105264]
+watchfiles.main - DEBUG - 2025-01-28 23:31:31,427 - 8 changes detected: {(<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\health.py'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\4913'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\4913'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\health.py~'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\health.py'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\health.py~'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log')}
+uvicorn.error - WARNING - 2025-01-28 23:31:31,427 - WatchFiles detected changes in 'server\routes\health.py'. Reloading...
+uvicorn.error - INFO - 2025-01-28 23:31:31,557 - Started server process [90040]
+uvicorn.error - INFO - 2025-01-28 23:31:31,559 - Waiting for application startup.
+server.server - INFO - 2025-01-28 23:31:31,560 - App ready 🚀
+uvicorn.error - INFO - 2025-01-28 23:31:31,560 - Application startup complete.
+uvicorn.error - ERROR - 2025-01-28 23:31:31,588 - Traceback (most recent call last):
+  File "C:\Users\Patea\AppData\Roaming\uv\python\cpython-3.13.1-windows-x86_64-none\Lib\asyncio\runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\Patea\AppData\Roaming\uv\python\cpython-3.13.1-windows-x86_64-none\Lib\asyncio\base_events.py", line 720, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+asyncio.exceptions.CancelledError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Patea\AppData\Roaming\uv\python\cpython-3.13.1-windows-x86_64-none\Lib\asyncio\runners.py", line 194, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "C:\Users\Patea\AppData\Roaming\uv\python\cpython-3.13.1-windows-x86_64-none\Lib\asyncio\runners.py", line 123, in run
+    raise KeyboardInterrupt()
+KeyboardInterrupt
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Patea\Desktop\EduWiz\backend\.venv\Lib\site-packages\starlette\routing.py", line 700, in lifespan
+    await receive()
+  File "C:\Users\Patea\Desktop\EduWiz\backend\.venv\Lib\site-packages\uvicorn\lifespan\on.py", line 137, in receive
+    return await self.receive_queue.get()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Patea\AppData\Roaming\uv\python\cpython-3.13.1-windows-x86_64-none\Lib\asyncio\queues.py", line 186, in get
+    await getter
+asyncio.exceptions.CancelledError
+
+watchfiles.main - DEBUG - 2025-01-28 23:31:31,990 - 1 change detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log')}
+uvicorn.error - INFO - 2025-01-28 23:31:32,107 - Started server process [105976]
+uvicorn.error - INFO - 2025-01-28 23:31:32,108 - Waiting for application startup.
+server.server - INFO - 2025-01-28 23:31:32,109 - App ready 🚀
+uvicorn.error - INFO - 2025-01-28 23:31:32,109 - Application startup complete.
+watchfiles.main - DEBUG - 2025-01-28 23:31:55,386 - 7 changes detected: {(<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py~'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\4913'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\4913'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py~'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server')}
+uvicorn.error - WARNING - 2025-01-28 23:31:55,387 - WatchFiles detected changes in 'server\server.py'. Reloading...
+uvicorn.error - INFO - 2025-01-28 23:31:58,920 - Shutting down
+uvicorn.error - INFO - 2025-01-28 23:31:59,029 - Waiting for application shutdown.
+uvicorn.error - INFO - 2025-01-28 23:31:59,030 - Application shutdown complete.
+uvicorn.error - INFO - 2025-01-28 23:31:59,030 - Finished server process [105976]
+watchfiles.main - DEBUG - 2025-01-28 23:31:59,423 - 6 changes detected: {(<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc.3209938887728'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc.3209938887728'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log')}
+uvicorn.error - INFO - 2025-01-28 23:31:59,592 - Started server process [88536]
+uvicorn.error - INFO - 2025-01-28 23:31:59,594 - Waiting for application startup.
+server.server - INFO - 2025-01-28 23:31:59,594 - App ready 🚀
+uvicorn.error - INFO - 2025-01-28 23:31:59,594 - Application startup complete.
+watchfiles.main - DEBUG - 2025-01-28 23:33:17,106 - 7 changes detected: {(<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\health.py'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\4913'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\4913'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\health.py~'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\health.py'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\health.py~')}
+uvicorn.error - WARNING - 2025-01-28 23:33:17,106 - WatchFiles detected changes in 'server\routes\health.py'. Reloading...
+uvicorn.error - INFO - 2025-01-28 23:35:01,072 - Shutting down
+uvicorn.error - INFO - 2025-01-28 23:35:01,183 - Waiting for application shutdown.
+uvicorn.error - INFO - 2025-01-28 23:35:01,183 - Application shutdown complete.
+uvicorn.error - INFO - 2025-01-28 23:35:01,184 - Finished server process [88536]
+watchfiles.main - DEBUG - 2025-01-28 23:35:01,578 - 13 changes detected: {(<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py~'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc.1603585860656'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc.1603585860656'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\4913'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\4913'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py~'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc')}
+uvicorn.error - WARNING - 2025-01-28 23:35:01,578 - WatchFiles detected changes in 'server\server.py'. Reloading...
+watchfiles.main - DEBUG - 2025-01-28 23:36:21,565 - 7 changes detected: {(<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py~'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\4913'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\4913'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py~'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server')}
+uvicorn.error - WARNING - 2025-01-28 23:36:21,565 - WatchFiles detected changes in 'server\server.py'. Reloading...
+watchfiles.main - DEBUG - 2025-01-28 23:36:21,924 - 5 changes detected: {(<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc.1807266047024'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc.1807266047024'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc')}
+watchfiles.main - DEBUG - 2025-01-28 23:36:23,592 - 7 changes detected: {(<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py~'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\4913'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\4913'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py~'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server')}
+uvicorn.error - WARNING - 2025-01-28 23:36:23,592 - WatchFiles detected changes in 'server\server.py'. Reloading...
+watchfiles.main - DEBUG - 2025-01-28 23:36:23,949 - 5 changes detected: {(<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc.1904295371824'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc.1904295371824')}
+watchfiles.main - DEBUG - 2025-01-28 23:36:27,725 - 7 changes detected: {(<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py~'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\4913'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\4913'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py~'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server')}
+uvicorn.error - WARNING - 2025-01-28 23:36:27,725 - WatchFiles detected changes in 'server\server.py'. Reloading...
+watchfiles.main - DEBUG - 2025-01-28 23:36:28,080 - 5 changes detected: {(<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc.2962974925872'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc.2962974925872')}
+watchfiles.main - DEBUG - 2025-01-28 23:37:11,600 - 7 changes detected: {(<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py~'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\4913'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\4913'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py~'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server')}
+uvicorn.error - WARNING - 2025-01-28 23:37:11,600 - WatchFiles detected changes in 'server\server.py'. Reloading...
+watchfiles.main - DEBUG - 2025-01-28 23:37:11,966 - 5 changes detected: {(<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc.2695320593456'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc.2695320593456'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc')}
+watchfiles.main - DEBUG - 2025-01-28 23:37:18,050 - 7 changes detected: {(<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py~'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\4913'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\4913'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py~'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server')}
+uvicorn.error - WARNING - 2025-01-28 23:37:18,050 - WatchFiles detected changes in 'server\server.py'. Reloading...
+watchfiles.main - DEBUG - 2025-01-28 23:37:18,407 - 5 changes detected: {(<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc.1582914233392'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc.1582914233392')}
+watchfiles.main - DEBUG - 2025-01-28 23:37:42,555 - 7 changes detected: {(<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py~'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\4913'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\4913'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py~'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server')}
+uvicorn.error - WARNING - 2025-01-28 23:37:42,555 - WatchFiles detected changes in 'server\server.py'. Reloading...
+watchfiles.main - DEBUG - 2025-01-28 23:37:42,921 - 5 changes detected: {(<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc.2152889017392'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc.2152889017392')}
+watchfiles.main - DEBUG - 2025-01-28 23:38:13,212 - 7 changes detected: {(<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py~'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\4913'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\4913'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py~'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server')}
+uvicorn.error - WARNING - 2025-01-28 23:38:13,212 - WatchFiles detected changes in 'server\server.py'. Reloading...
+watchfiles.main - DEBUG - 2025-01-28 23:38:13,567 - 5 changes detected: {(<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc.1493247812656'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc.1493247812656')}
+watchfiles.main - DEBUG - 2025-01-28 23:38:13,931 - 16 changes detected: {(<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas\\__pycache__\\health.cpython-313.pyc.1493270773808'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas\\__pycache__\\__init__.cpython-313.pyc.1493272249952'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\__pycache__\\health.cpython-313.pyc.1493270774064'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\__pycache__\\health.cpython-313.pyc.1493270774064'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas\\__pycache__'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\__pycache__'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\__pycache__\\__init__.cpython-313.pyc.1493272249088'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\__pycache__\\__init__.cpython-313.pyc'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas\\__pycache__\\__init__.cpython-313.pyc.1493272249952'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas\\__pycache__\\__init__.cpython-313.pyc'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\__pycache__\\__init__.cpython-313.pyc.1493272249088'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas\\__pycache__\\health.cpython-313.pyc.1493270773808'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\__pycache__\\health.cpython-313.pyc'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas\\__pycache__\\health.cpython-313.pyc')}
+watchfiles.main - DEBUG - 2025-01-28 23:38:16,651 - 7 changes detected: {(<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py~'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\4913'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\4913'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\server.py~'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server')}
+uvicorn.error - WARNING - 2025-01-28 23:38:16,652 - WatchFiles detected changes in 'server\server.py'. Reloading...
+watchfiles.main - DEBUG - 2025-01-28 23:38:17,015 - 5 changes detected: {(<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc.1575670932528'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\__pycache__\\server.cpython-313.pyc.1575670932528')}
+watchfiles.main - DEBUG - 2025-01-28 23:39:00,846 - 7 changes detected: {(<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas\\health.py~'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas\\4913'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas\\health.py'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas\\4913'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas\\health.py'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas\\health.py~')}
+uvicorn.error - WARNING - 2025-01-28 23:39:00,847 - WatchFiles detected changes in 'server\schemas\health.py'. Reloading...
+uvicorn.error - INFO - 2025-01-28 23:39:01,383 - Started server process [106320]
+uvicorn.error - INFO - 2025-01-28 23:39:01,385 - Waiting for application startup.
+server.server - INFO - 2025-01-28 23:39:01,386 - App ready 🚀
+uvicorn.error - INFO - 2025-01-28 23:39:01,386 - Application startup complete.
+watchfiles.main - DEBUG - 2025-01-28 23:39:01,452 - 5 changes detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas\\__pycache__'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas\\__pycache__\\health.cpython-313.pyc'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas\\__pycache__\\health.cpython-313.pyc.1451510710576'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas\\__pycache__\\health.cpython-313.pyc'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas\\__pycache__\\health.cpython-313.pyc.1451510710576')}
+watchfiles.main - DEBUG - 2025-01-28 23:39:01,811 - 4 changes detected: {(<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\.venv\\Lib\\site-packages\\pydantic\\__pycache__\\root_model.cpython-313.pyc.1451512217104'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\.venv\\Lib\\site-packages\\pydantic\\__pycache__\\root_model.cpython-313.pyc.1451512217104'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\.venv\\Lib\\site-packages\\pydantic\\__pycache__\\root_model.cpython-313.pyc'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\.venv\\Lib\\site-packages\\pydantic\\__pycache__')}
+watchfiles.main - DEBUG - 2025-01-28 23:39:02,469 - 7 changes detected: {(<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\health.py'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\4913'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\4913'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\health.py~'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\health.py'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\health.py~')}
+uvicorn.error - WARNING - 2025-01-28 23:39:02,470 - WatchFiles detected changes in 'server\routes\health.py'. Reloading...

@@ -387,3 +387,32 @@ watchfiles.main - DEBUG - 2025-01-28 23:39:01,452 - 5 changes detected: {(<Chang
 watchfiles.main - DEBUG - 2025-01-28 23:39:01,811 - 4 changes detected: {(<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\.venv\\Lib\\site-packages\\pydantic\\__pycache__\\root_model.cpython-313.pyc.1451512217104'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\.venv\\Lib\\site-packages\\pydantic\\__pycache__\\root_model.cpython-313.pyc.1451512217104'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\.venv\\Lib\\site-packages\\pydantic\\__pycache__\\root_model.cpython-313.pyc'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\.venv\\Lib\\site-packages\\pydantic\\__pycache__')}
 watchfiles.main - DEBUG - 2025-01-28 23:39:02,469 - 7 changes detected: {(<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\health.py'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\4913'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\4913'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\health.py~'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\health.py'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\routes\\health.py~')}
 uvicorn.error - WARNING - 2025-01-28 23:39:02,470 - WatchFiles detected changes in 'server\routes\health.py'. Reloading...
+uvicorn.error - INFO - 2025-01-29 16:16:24,543 - Will watch for changes in these directories: ['C:\\Users\\Patea\\Desktop\\EduWiz\\backend']
+uvicorn.error - INFO - 2025-01-29 16:16:24,544 - Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+uvicorn.error - INFO - 2025-01-29 16:16:24,544 - Started reloader process [9752] using WatchFiles
+uvicorn.error - INFO - 2025-01-29 16:16:25,086 - Started server process [27416]
+uvicorn.error - INFO - 2025-01-29 16:16:25,088 - Waiting for application startup.
+server.server - INFO - 2025-01-29 16:16:25,089 - App ready 🚀
+uvicorn.error - INFO - 2025-01-29 16:16:25,089 - Application startup complete.
+watchfiles.main - DEBUG - 2025-01-29 16:17:12,454 - 1 change detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log')}
+watchfiles.main - DEBUG - 2025-01-29 16:17:12,812 - 1 change detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log')}
+watchfiles.main - DEBUG - 2025-01-29 16:17:16,737 - 1 change detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log')}
+watchfiles.main - DEBUG - 2025-01-29 16:17:17,103 - 1 change detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log')}
+watchfiles.main - DEBUG - 2025-01-29 16:22:26,244 - 7 changes detected: {(<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas\\4913'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas\\health.py'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas\\health.py~'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas\\4913'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas\\health.py'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas\\health.py~')}
+uvicorn.error - WARNING - 2025-01-29 16:22:26,245 - WatchFiles detected changes in 'server\schemas\health.py'. Reloading...
+uvicorn.error - INFO - 2025-01-29 16:22:29,710 - Shutting down
+uvicorn.error - INFO - 2025-01-29 16:22:29,820 - Waiting for application shutdown.
+uvicorn.error - INFO - 2025-01-29 16:22:29,820 - Application shutdown complete.
+uvicorn.error - INFO - 2025-01-29 16:22:29,821 - Finished server process [27416]
+watchfiles.main - DEBUG - 2025-01-29 16:22:30,234 - 1 change detected: {(<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\logs\\app.log')}
+uvicorn.error - INFO - 2025-01-29 16:22:30,849 - Started server process [4044]
+uvicorn.error - INFO - 2025-01-29 16:22:30,851 - Waiting for application startup.
+server.server - INFO - 2025-01-29 16:22:30,851 - App ready 🚀
+uvicorn.error - INFO - 2025-01-29 16:22:30,851 - Application startup complete.
+watchfiles.main - DEBUG - 2025-01-29 16:22:30,942 - 5 changes detected: {(<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas\\__pycache__\\health.cpython-313.pyc.2028436865328'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas\\__pycache__\\health.cpython-313.pyc.2028436865328'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas\\__pycache__\\health.cpython-313.pyc'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas\\__pycache__\\health.cpython-313.pyc'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas\\__pycache__')}
+watchfiles.main - DEBUG - 2025-01-29 16:23:55,105 - 7 changes detected: {(<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas\\4913'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas\\health.py'), (<Change.modified: 2>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas'), (<Change.deleted: 3>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas\\health.py~'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas\\4913'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas\\health.py'), (<Change.added: 1>, 'C:\\Users\\Patea\\Desktop\\EduWiz\\backend\\server\\schemas\\health.py~')}
+uvicorn.error - WARNING - 2025-01-29 16:23:55,106 - WatchFiles detected changes in 'server\schemas\health.py'. Reloading...
+uvicorn.error - INFO - 2025-01-29 16:24:01,088 - Shutting down
+uvicorn.error - INFO - 2025-01-29 16:24:01,198 - Waiting for application shutdown.
+uvicorn.error - INFO - 2025-01-29 16:24:01,198 - Application shutdown complete.
+uvicorn.error - INFO - 2025-01-29 16:24:01,199 - Finished server process [4044]

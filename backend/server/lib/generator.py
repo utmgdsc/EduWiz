@@ -29,9 +29,9 @@ def codeCleaner(response):
 
 def ask(prompt):
     # Models
-    writer = ChatGoogleGenerativeAI(model="gemini-1.5-flash", google_api_key=key)
-    animator = ChatGoogleGenerativeAI(model="gemini-1.5-flash", google_api_key=key)
-    checker = ChatGoogleGenerativeAI(model="gemini-1.5-flash", google_api_key=key)
+    writer = ChatGoogleGenerativeAI(model="gemini-2.0-flash", google_api_key=key)
+    animator = ChatGoogleGenerativeAI(model="gemini-2.0-flash", google_api_key=key)
+    checker = ChatGoogleGenerativeAI(model="gemini-2.0-flash", google_api_key=key)
 
     # Writer prompt
     writer_human_message = HumanMessagePromptTemplate.from_template("{prompt}")

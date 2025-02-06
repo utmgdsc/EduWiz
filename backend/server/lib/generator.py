@@ -52,7 +52,3 @@ def ask(prompt):
     chain = writer_prompt | writer | RunnableLambda(animatorPrompter) | animator_prompt | animator | RunnableLambda(codeCleaner) | checker_prompt | checker | RunnableLambda(unwrapCode)
     result = chain.invoke(prompt)
     return result
-
-
-if __name__ == "__main__":
-    print(ask("Explain the pythagorean theorem"))

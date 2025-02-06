@@ -10,25 +10,20 @@ key = os.getenv("GOOGLE_API_KEY")
 
 # Parsing functions
 
+def unwrapCode(code):
+    lines = code.content.splitlines()
+    code = lines[1:]
+    for i in code:
+        if i == "```":
+            code.remove(i)
+
+    return "\n".join(code)
+
 def animatorPrompter(response):
     return {"script": response.content}
 
 def codeCleaner(response):
-    lines = response.content.splitlines()
-    code = lines[1:]
-    for i in code:
-        if i == "```":
-            code.remove(i)
-
-    return {"manim_code": "\n".join(code)}
-
-def codeParse(response):
-    lines = response.content.splitlines()
-    code = lines[1:]
-    for i in code:
-        if i == "```":
-            code.remove(i)
-    return "\n".join(code)
+    return {"manim_code": unwrapCode(response)}
 
 # Prompting function
 
@@ -54,6 +49,10 @@ def ask(prompt):
     checker_prompt = ChatPromptTemplate([checker_system_message, checker_human_message])
     
     # Chaining
-    chain = writer_prompt | writer | RunnableLambda(animatorPrompter) | animator_prompt | animator | RunnableLambda(codeCleaner) | checker_prompt | checker | RunnableLambda(codeParse)
+    chain = writer_prompt | writer | RunnableLambda(animatorPrompter) | animator_prompt | animator | RunnableLambda(codeCleaner) | checker_prompt | checker | RunnableLambda(unwrapCode)
     result = chain.invoke(prompt)
     return result
+
+
+if __name__ == "__main__":
+    print(ask("Explain the pythagorean theorem"))

@@ -38,13 +38,8 @@ export default function LoginPage() {
         })
 
         if (response.ok) {
-            // moving user into email verification process
-            await fetch("/api/auth/sendverificationcode", {
-                method: 'GET',
-                credentials: 'include'
-            }).then((response) => {
-                router.push('/')
-            })
+           
+           router.push("/")
             
 
         } else {

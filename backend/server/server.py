@@ -2,7 +2,7 @@ import logging
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from server.logger import setup_logger
-from .routes import health
+from .routes import health, video
 
 
 setup_logger()
@@ -20,6 +20,7 @@ app = FastAPI(
     title="EduWiz API",
 )
 app.include_router(health.router)
+app.include_router(video.router)
 
 
 @app.get("/")

@@ -4,3 +4,4 @@ uv.lock
 backend/logs/
 backend/server/output
 example.py
+.env

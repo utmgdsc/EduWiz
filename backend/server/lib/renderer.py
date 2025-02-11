@@ -52,8 +52,8 @@ def render_manim_code(code: str) -> str:
             logger.error(message)
             raise RuntimeError(message)
 
-        # If the video is found copy it to \output\ folder
-        output_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "output")
+        # If the video is found copy it to backend\output\ folder
+        output_dir = os.path.dirname("./output/")
         os.makedirs(output_dir, exist_ok=True)
 
         final_video_path = os.path.join(output_dir, f"{output_id}.mp4")

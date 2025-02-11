@@ -2,6 +2,6 @@ __pycache__/
 uv.lock
 .DS_Store
 backend/logs/
-backend/server/output
+backend/output
 example.py
 .env

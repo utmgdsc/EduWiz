@@ -1,54 +1,58 @@
 from langchain_core.runnables import RunnableLambda
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
 import os
 from dotenv import load_dotenv
 
 
 load_dotenv()
-key = os.getenv("GOOGLE_API_KEY")
+key = os.getenv("OPENAI_API_KEY")
 
+animator_script = ""
 # Parsing functions
-
+#
 def unwrapCode(code):
-    lines = code.content.splitlines()
-    code = lines[1:]
-    for i in code:
-        if i == "```":
-            code.remove(i)
+    return code.content
 
-    return "\n".join(code)
-
-def animatorPrompter(response):
+def animator_prompter(response):
+    global animator_script
+    animator_script = response.content
     return {"script": response.content}
 
 def codeCleaner(response):
-    return {"manim_code": unwrapCode(response)}
+    final_response = response.content + "\n==================SCRIPT STARTS HERE==================\n" + animator_script
+    return {"manim_code": final_response}
+
+def get_prompt(filepath):
+    with open(filepath, "r") as prompt:
+        return prompt.read()
 
 # Prompting function
-
 def ask(prompt):
     # Models
-    writer = ChatGoogleGenerativeAI(model="gemini-2.0-flash", google_api_key=key)
-    animator = ChatGoogleGenerativeAI(model="gemini-2.0-flash", google_api_key=key)
-    checker = ChatGoogleGenerativeAI(model="gemini-2.0-flash", google_api_key=key)
+    mathematician = ChatOpenAI(model="o3-mini-2025-01-31", openai_api_key=key)
+    animator = ChatOpenAI(model="o3-mini-2025-01-31", openai_api_key=key)
+    checker = ChatOpenAI(model="o3-mini-2025-01-31", openai_api_key=key)
 
-    # Writer prompt
-    writer_human_message = HumanMessagePromptTemplate.from_template("{prompt}")
-    writer_system_message = SystemMessagePromptTemplate.from_template("You will be provided a question, your job is to write a script for a video that will explain the answer to that question. The video will be coded via manim, so describe video elements as well. Describe each step clearly. Specify the animation order (e.g., first draw the triangle, then label the sides, then show the theorem). Avoid overlapping elements by specifying where each object should appear. Mention the type of animations (e.g., FadeIn, Write, Transform). Keep it concise and suitable for automatic conversion into Python code.")
-    writer_prompt = ChatPromptTemplate([writer_system_message, writer_human_message])
+    # Mathematician prompt
+    mathematician_human_message = HumanMessagePromptTemplate.from_template("{prompt}")
+    mathematician_system_message = SystemMessagePromptTemplate.from_template(get_prompt("mathematician_prompt.txt"))
+    mathematician_prompt = ChatPromptTemplate([mathematician_system_message, mathematician_human_message])
 
     # Animator prompt
     animator_human_message = HumanMessagePromptTemplate.from_template("{script}")
-    animator_system_message = SystemMessagePromptTemplate.from_template("You will be provided a script for a video. Write a manim script to animate this. Make sure that you STRICTLY use ascii characters in the code. Make sure that it renders properly and none of the elements of the video overlap. Make sure that the code runs and does not cause any errors. Use Write() for text, Create() for shapes, and Transform() for smooth transitions. Follow the script's order carefully to ensure proper animations. Use .next_to(), .move_to(), and .align_to() to position elements correctly. Avoid overlapping elements. The output should be a valid and runnable Python script using Manim.")
+    animator_system_message = SystemMessagePromptTemplate.from_template(get_prompt("animator_prompt.txt"))
     animator_prompt = ChatPromptTemplate([animator_system_message, animator_human_message])
     
     # Checker prompt
     checker_human_message = HumanMessagePromptTemplate.from_template("{manim_code}")
-    checker_system_message = SystemMessagePromptTemplate.from_template("You are a manim expert. Your job is to check the following code for any errors and return the verified code. Make sure you return nothing except the code.")
+    checker_system_message = SystemMessagePromptTemplate.from_template("You are a manim expert. Your job is to make sure that the manim code provided to you is clear, visible and valid. Make sure that none of the code overlaps, and that all of it fits within the bounds of the screen. None of the elements should linger on the screen longer than necessary, and must be faded properly. Make sure you return nothing except the code. The script will be given to you, make sure you omit it in your response.")
     checker_prompt = ChatPromptTemplate([checker_system_message, checker_human_message])
     
     # Chaining
-    chain = writer_prompt | writer | RunnableLambda(animatorPrompter) | animator_prompt | animator | RunnableLambda(codeCleaner) | checker_prompt | checker | RunnableLambda(unwrapCode)
+    chain = mathematician_prompt | mathematician | RunnableLambda(animator_prompter) | animator_prompt | animator | RunnableLambda(codeCleaner) | checker_prompt | checker | RunnableLambda(unwrapCode)
     result = chain.invoke(prompt)
     return result
+
+if __name__ == "__main__":
+    print(ask("Explain f=ma to me."))

@@ -2,11 +2,12 @@ import logging
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from server.logger import setup_logger
-from .routes import health, video
+from server.routes import health, video
+from server.services.rabbitmq import RabbitMQConnection
 
 
 setup_logger()
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("eduwiz.server")
 
 
 @asynccontextmanager
@@ -19,10 +20,14 @@ app = FastAPI(
     lifespan=lifespan,
     title="EduWiz API",
 )
+
+
+@app.on_event("startup")
+async def startup_event():
+    # Initialize RabbitMQ connection
+    await RabbitMQConnection.get_instance()
+    logger.info("RabbitMQ connection initialized")
+
+
 app.include_router(health.router)
 app.include_router(video.router)
-
-
-@app.get("/")
-def index():
-    return "Hello World"

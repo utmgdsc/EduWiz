@@ -1,11 +1,19 @@
+import logging
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
-from server.lib import renderer
 import os
+import uuid
+import aio_pika
+from pathlib import Path
+import json
 
 from server.schemas.render import RenderRequest
+from server.services.rabbitmq import RabbitMQConnection
 
 router = APIRouter(tags=["render"])
+logger = logging.getLogger("eduwiz.routes.video")
+
+VIDEOS_DIR = Path(os.getenv("OUTPUT_PATH", "/shared/videos"))
 
 
 @router.post(
@@ -19,9 +27,6 @@ async def render(data: RenderRequest):
     - **data: RenderRequest**: A JSON object containing:
         - **prompt (str)**: The prompt provided by the user, which will be used to generate the Manim code for the video.
 
-    **Returns:**
-    - **FileResponse**: A streaming response containing the rendered video file in MP4 format.
-      The response is sent with a media type of "video/mp4" and the file is named "output.mp4".
     """
     # prompt = data.prompt
 
@@ -32,14 +37,67 @@ async def render(data: RenderRequest):
 
     # temporary file for testing, located at root of project
     current_file = os.path.dirname(__file__)
-    example_file = os.path.abspath(os.path.join(current_file, "../../../example.py"))
+    example_file = os.path.abspath(os.path.join(current_file, "../../example.py"))
 
     with open(example_file, "r") as f:
         code = f.read()
+    scene = "Scene1"  # Also temporary
+
+    job_id = str(uuid.uuid4())
 
     try:
-        video_path = renderer.render_manim_code(code)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        rabbitmq = await RabbitMQConnection.get_instance()
+        channel = await rabbitmq.get_channel()
 
-    return FileResponse(video_path, media_type="video/mp4", filename="output.mp4")
+        message = {
+            "job_id": job_id,
+            "manim_code": code,
+            "scene_name": scene,
+        }
+
+        # Publish job order to the queue
+        await channel.default_exchange.publish(
+            aio_pika.Message(
+                body=json.dumps(message).encode(),
+                content_type="application/json",
+                delivery_mode=aio_pika.DeliveryMode.PERSISTENT,  # Makes it so that message is saved in case of errors
+            ),
+            routing_key="render_jobs",
+        )
+
+        logger.info(f"Job {job_id} queued successfully")
+        return {"job_id": job_id}
+
+    except Exception as e:
+        logger.error(f"Failed to queue job: {e}")
+        raise HTTPException(status_code=500, detail="Failed to queue render job")
+
+
+## Temporary to be replaced with the firebase realtime db TODO
+@router.get("/render/{job_id}/video")
+async def get_video(job_id: str):
+    """
+    Retrieve a rendered video by its job ID.
+
+    **Parameters:**
+    - **job_id (str)**: The UUID of the render job
+    """
+    # Validate job_id format
+    try:
+        uuid.UUID(job_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid job ID format")
+
+    video_path = VIDEOS_DIR / f"{job_id}.mp4"
+
+    if not video_path.exists():
+        logger.info(f"Video not found for job {job_id}")
+        raise HTTPException(status_code=404, detail="Video not found")
+
+    try:
+        return FileResponse(
+            str(video_path), media_type="video/mp4", filename=f"{job_id}.mp4"
+        )
+    except Exception as e:
+        logger.error(f"Failed to serve video {job_id}: {e}")
+        raise HTTPException(status_code=500, detail="Failed to serve video file")

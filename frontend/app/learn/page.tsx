@@ -7,7 +7,7 @@ import { useSearchParams } from "next/navigation";
 
 export default function Home() {
     const searchParams = useSearchParams();
-    const chatID = searchParams.get('id');
+    const chatID = searchParams.get('id'); //TODO: use this later to allow users to view already-made videos
 
     const [prompt, setPrompt] = useState("");
     const [searchMode, setSearchMode] = useState(true);
@@ -28,13 +28,6 @@ export default function Home() {
             setVideoGenerationState(2);
         }
     }
-
-    useEffect(() => {
-        if (chatID !== null){ // if user is loading in pre existing chat
-            // TODO: load in pre existing chat
-        }
-    }, [])
-
 
     return (
         <main className="h-full">
@@ -57,7 +50,6 @@ export default function Home() {
                 </div>
 
                 {/* video placeholder and search suggestions box*/}
-                {/* TODO: implement video box here */}
                 <div className="rounded-md h-full w-full" >
                     {(searchMode) ? (
                         <AutoSearch query={prompt} />
@@ -66,10 +58,16 @@ export default function Home() {
                             <div className="rounded-md border p-4 self-start aspect-video max-h-full w-full">
                                 {(videoGenerationState == 1) ?
                                     (<p className="text-black">Video will appear here</p>)
-                                    : (<p>video is playing here now</p>)
+                                    : (
+                                        <video
+                                            src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
+                                            controls
+                                            className="w-full h-full"
+                                        >
+                                        </video>
+                                    )
                                 }
                             </div>
-                            {/* TODO: CHATBOX GOES HERE*/}
                         </div>
                     )
                     }

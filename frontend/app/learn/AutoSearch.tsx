@@ -1,23 +1,34 @@
-import React from "react";
+"use client"
+import React, { useEffect, useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button";
+import { SidebarGroup, SidebarGroupLabel, SidebarMenuButton } from "@/components/ui/sidebar";
+import { useRouter } from "next/navigation";
 
 interface SearchResult {
+    id: number,
     title: string,
-    id: number
+    date: Date
 }
 
-const getSearchResults = (query: string): SearchResult[] => {
-    // THESE ARE MOCK SEARCH RESULTS, THEY WILL NEED TO BE RETURNED
-    console.log("updating search results");
-    const s = {title: "asdfasdf", id: 12312};
-    return [s];
+const getSearchResults = async (query: string): Promise<SearchResult[]> => {
+    // TODO: THESE ARE MOCK SEARCH RESULTS, THEY WILL NEED TO BE RETURNED
+    const s = { id: 12312, title: "Pythogorean theorem", date: new Date() };
+    const r = { id: 133, title: "Newton's first law", date: new Date() };
+    const t = { id: 9393, title: "Thermodynamics", date: new Date() };
+    return [s, r, t];
 }
 
-const AutoSearch = ({ query }: {query: string}) => {
+const AutoSearch = ({ query }: { query: string }) => {
+    const [results, setResults] = useState<SearchResult[]>([]);
+    const router = useRouter();
 
-    // THESE ARE JUST MOCK RESULTS, THESE WILL LATER BE REPLACED BY ACTUAL RESULTS
-    const results = getSearchResults(query);
+    useEffect(() => {
+        const updateSearchResults = async () => {
+            setResults(await getSearchResults(query));
+        }
+        updateSearchResults();
+    }, [query])
 
     return (
         <main className="h-full">
@@ -25,10 +36,19 @@ const AutoSearch = ({ query }: {query: string}) => {
                 <ul>
                     {results.length > 0 ? (
                         results.map((item, index) => (
-                            <li key={index} className="p-1 border-b last:border-none">
-                                <Button className="w-full">
-                                    {item.title}
-                                </Button>
+                            <li key={index} className="mb-2 flex-col">
+                                <SidebarMenuButton 
+                                className="h-full"
+                                onClick={(e) => {
+                                    router.push("/")
+                                    {/*TODO: update this so that it pushes to the correct page*/}
+                                }}
+                                >
+                                    <div className="flex-col text-left">
+                                        {item.title}
+                                        <SidebarGroupLabel>Generated on {item.date.toDateString()}</SidebarGroupLabel>                           
+                                    </div>
+                                </SidebarMenuButton>
                             </li>
                         ))
                     ) : (

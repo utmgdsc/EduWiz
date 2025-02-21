@@ -39,7 +39,7 @@ if (process.env.NODE_ENV !== "production") {
 
   connectAuthEmulator(
     auth,
-    `https://localhost:${firebase_local.emulators.auth.port}`
+    `http://localhost:${firebase_local.emulators.auth.port}`
   );
 }
 

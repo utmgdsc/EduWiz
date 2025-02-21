@@ -53,6 +53,3 @@ def ask(prompt):
     chain = mathematician_prompt | mathematician | RunnableLambda(animator_prompter) | animator_prompt | animator | RunnableLambda(codeCleaner) | checker_prompt | checker | RunnableLambda(unwrapCode)
     result = chain.invoke(prompt)
     return result
-
-if __name__ == "__main__":
-    print(ask("Explain f=ma to me."))

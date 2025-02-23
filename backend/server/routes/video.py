@@ -9,6 +9,8 @@ import json
 
 from server.schemas.render import RenderRequest
 from server.services.rabbitmq import RabbitMQConnection
+from server.lib.generator import ask
+from server.services.status import send_status_update
 
 router = APIRouter(tags=["render"])
 logger = logging.getLogger("eduwiz.routes.video")
@@ -28,22 +30,24 @@ async def render(data: RenderRequest):
         - **prompt (str)**: The prompt provided by the user, which will be used to generate the Manim code for the video.
 
     """
-    # prompt = data.prompt
+    job_id = str(uuid.uuid4())
 
-    # if not prompt:
-    #     raise HTTPException(status_code=400, detail="Missing 'prompt' in request body")
+    prompt = data.prompt
 
-    # Api calls to turn prompt into code
+    if not prompt:
+        raise HTTPException(status_code=400, detail="Missing 'prompt' in request body")
 
-    # temporary file for testing, located at root of project
+    await send_status_update(job_id, "started_generation")
+
+    # code = ask(prompt)
+
     current_file = os.path.dirname(__file__)
     example_file = os.path.abspath(os.path.join(current_file, "../../example.py"))
 
     with open(example_file, "r") as f:
         code = f.read()
-    scene = "Scene1"  # Also temporary
 
-    job_id = str(uuid.uuid4())
+    await send_status_update(job_id, "ended_generation")
 
     try:
         rabbitmq = await RabbitMQConnection.get_instance()
@@ -52,7 +56,7 @@ async def render(data: RenderRequest):
         message = {
             "job_id": job_id,
             "manim_code": code,
-            "scene_name": scene,
+            "scene_name": "ManimVideo",
         }
 
         # Publish job order to the queue

@@ -6,3 +6,5 @@ backend/example.py
 /videos/*
 
 .env
+
+/firebase/credentials/*

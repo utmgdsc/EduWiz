@@ -1,35 +1,81 @@
-import asyncio
-from pathlib import Path
 import aio_pika
-import json
-import tempfile
-import shutil
+import asyncio
 import logging
 import os
+import json
+import shutil
+from pathlib import Path
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s %(levelname)s: %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
-)
 logger = logging.getLogger(__name__)
+JOB_LIMIT = 10
+
+
+class RabbitMQConnection:
+    """
+    Singleton class which handles connections to the RabbitMQ server and ensuring that the connection is always alive
+    """
+
+    _instance = None
+    _connection = None
+    _channel = None
+
+    def __init__(self):
+        self.url = os.getenv("RABBITMQ_URL", "amqp://guest:guest@localhost:5672/")
+
+    @classmethod
+    async def get_instance(cls):
+        if not cls._instance:
+            cls._instance = cls()
+        return cls._instance
+
+    async def connect(self):
+        """Establishes a connection to RabbitMQ and deals with reconnecting when necessary"""
+        try:
+            if not self._connection or self._connection.is_closed:
+                logger.info(f"Connecting to RabbitMQ at {self.url}")
+                self._connection = await aio_pika.connect_robust(self.url)
+
+            if not self._channel or self._channel.is_closed:
+                self._channel = await self._connection.channel()
+
+                # Enables round-robin dispatching with JOB_LIMIT jobs per container.
+                await self._channel.declare_queue("render_jobs", durable=True)
+                logger.info("RabbitMQ channel established")
+        except Exception as e:
+            logger.error(f"Failed to connect to RabbitMQ: {e}")
+            self._connection = None
+            self._channel = None
+            raise
+
+    async def get_channel(self):
+        """Return the current channel, reconnecting if necessary."""
+        if not self._channel or self._channel.is_closed:
+            await self.connect()
+        return self._channel
+
+    async def close(self):
+        """Gracefully close the channel and connection."""
+        if self._channel and not self._channel.is_closed:
+            await self._channel.close()
+        if self._connection and not self._connection.is_closed:
+            await self._connection.close()
+        self._channel = None
+        self._connection = None
 
 
 class RenderManager:
     def __init__(self):
-        self.rabbitmq_url = os.getenv(
-            "RABBITMQ_URL", "amqp://guest:guest@localhost:5672/"
-        )
         self.output_path = Path(os.getenv("OUTPUT_PATH", "/shared/videos"))
         self.temp_base = Path(os.getenv("TEMP_DIR", "/app/temp"))
 
+        # Create directories if they don't exist
         self.temp_base.mkdir(parents=True, exist_ok=True)
         self.output_path.mkdir(parents=True, exist_ok=True)
 
-        # verify write permissions
+        # Verify that permissions are correct for the output and temporary folders
         try:
             test_file = self.temp_base / ".write_test"
-            test_file.touch()
+            test_file.write_text("test")
             test_file.unlink()
         except PermissionError:
             raise RuntimeError(
@@ -38,7 +84,7 @@ class RenderManager:
 
         try:
             test_file = self.output_path / ".write_test"
-            test_file.touch()
+            test_file.write_text("test")
             test_file.unlink()
         except PermissionError:
             raise RuntimeError(
@@ -51,16 +97,18 @@ class RenderManager:
         temp_dir = self.temp_base / job_id
         temp_dir.mkdir(parents=True, exist_ok=True)
 
+        await self.send_status_update(job_id, "started_rendering")
+
         try:
             scene_file = temp_dir / "scene.py"
-            # Write manim code to file for manim cli
+            # write the Manim code to a file so that the CLI can use it
             scene_file.write_text(scene_code)
 
-            # create media directory for new job
+            # Create a media directory for this job for use in --media_dir
             media_dir = temp_dir / "media"
             media_dir.mkdir(parents=True, exist_ok=True)
 
-            # run manim
+            # Run Manim using the CLI
             process = await asyncio.create_subprocess_exec(
                 "manim",
                 str(scene_file),
@@ -76,19 +124,21 @@ class RenderManager:
             if process.returncode != 0:
                 raise RuntimeError(f"Render failed: {stderr.decode()}")
 
-            # Find output file
+            # Get the final rendered video in the temporary directory
             video_file = next(temp_dir.rglob("*.mp4"), None)
             if not video_file:
                 raise FileNotFoundError("No video file was produced")
 
-            # Move to output directory using copy then delete
+            await self.send_status_update(job_id, "rendering_complete")
+
+            # Copy the video to the output directory
             output_file = self.output_path / f"{job_id}.mp4"
             shutil.copy2(str(video_file), str(output_file))
 
             return output_file
 
         finally:
-            # Clean up temporary directory
+            # Clean up the temporary directory
             try:
                 if temp_dir.exists():
                     shutil.rmtree(temp_dir)
@@ -105,36 +155,52 @@ class RenderManager:
                 await self._render_scene(job_id, data["manim_code"], data["scene_name"])
                 logger.info(f"Completed job {job_id}")
             except Exception as e:
-                logger.exception(f"Failed to render job {job_id} with error {e}")
-                await message.reject(
-                    requeue=False
-                )  # We will not requeue failed jobs for now
+                logger.exception(f"Failed to render job {job_id} with error: {e}")
+                # Reject failed jobs without requeuing for now
+                await message.reject(requeue=False)
 
-    async def run(self, job_limit: int):
-        # Verify directories are accessible before starting
-        if not self.output_path.is_dir():
-            raise RuntimeError(f"Output directory not accessible: {self.output_path}")
-        if not self.temp_base.is_dir():
-            raise RuntimeError(f"Temporary directory not accessible: {self.temp_base}")
+    async def run(self):
+        rabbit_conn = await RabbitMQConnection.get_instance()
+        await rabbit_conn.connect()
+        channel = await rabbit_conn.get_channel()
 
-        connection = await aio_pika.connect_robust(self.rabbitmq_url)
-        async with connection:
-            channel = await connection.channel()
-            await channel.set_qos(prefetch_count=job_limit)
-            queue = await channel.declare_queue("render_jobs", durable=True)
+        queue = await channel.declare_queue("render_jobs", durable=True)
 
-            logger.info(f"Started render manager (job_limit={job_limit})")
-            logger.info(f"Using temp directory: {self.temp_base}")
-            logger.info(f"Using output directory: {self.output_path}")
+        logger.info(f"Started render manager (job_limit={JOB_LIMIT})")
+        logger.info(f"Using temp directory: {self.temp_base}")
+        logger.info(f"Using output directory: {self.output_path}")
 
-            await queue.consume(self._message_handler)
+        await queue.consume(self._message_handler)
 
-            try:
-                await asyncio.Future()  # run forever
-            except asyncio.CancelledError:
-                logger.info("Shutting down render manager")
+        try:
+            await asyncio.Future()  # run forever
+        except asyncio.CancelledError:
+            logger.info("Shutting down render manager")
+        finally:
+            await rabbit_conn.close()
+
+    async def send_status_update(self, job_id: str, status: str):
+        rabbitmq = await RabbitMQConnection.get_instance()
+        channel = await rabbitmq.get_channel()
+
+        message = {"job_id": job_id, "status": status}
+
+        # Publish job order to the queue
+        await channel.default_exchange.publish(
+            aio_pika.Message(
+                body=json.dumps(message).encode(),
+                content_type="application/json",
+                delivery_mode=aio_pika.DeliveryMode.PERSISTENT,  # Makes it so that message is saved in case of errors
+            ),
+            routing_key="status_updates",
+        )
 
 
 if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)s: %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
     manager = RenderManager()
-    asyncio.run(manager.run(job_limit=2))
+    asyncio.run(manager.run())

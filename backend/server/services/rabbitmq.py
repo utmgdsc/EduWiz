@@ -5,7 +5,7 @@ import os
 
 logger = logging.getLogger(__name__)
 
-PER_CONTAINER = 2
+PER_CONTAINER = 10
 
 
 class RabbitMQConnection:
@@ -35,6 +35,7 @@ class RabbitMQConnection:
                 await self._channel.set_qos(prefetch_count=PER_CONTAINER)
                 # Declare the render_jobs queue
                 await self._channel.declare_queue("render_jobs", durable=True)
+                await self._channel.declare_queue("status_updates")
                 logger.info("RabbitMQ channel established")
 
         except Exception as e:

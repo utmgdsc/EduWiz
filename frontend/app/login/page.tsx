@@ -22,8 +22,6 @@ export default function LoginPage() {
             return
         }
         
-        
-
         const response = await fetch('/api/auth/login', {
             method: 'POST',
             headers: {

@@ -20,13 +20,9 @@ services:
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
       - CORS_ORIGINS=http://localhost:3000
       - NODE_ENV=development
-      - FIREBASE_DATABASE_URL=${FIREBASE_DATABASE_URL}
-      - FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}
-      - FIREBASE_ADMIN_CREDENTIALS_PATH=/app/firebase/credentials/firebase_creds.json
       - RUNNING_IN_DOCKER=true
     volumes:
       - ./videos:/shared/videos:ro
-      - ./firebase:/app/firebase:ro
     extra_hosts:
       - "host.docker.internal:host-gateway" # remove after testing
     depends_on:

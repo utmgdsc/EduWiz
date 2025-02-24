@@ -3,6 +3,7 @@ import json
 import logging
 import aio_pika
 import firebase_admin
+from pathlib import Path
 from firebase_admin import credentials, initialize_app
 from firebase_admin import db
 from server.services.rabbitmq import RabbitMQConnection
@@ -11,12 +12,24 @@ logger = logging.getLogger(__name__)
 
 
 def initialize_firebase():
-    cred = credentials.Certificate(os.getenv("FIREBASE_ADMIN_CREDENTIALS_PATH"))
-    firebase_config = {"databaseURL": os.getenv("FIREBASE_DATABASE_URL")}
+    cred_path = Path("firebase_creds.json")
+    if not cred_path.exists():
+        raise FileNotFoundError(
+            f"Firebase credentials not found at {cred_path}. Place the service account key file there."
+        )
+
+    cred = credentials.Certificate(cred_path)
+
+    # Get project_id from credentials
+    with open(cred_path) as f:
+        cred_data = json.load(f)
+        project_id = cred_data["project_id"]
+
+    firebase_config = {"databaseURL": f"https://{project_id}.firebaseio.com"}
 
     # Connect to emulator if not in production
     if os.getenv("NODE_ENV") != "production":
-        with open("/app/firebase/firebase.json", "r") as f:
+        with open("/app/firebase.json", "r") as f:
             firebase_local = json.load(f)
 
         emulator_host = (
@@ -24,7 +37,7 @@ def initialize_firebase():
         )
 
         firebase_config["databaseURL"] = (
-            f"http://{emulator_host}:{firebase_local['emulators']['database']['port']}?ns={os.getenv('FIREBASE_PROJECT_ID')}"
+            f"http://{emulator_host}:{firebase_local['emulators']['database']['port']}?ns={project_id}"
         )
 
         logger.info(f"Using Firebase emulator at {firebase_config['databaseURL']}")

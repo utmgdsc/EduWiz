@@ -1,16 +1,18 @@
+import "@/styles/globals.css";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import { Geist, Geist_Mono, Outfit, Space_Grotesk } from "next/font/google";
 import { AuthorizationProvider } from "@/lib/context/auth";
 import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
+  weight: ["400", "600", "700"],
   subsets: ["latin"],
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
+  weight: ["400", "600", "700"],
   subsets: ["latin"],
 });
 
@@ -30,9 +32,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AuthorizationProvider>
+          <Toaster position="top-right" />
           <div>{children}</div>
         </AuthorizationProvider>
-        <Toaster position="top-right" />
       </body>
     </html>
   );

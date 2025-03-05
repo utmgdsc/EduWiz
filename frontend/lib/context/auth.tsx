@@ -5,13 +5,14 @@ import { auth } from "@/lib/firebase";
 import {
   type User,
   type UserCredential,
+  AuthProvider,
+  GithubAuthProvider,
   GoogleAuthProvider,
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+  signInWithEmailAndPassword,
   signInWithRedirect,
   signOut,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  GithubAuthProvider,
-  AuthProvider,
 } from "firebase/auth";
 
 import { FaGithub, FaGoogle } from "react-icons/fa";
@@ -23,7 +24,7 @@ interface AuthorizationContext {
   SignUpUser: (email: string, password: string) => Promise<UserCredential>;
   SignInUser: (email: string, password: string) => Promise<UserCredential>;
   SignInUserProvider: (provider: AuthProvider) => void;
-  SignOutUser: () => void;
+  SignOutUser: () => Promise<void>;
   providers: ProviderData[];
 }
 
@@ -58,8 +59,8 @@ function AuthorizationProvider({ children }: any) {
     signInWithRedirect(auth, provider);
   }
 
-  function SignOutUser() {
-    signOut(auth);
+  async function SignOutUser() {
+    return await signOut(auth);
   }
 
   return (

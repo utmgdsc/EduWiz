@@ -3,7 +3,7 @@ import type { ProviderData } from "@/lib/context/auth";
 
 import clsx from "clsx";
 
-import { Button, type ButtonProps } from "@/components/ui/button";
+import { type ButtonProps, Button } from "@/components/ui/button";
 
 type ProviderButtonProps = ButtonProps & {
   provider: ProviderData;
@@ -24,3 +24,4 @@ const ProviderButton = ({
 );
 
 export default ProviderButton;
+export type { ProviderButtonProps };

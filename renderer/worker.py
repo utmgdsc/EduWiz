@@ -122,11 +122,13 @@ class RenderManager:
             stdout, stderr = await process.communicate()
 
             if process.returncode != 0:
+                await self.send_status_update(job_id, "error")
                 raise RuntimeError(f"Render failed: {stderr.decode()}")
 
             # Get the final rendered video in the temporary directory
             video_file = next(temp_dir.rglob("*.mp4"), None)
             if not video_file:
+                await self.send_status_update(job_id, "error")
                 raise FileNotFoundError("No video file was produced")
 
             await self.send_status_update(job_id, "rendering_complete")
@@ -134,6 +136,8 @@ class RenderManager:
             # Copy the video to the output directory
             output_file = self.output_path / f"{job_id}.mp4"
             shutil.copy2(str(video_file), str(output_file))
+
+            await self.send_status_update(job_id, "completed")
 
             return output_file
 

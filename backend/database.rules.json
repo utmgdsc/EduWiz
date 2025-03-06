@@ -1,0 +1,10 @@
+{
+  "rules": {
+    "jobs": {
+      "$job_id": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    }
+  }
+}

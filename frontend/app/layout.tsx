@@ -1,6 +1,6 @@
 import "@/styles/globals.css";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Outfit, Space_Grotesk } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import { AuthorizationProvider } from "@/lib/context/auth";
 import { Toaster } from "@/components/ui/sonner";
 

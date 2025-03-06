@@ -15,8 +15,6 @@ export default function Home() {
 
   return (
     <main>
-      {/*TODO: next up make side bar with all chats next?*/}
-      {/**/}
       <div>
         <div
           className="relative flex flex-col h-screen w-screen justify-end"

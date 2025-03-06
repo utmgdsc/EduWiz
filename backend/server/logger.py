@@ -8,6 +8,9 @@ def setup_logger():
 
     os.makedirs(log_dir, exist_ok=True)
 
+    logger = logging.getLogger("eduwiz")
+    logger.setLevel(logging.DEBUG)
+
     logging.basicConfig(
         format="%(name)s - %(levelname)s - %(asctime)s - %(message)s",
         level=logging.DEBUG,
@@ -18,3 +21,5 @@ def setup_logger():
         logging.Formatter("%(name)s - %(levelname)s - %(asctime)s - %(message)s")
     )
     logging.getLogger().addHandler(file_handler)
+
+    logger.propagate = False

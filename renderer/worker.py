@@ -1,9 +1,11 @@
+from typing import AsyncIterable
 import aio_pika
 import asyncio
 import logging
 import os
 import json
 import shutil
+import re
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -91,9 +93,13 @@ class RenderManager:
                 f"No write permission in output directory: {self.output_path}"
             )
 
-    async def _render_scene(
-        self, job_id: str, scene_code: str, scene_name: str
-    ) -> Path:
+    def count_total_animations_in_code(self, code: str) -> int:
+        play_count = len(re.findall(r"self\.play\(", code))
+        wait_count = len(re.findall(r"self\.wait\(", code))
+        total = play_count + wait_count
+        return total
+
+    async def _render_scene(self, job_id: str, scene_code: str) -> Path:
         temp_dir = self.temp_base / job_id
         temp_dir.mkdir(parents=True, exist_ok=True)
 
@@ -104,6 +110,8 @@ class RenderManager:
             # write the Manim code to a file so that the CLI can use it
             scene_file.write_text(scene_code)
 
+            total_animations = self.count_total_animations_in_code(scene_code)
+
             # Create a media directory for this job for use in --media_dir
             media_dir = temp_dir / "media"
             media_dir.mkdir(parents=True, exist_ok=True)
@@ -112,18 +120,38 @@ class RenderManager:
             process = await asyncio.create_subprocess_exec(
                 "manim",
                 str(scene_file),
-                scene_name,
+                "ManimVideo",
                 "-qm",
                 "--media_dir",
                 str(media_dir),
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
             )
-            stdout, stderr = await process.communicate()
+
+            animation_regex = re.compile(r"Animation (\d+) :")
+
+            # Read every line that manim outputs, matching for the current animation
+            # so that we can know the current progress
+            last_progress = 0
+            while True:
+                line = await process.stdout.readline()
+                if not line:
+                    break
+                line = line.decode("utf-8").strip()
+                match = animation_regex.search(line)
+                if match:
+                    current_animation = int(match.group(1)) + 1
+                    progress = (current_animation / total_animations) * 100
+                    new_progress = int(progress // 10) * 10
+                    if new_progress > last_progress:
+                        await self.send_status_update(job_id, str(new_progress))
+                        last_progress = new_progress
+
+            await process.wait()
 
             if process.returncode != 0:
                 await self.send_status_update(job_id, "error")
-                raise RuntimeError(f"Render failed: {stderr.decode()}")
+                raise RuntimeError("Render failed")
 
             # Get the final rendered video in the temporary directory
             video_file = next(temp_dir.rglob("*.mp4"), None)
@@ -150,18 +178,16 @@ class RenderManager:
                 logger.error(f"Failed to clean up temporary directory {temp_dir}: {e}")
 
     async def _message_handler(self, message: aio_pika.abc.AbstractIncomingMessage):
-        async with message.process():
+        async with message.process(requeue=False):
             data = json.loads(message.body.decode())
             job_id = data["job_id"]
 
             try:
                 logger.info(f"Started job {job_id}")
-                await self._render_scene(job_id, data["manim_code"], data["scene_name"])
+                await self._render_scene(job_id, data["manim_code"])
                 logger.info(f"Completed job {job_id}")
             except Exception as e:
                 logger.exception(f"Failed to render job {job_id} with error: {e}")
-                # Reject failed jobs without requeuing for now
-                await message.reject(requeue=False)
 
     async def run(self):
         rabbit_conn = await RabbitMQConnection.get_instance()

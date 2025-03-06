@@ -9,17 +9,15 @@ export interface RenderRequest {
   prompt: string;
 }
 
-export enum VideoStatus {
-  STARTED_GENERATION = "started_generation",
-  ENDED_GENERATION = "ended_generation",
-  STARTED_RENDERING = "started_rendering",
-  ENDED_RENDERING = "ended_rendering",
-  COMPLETED = "completed",
-  ERROR = "error"
-}
+//STARTED_GENERATION = "started_generation",
+//ENDED_GENERATION = "ended_generation",
+//STARTED_RENDERING = "started_rendering",
+//ENDED_RENDERING = "ended_rendering",
+//COMPLETED = "completed",
+//ERROR = "error"
 
 export interface JobStatus {
-  status: VideoStatus;
+  status: string | number;
   timestamp: number;
 }
 
@@ -93,7 +91,7 @@ export const ManimRenderService = {
    * @param status The job status string
    */
   isJobComplete(status: string): boolean {
-    return status === VideoStatus.COMPLETED;
+    return status === "completed";
   },
 
   /**
@@ -101,7 +99,7 @@ export const ManimRenderService = {
    * @param status The job status string
    */
   hasJobError(status: string): boolean {
-    return status === VideoStatus.ERROR;
+    return status === "error";
   }
 };
 

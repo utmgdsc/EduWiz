@@ -56,7 +56,6 @@ async def render(data: RenderRequest):
         message = {
             "job_id": job_id,
             "manim_code": code,
-            "scene_name": "ManimVideo",
         }
 
         # Publish job order to the queue

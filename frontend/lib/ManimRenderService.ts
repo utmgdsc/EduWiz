@@ -23,7 +23,8 @@ export interface JobStatus {
   timestamp: number;
 }
 
-export const api = {
+export const ManimRenderService = {
+
   /**
    * Test the API connection with a simple health check
    */
@@ -104,7 +105,7 @@ export const api = {
   }
 };
 
-export default api;
+export default ManimRenderService;
 
 
 

@@ -1,4 +1,4 @@
-import api, { VideoStatus } from "../lib/api"
+import ManimRenderService, { VideoStatus } from "../lib/ManimRenderService"
 import firebaseApp from "../lib/firebase";
 import { getDatabase, ref, set, get, remove } from "firebase/database";
 
@@ -31,7 +31,7 @@ describe("API Integration Tests", () => {
 
   describe("Health Check", () => {
     it("should confirm the API is healthy", async () => {
-      const response = await api.healthCheck();
+      const response = await ManimRenderService.healthCheck();
       expect(response).toHaveProperty("message");
       console.log("Health check message:", response.message);
     });
@@ -42,14 +42,14 @@ describe("API Integration Tests", () => {
     const testPrompt = "Integration test: Generate a short video";
 
     it("should submit a new render job", async () => {
-      submittedJobId = await api.submitRenderJob(testPrompt);
+      submittedJobId = await ManimRenderService.submitRenderJob(testPrompt);
       expect(submittedJobId).toBeTruthy();
       console.log("Submitted job id:", submittedJobId);
     });
 
 
     it("Should receive status updates", (done) => {
-      const unsubscribe = api.subscribeToJobStatus(submittedJobId, (status) => {
+      const unsubscribe = ManimRenderService.subscribeToJobStatus(submittedJobId, (status) => {
         console.log("Received status update:", status);
         unsubscribe();
         done();
@@ -57,7 +57,7 @@ describe("API Integration Tests", () => {
     });
 
     it("should provide a valid video URL", () => {
-      const url = api.getVideoUrl(submittedJobId);
+      const url = ManimRenderService.getVideoUrl(submittedJobId);
       expect(url).toContain(`${API_BASE_URL}/render/${submittedJobId}/video`);
       console.log("Video URL:", url);
     });
@@ -66,13 +66,13 @@ describe("API Integration Tests", () => {
 
   describe("Helper Functions", () => {
     it("isJobComplete should return true when status is COMPLETED", () => {
-      expect(api.isJobComplete(VideoStatus.COMPLETED)).toBe(true);
-      expect(api.isJobComplete(VideoStatus.ENDED_RENDERING)).toBe(false);
+      expect(ManimRenderService.isJobComplete(VideoStatus.COMPLETED)).toBe(true);
+      expect(ManimRenderService.isJobComplete(VideoStatus.ENDED_RENDERING)).toBe(false);
     });
 
     it("hasJobError should return true when status is ERROR", () => {
-      expect(api.hasJobError(VideoStatus.ERROR)).toBe(true);
-      expect(api.hasJobError(VideoStatus.STARTED_GENERATION)).toBe(false);
+      expect(ManimRenderService.hasJobError(VideoStatus.ERROR)).toBe(true);
+      expect(ManimRenderService.hasJobError(VideoStatus.STARTED_GENERATION)).toBe(false);
     });
   });
 

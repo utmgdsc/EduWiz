@@ -17,11 +17,6 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-
-console.log("Firebase config:", firebaseConfig);
-console.log("Emulator ports:", firebaseLocal.emulators);
-console.log("NODE_ENV:", process.env.NODE_ENV);
-
 // Initialize Firebase
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 

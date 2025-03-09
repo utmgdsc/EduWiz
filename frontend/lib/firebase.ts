@@ -39,7 +39,8 @@ if (process.env.NODE_ENV !== "production") {
   );
   connectAuthEmulator(
     auth,
-    `http://127.0.0.1:${firebaseLocal.emulators.auth.port}`
+    `http://localhost:${firebaseLocal.emulators.auth.port}`,
+    { disableWarnings: true }
   );
 }
 

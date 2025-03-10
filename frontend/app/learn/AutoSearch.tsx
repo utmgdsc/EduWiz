@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button";
-import { SidebarGroup, SidebarGroupLabel, SidebarMenuButton } from "@/components/ui/sidebar";
 import { useRouter } from "next/navigation";
 
 interface SearchResult {
@@ -32,23 +31,23 @@ const AutoSearch = ({ query }: { query: string }) => {
 
     return (
         <main className="h-full">
-            <ScrollArea className="h-full w-full rounded-md border p-4">
+            <ScrollArea className="h-full w-full">
                 <ul>
                     {results.length > 0 ? (
                         results.map((item, index) => (
-                            <li key={index} className="mb-2 flex-col">
-                                <SidebarMenuButton 
-                                className="h-full"
-                                onClick={(e) => {
-                                    router.push("/")
-                                    {/*TODO: update this so that it pushes to the correct page*/}
-                                }}
+                            <li key={index} className="mb-2">
+                                <Button
+                                    className="h-full w-full justify-start bg-secondary text-foreground hover:bg-background border"
+                                    onClick={(e) => {
+                                        router.push("/")
+                                        {/*TODO: update this so that it pushes to the correct page*/ }
+                                    }}
                                 >
-                                    <div className="flex-col text-left">
+                                    <div className="flex flex-col text-left">
                                         {item.title}
-                                        <SidebarGroupLabel>Generated on {item.date.toDateString()}</SidebarGroupLabel>                           
+                                        <label>Generated on {item.date.toDateString()}</label>
                                     </div>
-                                </SidebarMenuButton>
+                                </Button>
                             </li>
                         ))
                     ) : (

@@ -44,8 +44,8 @@ const AutoSearch = ({ query }: { query: string }) => {
                                     }}
                                 >
                                     <div className="flex flex-col text-left">
-                                        {item.title}
-                                        <label>Generated on {item.date.toDateString()}</label>
+                                        <label className="font-bold text-lg">{item.title}</label>
+                                        <label className="font-normal font-mono text-gray-400">Generated on {item.date.toDateString()}</label>
                                     </div>
                                 </Button>
                             </li>

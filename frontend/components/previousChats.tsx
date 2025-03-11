@@ -5,6 +5,7 @@ import {
 } from "@/components/ui/sidebar"
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Button } from "./ui/button";
 
 interface Chat {
     id: number,
@@ -15,6 +16,7 @@ const getUserPastChats = async (userID: string): Promise<Chat[]> => {
     const r = { id: 133, title: "Pascal's triangle" };
     const t = { id: 9393, title: "Complex numbers" };
     return [s, r, t];
+    // TODO: load past videos the user viewed here
 }
 
 const PreviousChats = ({ userID }: { userID: string }) => {
@@ -37,11 +39,11 @@ const PreviousChats = ({ userID }: { userID: string }) => {
                         previousChats.map((item, index) => (
                             <li key={index} className="mb-2 flex-col">
                                 {
-                                <SidebarMenuButton onClick={() => {
+                                <Button onClick={() => {
                                     router.push("/")
                                 }}>
                                     {item.title}
-                                </SidebarMenuButton>
+                                </Button>
                                 
                                 }
                             </li>

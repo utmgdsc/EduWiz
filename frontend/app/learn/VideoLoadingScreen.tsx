@@ -3,21 +3,27 @@ import React, {useState} from "react";
 import { Loader2 } from "lucide-react";
 
 const VideoLoadingScreen = ({ loadingStatus }: { loadingStatus: string | null }) => {
-    const [indeterminate, setIndeterminate] = useState(true)
-    const [rawLoadingPercentage, setRawLoadingPercentage] = useState(0)
-    const [loadingPercentage, setLoadingPercentage] = useState(0)
+    
+    let rawLoadingPercentage = 0
+    let loadingPercentage = 0
     let stage = "Generating . . ."
-
-    if (isNaN(Number(loadingStatus))) {
-        setIndeterminate(false)
-        setRawLoadingPercentage(Number(loadingStatus))
-        setLoadingPercentage(Number(loadingStatus) / 100 * 650)
+    let indeterminate = true
+    console.log(loadingStatus)
+    if (!isNaN(Number(loadingStatus))) {
+        indeterminate = false
+        rawLoadingPercentage = (Number(loadingStatus))
+        loadingPercentage = (Number(loadingStatus) / 100 * 650)
         stage = `Rendering . . . ${rawLoadingPercentage}%`
     }
-    else if (loadingStatus === "started_generation") { stage = "Generating . . ." }
+    if (loadingStatus === "started_generation") { stage = "Generating . . ." }
     else if (loadingStatus === "ended_generation") { stage = "Finished generating" }
-    else if (loadingStatus === "ended_rendering") { stage = "Finished Rendering" }
-    else if (loadingStatus === "completed") { stage = "Done!" }
+    else if (loadingStatus === "ended_rendering") { 
+        stage = "Finished Rendering"
+        loadingPercentage = 650 
+    }
+    else if (loadingStatus === "completed") { 
+        loadingPercentage = 650 
+        stage = "Done!" }
 
     return (
         <main>

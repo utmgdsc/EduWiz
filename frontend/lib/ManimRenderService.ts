@@ -1,6 +1,7 @@
 import { getDatabase, ref, onValue, off, get } from "firebase/database";
 import firebaseApp from "./firebase";
 import { v4 as uuidv4 } from "uuid";
+import { Bytes } from "firebase/firestore";
 
 // Base URL for API calls
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -26,7 +27,7 @@ export const ManimRenderService = {
   async generateUniqueJobId(): Promise<string> {
     const db = getDatabase(firebaseApp);
     let isUnique = false;
-    let newId = '';
+    let newId = "";
 
     while (!isUnique) {
       // Generate a new UUID
@@ -44,7 +45,6 @@ export const ManimRenderService = {
 
     return newId;
   },
-
 
   /**
    * Test the API connection with a simple health check
@@ -64,7 +64,7 @@ export const ManimRenderService = {
    * @param prompt The text prompt for generating the video
    */
   async submitRenderJob(prompt: string): Promise<string> {
-    const jobid = await this.generateUniqueJobId()
+    const jobid = await this.generateUniqueJobId();
 
     const response = await fetch(`${API_BASE_URL}/render`, {
       method: "POST",
@@ -87,6 +87,17 @@ export const ManimRenderService = {
    */
   getVideoUrl(jobId: string): string {
     return `${API_BASE_URL}/render/${jobId}/video`;
+  },
+
+  async getVideoData(jobId: string): Promise<Blob> {
+    const response = await fetch(this.getVideoUrl(jobId), {
+      method: "GET",
+    });
+
+    if (!response.ok)
+      throw new Error(`Error ${response.status}: ${await response.text()}`);
+
+    return await response.blob();
   },
 
   /**
@@ -123,12 +134,10 @@ export const ManimRenderService = {
    */
   hasJobError(status: string): boolean {
     return status === "error";
-  }
+  },
 };
 
 export default ManimRenderService;
-
-
 
 /**
  * This would be used in the frontend as follows:

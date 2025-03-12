@@ -3,7 +3,6 @@ import { useCollectionData } from "react-firebase-hooks/firestore";
 
 import { User } from "firebase/auth";
 
-import { Chat } from "@/lib/firebase/schema";
 import { firestore } from "@/lib/firebase";
 import { chatConverter, CHAT_COLLECTION_NAME } from "@/lib/firebase/chat";
 

@@ -17,9 +17,9 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
-      - CORS_ORIGINS=http://localhost:3000
-      - SERVER_ENV=development
+      - RABBITMQ_URL=${RABBITMQ_URL}
+      - CORS_ORIGINS=${CORS_ORIGINS}
+      - SERVER_ENV=production
       - RUNNING_IN_DOCKER=true
       - OPENAI_API_KEY=${OPENAI_API_KEY}
     volumes:

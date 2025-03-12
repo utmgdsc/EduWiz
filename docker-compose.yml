@@ -19,7 +19,7 @@ services:
     environment:
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
       - CORS_ORIGINS=http://localhost:3000
-      - NODE_ENV=development
+      - SERVER_ENV=development
       - RUNNING_IN_DOCKER=true
       - OPENAI_API_KEY=${OPENAI_API_KEY}
     volumes:
@@ -48,7 +48,20 @@ services:
     security_opt:
       - no-new-privileges:true
 
+  seaweedFS:
+    image: chrislusf/seaweedfs
+    command: server -s3
+    ports:
+      - "8333:8333"
+    volumes:
+      - seaweedfs_data:/data
+    environment:
+      - WEED_FS_S3_DIR=/data
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+
 volumes:
+  seaweedfs_data:
   rendered_videos:
     driver: local
     driver_opts:

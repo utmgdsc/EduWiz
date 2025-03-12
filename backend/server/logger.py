@@ -22,4 +22,14 @@ def setup_logger():
     )
     logging.getLogger().addHandler(file_handler)
 
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.DEBUG)
+    console_formatter = logging.Formatter(
+        "%(name)s - %(levelname)s - %(asctime)s - %(message)s"
+    )
+    console_handler.setFormatter(console_formatter)
+    logger.addHandler(console_handler)
+
+    logging.getLogger("rabbitmq").setLevel(logging.ERROR)
+
     logger.propagate = False

@@ -1,5 +1,6 @@
-import { getDatabase, ref, onValue, off } from "firebase/database";
+import { getDatabase, ref, onValue, off, get } from "firebase/database";
 import firebaseApp from "./firebase";
+import { v4 as uuidv4 } from "uuid";
 
 // Base URL for API calls
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -22,6 +23,28 @@ export interface JobStatus {
 }
 
 export const ManimRenderService = {
+  async generateUniqueJobId(): Promise<string> {
+    const db = getDatabase(firebaseApp);
+    let isUnique = false;
+    let newId = '';
+
+    while (!isUnique) {
+      // Generate a new UUID
+      newId = uuidv4();
+
+      // Check if this ID already exists in the database
+      const jobRef = ref(db, `jobs/${newId}`);
+      const snapshot = await get(jobRef);
+
+      // If the snapshot doesn't exist, we have a unique ID
+      if (!snapshot.exists()) {
+        isUnique = true;
+      }
+    }
+
+    return newId;
+  },
+
 
   /**
    * Test the API connection with a simple health check
@@ -39,23 +62,23 @@ export const ManimRenderService = {
   /**
    * Submit a new video rendering job
    * @param prompt The text prompt for generating the video
-   * @returns The job_id for the submitted render job
    */
   async submitRenderJob(prompt: string): Promise<string> {
+    const jobid = await this.generateUniqueJobId()
+
     const response = await fetch(`${API_BASE_URL}/render`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ prompt }),
+      body: JSON.stringify({ prompt, jobid }),
     });
 
     if (!response.ok) {
       throw new Error(`Failed to submit render job: ${response.status}`);
     }
 
-    const data = await response.json();
-    return data.job_id;
+    return jobid;
   },
 
   /**

@@ -69,9 +69,8 @@ async def ask(prompt):
 
     # Checker prompt
     checker_human_message = HumanMessagePromptTemplate.from_template("{manim_code}")
-    checker_system_message = SystemMessagePromptTemplate.from_template(
-        "You are a manim expert. Your job is to make sure that the manim code provided to you is clear, visible and valid. Make sure that none of the code overlaps, and that all of it fits within the bounds of the screen. None of the elements should linger on the screen longer than necessary, and must be faded properly. Make sure you return nothing except the code. The script will be given to you, make sure you omit it in your response."
-    )
+    checker_system_message = SystemMessagePromptTemplate.from_template("You are a manim expert. Your job is to make sure that the manim code provided to you is clear, visible and valid. Make sure that none of the code overlaps, and that all of it fits within the bounds of the screen. Ensure all the Tex is valid, and all math mode elements are in MathTex OR enclosed in $. None of the elements should linger on the screen longer than necessary, and must be faded properly. The script will be given to you, make sure you omit it in your response. Make sure you return nothing except the code.")
+
     checker_prompt = ChatPromptTemplate([checker_system_message, checker_human_message])
 
     # Chaining

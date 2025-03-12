@@ -12,10 +12,10 @@ const VideoLoadingScreen = ({ loadingStatus }: { loadingStatus: string | null })
         setIndeterminate(false)
         setRawLoadingPercentage(Number(loadingStatus))
         setLoadingPercentage(Number(loadingStatus) / 100 * 650)
+        stage = `Rendering . . . ${rawLoadingPercentage}%`
     }
     else if (loadingStatus === "started_generation") { stage = "Generating . . ." }
     else if (loadingStatus === "ended_generation") { stage = "Finished generating" }
-    else if (loadingStatus === "started_rendering") { stage = `Rendering . . . ${rawLoadingPercentage}%` }
     else if (loadingStatus === "ended_rendering") { stage = "Finished Rendering" }
     else if (loadingStatus === "completed") { stage = "Done!" }
 

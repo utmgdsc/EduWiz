@@ -30,7 +30,7 @@ def initialize_firebase():
     }
 
     # Connect to emulator if not in production
-    if os.getenv("NODE_ENV") != "production":
+    if os.getenv("SERVER_ENV") != "production":
         with open("/app/firebase.json", "r") as f:
             firebase_local = json.load(f)
 

@@ -26,14 +26,16 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-return (
+  return (
     <html lang="en" className="dark">
-        <body
+      <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-            <Toaster position="top-right" />
-            <div>{children}</div>
-        </body>
+      >
+        <AuthorizationProvider>
+          <Toaster position="top-right" />
+          <div>{children}</div>
+        </AuthorizationProvider>
+      </body>
     </html>
-    );
+  );
 }

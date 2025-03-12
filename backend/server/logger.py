@@ -30,6 +30,6 @@ def setup_logger():
     console_handler.setFormatter(console_formatter)
     logger.addHandler(console_handler)
 
-    logging.getLogger("rabbitmq").setLevel(logging.ERROR)
+    logging.getLogger("aiormq").setLevel(logging.ERROR)
 
     logger.propagate = False

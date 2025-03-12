@@ -6,6 +6,7 @@ import uuid
 import aio_pika
 from pathlib import Path
 import json
+import asyncio
 
 from server.schemas.render import RenderRequest
 from server.services.rabbitmq import RabbitMQConnection
@@ -51,7 +52,8 @@ async def process_render_job(job_id: str, prompt: str):
 
     await send_status_update(job_id, "started_generation")
     try:
-        code = ask(prompt)
+        ask_task = asyncio.create_task(ask(prompt))
+        code = await ask_task
     except Exception as e:
         logger.error(f"Job {job_id} generation was not successful\n With error: {e}")
         await send_status_update(job_id, "error")

@@ -43,7 +43,7 @@ def get_prompt(filepath):
 
 
 # Prompting function
-def ask(prompt):
+async def ask(prompt):
     # Models
     mathematician = ChatOpenAI(model="o3-mini-2025-01-31", openai_api_key=key)
     animator = ChatOpenAI(model="o3-mini-2025-01-31", openai_api_key=key)
@@ -88,7 +88,7 @@ def ask(prompt):
     )
 
     try:
-        result = chain.invoke(prompt)
+        result = await chain.ainvoke(prompt)
         return result
     except Exception as e:
         raise e

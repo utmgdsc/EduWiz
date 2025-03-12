@@ -4,13 +4,12 @@ from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, H
 import os
 from dotenv import load_dotenv
 
-
+# Globals
 load_dotenv()
 key = os.getenv("OPENAI_API_KEY")
-
 animator_script = ""
+
 # Parsing functions
-#
 def unwrapCode(code):
     return code.content
 

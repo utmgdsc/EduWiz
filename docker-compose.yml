@@ -19,7 +19,7 @@ services:
     environment:
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
       - CORS_ORIGINS=http://localhost:3000
-      - NODE_ENV=development
+      - NODE_ENV=production
       - RUNNING_IN_DOCKER=true
       - OPENAI_API_KEY=${OPENAI_API_KEY}
     volumes:

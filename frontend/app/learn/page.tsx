@@ -7,7 +7,8 @@ import VideoLoadingScreen from "./VideoLoadingScreen";
 import { Sidesheet } from "@/components/Sidesheet";
 import { useRouter } from 'next/navigation'
 import ManimRenderService from "@/lib/ManimRenderService";
-import { Send, Clapperboard } from 'lucide-react';
+import { toast } from "sonner";
+import { Send, Clapperboard, TriangleAlert } from 'lucide-react';
 
 
 
@@ -26,6 +27,7 @@ export default function Home() {
     const sendPrompt = async () => {
         try {
             // TODO: un comment lines below if they are commented
+            
             const id = await ManimRenderService.submitRenderJob(prompt)
             jobIDRef.current = id
             
@@ -38,14 +40,15 @@ export default function Home() {
                     unsubscribeJobStatus.current!()
                 }
                 if (ManimRenderService.hasJobError(status.status as string)) {
-                    setVideoGenerationState(-1)
+                    toast.error("Error generating video")
+                    setVideoGenerationState(0)
                     unsubscribeJobStatus.current!()
                 }
             })
             setVideoGenerationState(1)
         } catch (error) {
+            toast.error("Error generating video")
             setVideoGenerationState(0);
-            console.error("Error sending prompt to server", error);
         } finally {
             // TODO: remove this, it is only here now for testing purposes
             //videoURLRef.current = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4"
@@ -56,6 +59,7 @@ export default function Home() {
 
     useEffect(() => {
         // setting up the page based on whether or not it's for an existing video or a new one
+
         const setupPage = async () => {
             // TODO: setup page if a video id was already provided, load in that video
             /*

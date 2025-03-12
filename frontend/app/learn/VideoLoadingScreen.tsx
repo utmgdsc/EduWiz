@@ -9,7 +9,7 @@ const VideoLoadingScreen = ({ loadingStatus }: { loadingStatus: string | null })
     let stage = "Generating . . ."
     let indeterminate = true
     console.log(loadingStatus)
-    if (!isNaN(Number(loadingStatus))) {
+    if (loadingStatus !== null && !isNaN(Number(loadingStatus))) {
         indeterminate = false
         rawLoadingPercentage = (Number(loadingStatus))
         loadingPercentage = (Number(loadingStatus) / 100 * 650)

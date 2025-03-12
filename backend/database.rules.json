@@ -2,7 +2,7 @@
   "rules": {
     "jobs": {
       "$job_id": {
-        ".read": "auth != null",
+        ".read": "true",
         ".write": "auth != null"
       }
     }

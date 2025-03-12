@@ -1,6 +1,6 @@
 import logging
 from fastapi import APIRouter, HTTPException, BackgroundTasks
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 import os
 import uuid
 import aio_pika
@@ -52,8 +52,9 @@ async def process_render_job(job_id: str, prompt: str):
 
     await send_status_update(job_id, "started_generation")
     try:
-        ask_task = asyncio.create_task(ask(prompt))
-        code = await ask_task
+        # ask_task = asyncio.create_task(ask(prompt))
+        # code = await ask_task
+        code = open("example.py").read()
     except Exception as e:
         logger.error(f"Job {job_id} generation was not successful\n With error: {e}")
         await send_status_update(job_id, "error")
@@ -109,8 +110,12 @@ async def get_video(job_id: str):
         raise HTTPException(status_code=404, detail="Video not found")
 
     try:
-        return FileResponse(
-            str(video_path), media_type="video/mp4", filename=f"{job_id}.mp4"
+        with open(video_path, "rb") as video_file:
+            video_bytes = video_file.read()
+        return Response(
+            content=video_bytes,
+            media_type="video/mp4",
+            headers={"Content-Disposition": f'attachment; filename="{job_id}.mp4"'},
         )
     except Exception as e:
         logger.error(f"Failed to serve video {job_id}: {e}")

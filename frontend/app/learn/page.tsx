@@ -49,8 +49,8 @@ export default function Home() {
             console.error("Error sending prompt to server", error);
         } finally {
             // TODO: remove this, it is only here now for testing purposes
-            videoURLRef.current = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4"
-            setVideoGenerationState(2);
+            //videoURLRef.current = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4"
+            //setVideoGenerationState(2);
         }
     }
 

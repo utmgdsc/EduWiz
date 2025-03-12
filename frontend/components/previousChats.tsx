@@ -23,7 +23,6 @@ const PreviousChats = ({ userID }: { userID: string }) => {
     const [previousChats, setPreviousChats] = useState<Chat[]>([]);
     const router = useRouter();
 
-    
     useEffect(() => {
         const updatePrevChats = async () => {
             setPreviousChats(await getUserPastChats(userID));
@@ -37,14 +36,16 @@ const PreviousChats = ({ userID }: { userID: string }) => {
                 <ul>
                     {
                         previousChats.map((item, index) => (
-                            <li key={index} className="mb-2 flex-col">
+                            <li key={index} className="mb-2">
                                 {
-                                <Button onClick={() => {
-                                    router.push("/")
-                                }}>
-                                    {item.title}
-                                </Button>
-                                
+                                    <Button
+                                        className="h-full w-full justify-start bg-secondary text-foreground hover:bg-background border"
+                                        onClick={() => {
+                                            router.push("/")
+                                        }}>
+                                        {item.title}
+                                    </Button>
+
                                 }
                             </li>
                         ))

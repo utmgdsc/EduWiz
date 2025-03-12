@@ -27,6 +27,7 @@ export default function Home() {
         try {
             // TODO: un comment lines below if they are commented
             
+            /*
             const id = await ManimRenderService.submitRenderJob(prompt)
             jobIDRef.current = id
             
@@ -42,7 +43,7 @@ export default function Home() {
                     setVideoGenerationState(-1)
                     unsubscribeJobStatus.current!()
                 }
-            })
+            })*/
             setVideoGenerationState(1)
         } catch (error) {
             setVideoGenerationState(0);

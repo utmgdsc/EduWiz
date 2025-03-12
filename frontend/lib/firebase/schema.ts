@@ -14,7 +14,8 @@ export type Chat = {
   user_id: string;
   prompt: string;
   conversation: Array<LLMMessage>;
-  video: Video;
+  video: Video | null;
+  created_at: Date;
 };
 
 export type Video = {

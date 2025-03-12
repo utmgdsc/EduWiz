@@ -11,9 +11,9 @@ export class S3BucketService implements StorageBucket {
 
   /**
    * Creates a new S3BucketService instance
-   * @param {S3Client} s3 - The AWS SDK S3 client instance
-   * @param {S3ClientConfig} config - The S3 client configuration
-   * @param {string} bucket - The name of the S3 bucket to use
+   * @param s3 - The AWS SDK S3 client instance
+   * @param config - The S3 client configuration
+   * @param bucket - The name of the S3 bucket to use
    */
   constructor(s3: S3Client, config: S3ClientConfig, bucket: string) {
     this.s3 = s3;
@@ -24,8 +24,8 @@ export class S3BucketService implements StorageBucket {
   /**
    * Uploads a file to the S3 bucket with the specified prefix
    * This method will be changed to receive presigned URLs from a separate API for security purposes
-   * @param {Blob | File} file - The file to upload
-   * @param {string} prefix - The folder/prefix path where the file should be stored
+   * @param file - The file to upload
+   * @param prefix - The folder/prefix path where the file should be stored
    * @returns {Promise<string>} The URL of the uploaded file
    */
   async upload(file: Blob | File, prefix: string): Promise<string> {
@@ -44,7 +44,7 @@ export class S3BucketService implements StorageBucket {
 
   /**
    * Generates a unique key for the file using timestamp and random string
-   * @returns {string} A unique identifier string
+   * @returns A unique identifier string
    * @private
    */
   private getUniqueKey(): string {
@@ -53,10 +53,6 @@ export class S3BucketService implements StorageBucket {
 
   /**
    * Factory method to create an S3BucketService from configuration
-   * @param {S3ClientConfig} config - The S3 client configuration
-   * @param {string} bucket - The name of the S3 bucket to use
-   * @returns {S3BucketService} A new S3BucketService instance
-   * @static
    */
   static fromConfig(config: S3ClientConfig, bucket: string) {
     return new S3BucketService(new S3Client(config), config, bucket);

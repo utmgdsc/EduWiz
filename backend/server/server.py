@@ -1,6 +1,7 @@
 import asyncio
 import logging
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from server.logger import setup_logger
 from server.routes import health, video
@@ -28,6 +29,14 @@ app = FastAPI(
     title="EduWiz API",
 )
 
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Replace "*" with a list of allowed origins if needed
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(health.router)
 app.include_router(video.router)

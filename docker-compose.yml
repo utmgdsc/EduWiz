@@ -21,6 +21,7 @@ services:
       - CORS_ORIGINS=http://localhost:3000
       - NODE_ENV=development
       - RUNNING_IN_DOCKER=true
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
     volumes:
       - ./videos:/shared/videos:ro
     extra_hosts:

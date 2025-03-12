@@ -3,6 +3,9 @@ import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
 import { getDatabase, connectDatabaseEmulator } from "firebase/database";
 import { getAuth, connectAuthEmulator } from "firebase/auth";
 
+// Import the JSON statically
+import firebaseLocal from "@/firebase.json";
+
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -24,22 +27,20 @@ const auth = getAuth(app);
 
 // Firestore Emulator Service
 if (process.env.NODE_ENV !== "production") {
-  const firebase_local = await import("@/firebase.json");
-
   connectFirestoreEmulator(
     firestore,
-    "localhost",
-    firebase_local.emulators.firestore.port
+    "127.0.0.1",
+    firebaseLocal.emulators.firestore.port
   );
   connectDatabaseEmulator(
     realtime,
-    "localhost",
-    firebase_local.emulators.database.port
+    "127.0.0.1",
+    firebaseLocal.emulators.database.port
   );
-
   connectAuthEmulator(
     auth,
-    `http://localhost:${firebase_local.emulators.auth.port}`
+    `http://localhost:${firebaseLocal.emulators.auth.port}`,
+    { disableWarnings: true }
   );
 }
 

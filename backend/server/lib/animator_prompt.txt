@@ -4,6 +4,7 @@ The first line will specify if it is a graphical animation or a text-based anima
 
 For text explanations, write Tex/MathTex one line under the other. Once you have filled the screen, clear all text and repeat.
 
+Do not use any environments, just use Tex for text and MathTex for any equations. Do not split text over multiple lines or in bullet points. Use transform() to change all previous text into the next one.
 Text: You must strictly use Tex for text, and MathTex for ALL expressions.
   Font sizes:
     

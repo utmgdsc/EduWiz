@@ -18,6 +18,7 @@ export default function Home() {
     const jobIDRef = useRef<string | null>(null)
     const [videoGenerationState, setVideoGenerationState] = useState(0); // 0 = not started, 1 = generating, 2 = completed, -1 = error
     const jobStatusRef = useRef<string | null>(null)
+    const [jobStatus, setJobStatus] = useState<string | null>(null)
     const unsubscribeJobStatus = useRef<() => void | null>(null)
 
     const videoURLRef = useRef<string | null>(null)
@@ -31,7 +32,7 @@ export default function Home() {
             
             unsubscribeJobStatus.current = ManimRenderService.subscribeToJobStatus(id, (status) => {
                 // callback function for when status changes
-                jobStatusRef.current = status.status as string
+                setJobStatus(status.status as string)
                 if (ManimRenderService.isJobComplete(status.status as string)) {
                     setVideoGenerationState(2)
                     videoURLRef.current = ManimRenderService.getVideoUrl(jobIDRef.current as string)
@@ -48,8 +49,8 @@ export default function Home() {
             console.error("Error sending prompt to server", error);
         } finally {
             // TODO: remove this, it is only here now for testing purposes
-            //videoURLRef.current = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4"
-            //etVideoGenerationState(1);
+            videoURLRef.current = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4"
+            setVideoGenerationState(2);
         }
     }
 
@@ -116,7 +117,7 @@ export default function Home() {
                         <AutoSearch query={prompt} />
                     ) : (videoGenerationState === 1) ? (
                         <div className="h-full flex flex-col justify-center">
-                            <VideoLoadingScreen loadingStatus={jobStatusRef.current} />
+                            <VideoLoadingScreen loadingStatus={jobStatus} />
                         </div>
                         
                     ) : ( videoGenerationState === 2) ? (

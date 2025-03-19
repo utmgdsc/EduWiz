@@ -63,7 +63,6 @@ async def ask(prompt):
         | RunnableLambda(animate_scenes)
     )
     prompt = {"prompt": prompt}
-    result = await chain.ainvoke(prompt)
 
     try:
         result = await chain.ainvoke(prompt)

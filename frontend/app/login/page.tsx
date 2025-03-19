@@ -75,7 +75,7 @@ export default function Login() {
 
     if (credentials.user.emailVerified) {
       toast.success("Welcome back 👋");
-      router.push("/");
+      router.push("/learn");
     } else toast.info("Verify email");
   };
 

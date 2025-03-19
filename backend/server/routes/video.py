@@ -49,6 +49,7 @@ async def render(data: RenderRequest, background_tasks: BackgroundTasks):
 
 async def process_render_job(job_id: str, prompt: str):
     # Try to generate code the given prompt
+    logger.info(f"Received new job {job_id}")
 
     await send_status_update(job_id, "started_generation")
     try:
@@ -60,6 +61,7 @@ async def process_render_job(job_id: str, prompt: str):
         return
 
     await send_status_update(job_id, "ended_generation")
+    logger.info(f"Generation ended for job_id {job_id}")
 
     try:
         rabbitmq = await RabbitMQConnection.get_instance()

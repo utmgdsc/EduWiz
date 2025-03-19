@@ -1,6 +1,5 @@
 import aio_pika
 import logging
-from typing import Optional
 import os
 
 logger = logging.getLogger(__name__)

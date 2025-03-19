@@ -4,7 +4,7 @@ import logging
 import aio_pika
 import firebase_admin
 from pathlib import Path
-from firebase_admin import credentials, initialize_app
+from firebase_admin import credentials
 from firebase_admin import db
 from server.services.rabbitmq import RabbitMQConnection
 
@@ -25,10 +25,10 @@ def initialize_firebase():
         cred_data = json.load(f)
         project_id = cred_data["project_id"]
 
-    firebase_config = {"databaseURL": f"https://{project_id}.firebaseio.com"}
+    firebase_config = {"databaseURL": cred_data["databaseURL"]}
 
     # Connect to emulator if not in production
-    if os.getenv("NODE_ENV") != "production":
+    if os.getenv("SERVER_ENV") != "production":
         with open("/app/firebase.json", "r") as f:
             firebase_local = json.load(f)
 
@@ -41,6 +41,8 @@ def initialize_firebase():
         )
 
         logger.info(f"Using Firebase emulator at {firebase_config['databaseURL']}")
+    else:
+        logger.info("Using PRODUCTION Firebase services")
 
     firebase_admin.initialize_app(cred, firebase_config)
 

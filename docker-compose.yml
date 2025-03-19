@@ -11,7 +11,7 @@ services:
       retries: 3
 
   backend:
-    build: 
+    build:
       context: ./backend
       dockerfile: Dockerfile
     ports:
@@ -19,8 +19,8 @@ services:
     environment:
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
       - CORS_ORIGINS=http://localhost:3000
-      - SERVER_ENV=development
-      - RUNNING_IN_DOCKER=true
+      - SERVER_ENV=production
+      - RUNNING_IN_DOCKER=TRUE
       - OPENAI_API_KEY=${OPENAI_API_KEY}
     volumes:
       - ./videos:/shared/videos:ro
@@ -31,16 +31,17 @@ services:
         condition: service_healthy
 
   renderer:
-    build: 
+    user: root
+    build:
       context: ./renderer
       dockerfile: Dockerfile
     environment:
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
       - OUTPUT_PATH=/shared/videos
-      - TEMP_DIR=/app/temp 
+      - TEMP_DIR=/app/temp
     volumes:
       - ./videos:/shared/videos:rw
-      - type: tmpfs 
+      - type: tmpfs
         target: /app/temp
     depends_on:
       rabbitmq:

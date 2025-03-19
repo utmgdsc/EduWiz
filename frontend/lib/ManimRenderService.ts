@@ -26,7 +26,7 @@ export const ManimRenderService = {
   async generateUniqueJobId(): Promise<string> {
     const db = getDatabase(firebaseApp);
     let isUnique = false;
-    let newId = '';
+    let newId = "";
 
     while (!isUnique) {
       // Generate a new UUID
@@ -44,7 +44,6 @@ export const ManimRenderService = {
 
     return newId;
   },
-
 
   /**
    * Test the API connection with a simple health check
@@ -64,7 +63,7 @@ export const ManimRenderService = {
    * @param prompt The text prompt for generating the video
    */
   async submitRenderJob(prompt: string): Promise<string> {
-    const jobid = await this.generateUniqueJobId()
+    const jobid = await this.generateUniqueJobId();
 
     const response = await fetch(`${API_BASE_URL}/render`, {
       method: "POST",
@@ -87,6 +86,15 @@ export const ManimRenderService = {
    */
   getVideoUrl(jobId: string): string {
     return `${API_BASE_URL}/render/${jobId}/video`;
+  },
+
+  async getVideoData(jobId: string): Promise<Blob> {
+    const response = await fetch(`${API_BASE_URL}/render/${jobId}/video`);
+
+    if (!response.ok)
+      throw new Error(`Failed to fetch video data: ${response.status}`);
+
+    return await response.blob();
   },
 
   /**
@@ -123,12 +131,10 @@ export const ManimRenderService = {
    */
   hasJobError(status: string): boolean {
     return status === "error";
-  }
+  },
 };
 
 export default ManimRenderService;
-
-
 
 /**
  * This would be used in the frontend as follows:

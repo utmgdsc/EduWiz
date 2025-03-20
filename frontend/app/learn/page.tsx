@@ -9,6 +9,8 @@ import { useRouter } from 'next/navigation'
 import ManimRenderService from "@/lib/ManimRenderService";
 import { toast } from "sonner";
 import { Send, Clapperboard, TriangleAlert } from 'lucide-react';
+import ChatBox from "./Chatbox";
+import DiscoverSection from "./Discover";
 
 
 
@@ -28,6 +30,7 @@ export default function Home() {
         try {
             // TODO: un comment lines below if they are commented
             
+            /*
             const id = await ManimRenderService.submitRenderJob(prompt)
             jobIDRef.current = id
             
@@ -44,18 +47,23 @@ export default function Home() {
                     setVideoGenerationState(0)
                     unsubscribeJobStatus.current!()
                 }
-            })
+            })*/
             setVideoGenerationState(1)
         } catch (error) {
             toast.error("Error generating video")
             setVideoGenerationState(0);
         } finally {
             // TODO: remove this, it is only here now for testing purposes
-            //videoURLRef.current = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4"
-            //setVideoGenerationState(2);
+            videoURLRef.current = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4"
+            setVideoGenerationState(2);
         }
     }
 
+    const handleVideoSelect = (selectedPrompt: string) => {
+        setPrompt(selectedPrompt);
+        // Optional: automatically send the prompt
+        // setTimeout(() => sendPrompt(), 100);
+    };
 
     useEffect(() => {
         // setting up the page based on whether or not it's for an existing video or a new one
@@ -115,9 +123,13 @@ export default function Home() {
 
                 {/* video placeholder and search suggestions box*/}
                 {
-                    // TODO: change loadingStatus to actually be the loading status here
+                    // TODO: work on discover page that shows up before all the other search stuff shows up
                     (videoGenerationState === 0) ? (
-                        <AutoSearch query={prompt} />
+                        (prompt !== "") ? 
+                        <AutoSearch query={prompt} /> :
+
+                        <DiscoverSection onVideoSelect={handleVideoSelect} />
+
                     ) : (videoGenerationState === 1) ? (
                         <div className="h-full flex flex-col justify-center">
                             <VideoLoadingScreen loadingStatus={jobStatus} />
@@ -128,8 +140,8 @@ export default function Home() {
                                 <source src={videoURLRef.current as string} type="video/mp4" />
                             </video> ) : <p>Error</p>
                 }
-
             </div>
+            <ChatBox></ChatBox>
         </main>
     );
 }

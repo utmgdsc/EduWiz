@@ -30,14 +30,14 @@ const AutoSearch = ({ query }: { query: string }) => {
     }, [query])
 
     return (
-        <main className="h-full">
+        <main className="h-full mt-4">
             <ScrollArea className="h-full w-full">
                 <ul>
                     {results.length > 0 ? (
                         results.map((item, index) => (
                             <li key={index} className="mb-2">
                                 <Button
-                                    className="h-full w-full justify-start bg-secondary text-foreground hover:bg-background border"
+                                    className="h-full w-full justify-start bg-zinc-900 text-foreground hover:bg-background border"
                                     onClick={(e) => {
                                         router.push("/")
                                         {/*TODO: update this so that it pushes to the correct page*/ }

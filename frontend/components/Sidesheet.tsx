@@ -4,7 +4,6 @@ import {
     SheetDescription,
     SheetHeader,
     SheetTitle,
-    SheetTrigger,
 } from "@/components/ui/sheet"
 import PreviousChats from "./previousChats"
 import { Button } from "@/components/ui/button";

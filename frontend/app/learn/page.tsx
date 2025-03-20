@@ -1,15 +1,18 @@
 "use client";
-import { Button } from "@/components/ui/button";
 import React, { useEffect, useState, useRef } from "react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { Send, Clapperboard, TriangleAlert } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Sidesheet } from "@/components/Sidesheet";
 import AutoSearch from "./AutoSearch";
 import VideoLoadingScreen from "./VideoLoadingScreen";
-import { Sidesheet } from "@/components/Sidesheet";
-import { useRouter } from "next/navigation";
-import ManimRenderService from "@/lib/ManimRenderService";
-import { toast } from "sonner";
-import { Send, Clapperboard, TriangleAlert } from "lucide-react";
+
+import { realtime } from "@/lib/firebase";
 import { S3_CONFIG, S3BucketService } from "@/lib/s3";
+import ManimRenderService from "@/lib/ManimRenderService";
 
 export default function Home() {
   const router = useRouter();
@@ -18,7 +21,6 @@ export default function Home() {
   const [prompt, setPrompt] = useState("");
   const jobIDRef = useRef<string | null>(null);
   const [videoGenerationState, setVideoGenerationState] = useState(0); // 0 = not started, 1 = generating, 2 = completed, -1 = error
-  const jobStatusRef = useRef<string | null>(null);
   const [jobStatus, setJobStatus] = useState<string | null>(null);
   const unsubscribeJobStatus = useRef<() => void | null>(null);
 
@@ -28,11 +30,12 @@ export default function Home() {
     try {
       // TODO: un comment lines below if they are commented
 
-      const id = await ManimRenderService.submitRenderJob(prompt);
+      const id = await ManimRenderService.submitRenderJob(prompt, realtime);
       jobIDRef.current = id;
 
       unsubscribeJobStatus.current = ManimRenderService.subscribeToJobStatus(
         id,
+        realtime,
         async (status) => {
           // callback function for when status changes
           setJobStatus(status.status as string);

@@ -19,7 +19,7 @@ services:
     environment:
       - RABBITMQ_URL=${RABBITMQ_URL}
       - CORS_ORIGINS=${CORS_ORIGINS}
-      - SERVER_ENV=development
+      - SERVER_ENV=production
       - RUNNING_IN_DOCKER=true
       - OPENAI_API_KEY=${OPENAI_API_KEY}
     volumes:

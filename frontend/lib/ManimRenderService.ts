@@ -1,5 +1,11 @@
-import { getDatabase, ref, onValue, off, get } from "firebase/database";
-import firebaseApp from "./firebase";
+import {
+  ref,
+  onValue,
+  off,
+  get,
+  type Database,
+  remove,
+} from "firebase/database";
 import { v4 as uuidv4 } from "uuid";
 
 // Base URL for API calls
@@ -23,10 +29,9 @@ export interface JobStatus {
 }
 
 export const ManimRenderService = {
-  async generateUniqueJobId(): Promise<string> {
-    const db = getDatabase(firebaseApp);
+  async generateUniqueJobId(db: Database): Promise<string> {
     let isUnique = false;
-    let newId = '';
+    let newId = "";
 
     while (!isUnique) {
       // Generate a new UUID
@@ -45,7 +50,6 @@ export const ManimRenderService = {
     return newId;
   },
 
-
   /**
    * Test the API connection with a simple health check
    */
@@ -63,8 +67,8 @@ export const ManimRenderService = {
    * Submit a new video rendering job
    * @param prompt The text prompt for generating the video
    */
-  async submitRenderJob(prompt: string): Promise<string> {
-    const jobid = await this.generateUniqueJobId()
+  async submitRenderJob(prompt: string, db: Database): Promise<string> {
+    const jobid = await this.generateUniqueJobId(db);
 
     const response = await fetch(`${API_BASE_URL}/render`, {
       method: "POST",
@@ -90,12 +94,43 @@ export const ManimRenderService = {
   },
 
   /**
+   * Fetches the video data for a given job ID from the rendering service.
+   *
+   * @param jobId - The unique identifier of the rendering job.
+   * @returns A promise that resolves to a `Blob` containing the video data.
+   * @throws An error if the request fails or the response is not successful.
+   */
+  async getVideoData(jobId: string): Promise<Blob> {
+    const response = await fetch(`${API_BASE_URL}/render/${jobId}/video`);
+
+    if (!response.ok)
+      throw new Error(`Failed to fetch video data: ${response.status}`);
+
+    return await response.blob();
+  },
+
+  // Delete job from realtime db
+  /**
+   * Deletes a job from the database.
+   * @param jobId - The unique identifier of the job to be deleted.
+   * @param db - The database instance where the job is stored.
+   * @returns A promise that resolves when the job has been successfully removed.
+   */
+  async deleteJob(jobId: string, db: Database): Promise<void> {
+    const jobRef = ref(db, `jobs/${jobId}`);
+    await remove(jobRef);
+  },
+
+  /**
    * Subscribe to job status updates via Firebase Realtime Database
    * @param jobId The job ID to listen for
    * @param callback Function called when status changes
    */
-  subscribeToJobStatus(jobId: string, callback: (status: JobStatus) => void) {
-    const db = getDatabase(firebaseApp);
+  subscribeToJobStatus(
+    jobId: string,
+    db: Database,
+    callback: (status: JobStatus) => void
+  ) {
     const jobRef = ref(db, `jobs/${jobId}`);
 
     onValue(jobRef, (snapshot) => {
@@ -123,12 +158,10 @@ export const ManimRenderService = {
    */
   hasJobError(status: string): boolean {
     return status === "error";
-  }
+  },
 };
 
 export default ManimRenderService;
-
-
 
 /**
  * This would be used in the frontend as follows:

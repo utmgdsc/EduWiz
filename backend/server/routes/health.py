@@ -1,10 +1,8 @@
 import logging
 from fastapi import APIRouter
-
 from server.schemas.health import HealthCheck
 
 router = APIRouter(tags=["health"])
-
 logger = logging.getLogger("eduwiz.routes.health")
 
 

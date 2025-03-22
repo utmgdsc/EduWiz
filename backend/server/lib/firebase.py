@@ -26,7 +26,7 @@ def initialize_firebase():
         expected_variables = {
             "FIREBASE_AUTH_EMULATOR_HOST": "host.docker.internal:9099",
             "FIREBASE_DATABASE_EMULATOR_HOST": "host.docker.internal:9000",
-            "FIREBASE_FIRESTORE_EMULATOR_HOST": "host.docker.internal:8080",
+            "FIRESTORE_EMULATOR_HOST": "host.docker.internal:8080",
         }
 
         for var, default in expected_variables.items():

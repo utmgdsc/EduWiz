@@ -31,7 +31,6 @@ app = FastAPI(
     title="EduWiz API",
 )
 
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Replace "*" with a list of allowed origins if needed

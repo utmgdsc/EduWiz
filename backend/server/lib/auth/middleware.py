@@ -1,11 +1,11 @@
 import asyncio
 
-from firebase_admin import auth, credentials
+from firebase_admin import auth
 from fastapi import HTTPException, Request, Depends
 from fastapi.security import OAuth2PasswordBearer
 
-from auth.invariant import Invariant
-from auth.token import DecodedToken
+from .invariant import Invariant
+from .token import DecodedToken
 
 _auth_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
@@ -42,18 +42,17 @@ class FirebaseAuthMiddleware:
         self, request: Request, token: str = Depends(_auth_scheme)
     ) -> DecodedToken:
         try:
-            decoded_token: DecodedToken = auth.verify_id_token(
-                token, check_revoked=True
-            )
+            decoded_token: DecodedToken = auth.verify_id_token(token)
         except ValueError:
             raise HTTPException(status_code=400, detail="Invalid token")
         except auth.UserDisabledError:
             raise HTTPException(status_code=403, detail="User is disabled")
         except (
-            auth.InvalidIdTokenError
-            | auth.ExpiredIdTokenError
-            | auth.RevokedIdTokenError
+            auth.InvalidIdTokenError,
+            auth.ExpiredIdTokenError,
+            auth.RevokedIdTokenError,
         ) as error:
+            print(error)
             raise HTTPException(status_code=401, detail=error.default_message)
 
         if len(self.invariants) == 0:
@@ -89,21 +88,21 @@ class FirebaseAuthMiddleware:
         that all invariants are satisfied. It cancels any remaining tasks if one of the
         invariants are computed and fails.
         """
-        done, pending = await asyncio.wait(
-            [
-                asyncio.create_task(invariant(request, token))
-                for invariant in self.invariants
-            ],
-            return_when=asyncio.FIRST_COMPLETED,
-        )
+        pending = [
+            asyncio.create_task(invariant(request, token))
+            for invariant in self.invariants
+        ]
 
-        while len(pending) > 0 and all(task.result() for task in done):
+        while len(pending) > 0:
             done, pending = await asyncio.wait(
                 pending, return_when=asyncio.FIRST_COMPLETED
             )
 
-        for task in pending:
-            task.cancel()
+            if not all(task.result() for task in done):
+                for task in pending:
+                    task.cancel()
 
-        await asyncio.gather(*pending, return_exceptions=True)
+                await asyncio.gather(*pending, return_exceptions=True)
+                raise HTTPException(status_code=403, detail="Forbidden")
+
         return token

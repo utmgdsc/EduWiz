@@ -2,8 +2,8 @@
 This package provides authentication utilities for Firebase integration in FastAPI applications.
 """
 
-from auth.invariant import Invariant
-from auth.middleware import FirebaseAuthMiddleware
-from auth.token import DecodedToken
+from .invariant import Invariant
+from .middleware import FirebaseAuthMiddleware
+from .token import DecodedToken
 
 __all__ = ["FirebaseAuthMiddleware", "Invariant", "DecodedToken"]

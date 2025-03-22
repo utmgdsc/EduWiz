@@ -1,7 +1,7 @@
 from typing import Protocol
 from fastapi import Request
 
-from auth.middleware import DecodedToken
+from .token import DecodedToken
 
 
 class Invariant(Protocol):
@@ -22,5 +22,5 @@ class Invariant(Protocol):
     async def __call__(self, request: Request, token: DecodedToken) -> bool: ...
 
 
-def email_is_verified(request: Request, token: DecodedToken):
+async def email_is_verified(request: Request, token: DecodedToken):
     return token["email_verified"]

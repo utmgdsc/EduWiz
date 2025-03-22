@@ -1,5 +1,5 @@
 import logging
-from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
+from fastapi import APIRouter, HTTPException, BackgroundTasks
 from fastapi.responses import FileResponse
 import os
 import uuid
@@ -12,7 +12,6 @@ from server.schemas.render import RenderRequest
 from server.services.rabbitmq import RabbitMQConnection
 from server.lib.generator import ask
 from server.services.status import send_status_update
-from server.lib.auth import FirebaseAuthMiddleware, DecodedToken
 
 router = APIRouter(tags=["render"])
 logger = logging.getLogger("eduwiz.routes.video")
@@ -116,8 +115,3 @@ async def get_video(job_id: str):
     except Exception as e:
         logger.error(f"Failed to serve video {job_id}: {e}")
         raise HTTPException(status_code=500, detail="Failed to serve video file")
-
-
-@router.get("/user")
-def check_user(user: DecodedToken = Depends(FirebaseAuthMiddleware())):
-    return user

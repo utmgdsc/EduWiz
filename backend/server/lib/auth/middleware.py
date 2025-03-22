@@ -52,7 +52,6 @@ class FirebaseAuthMiddleware:
             auth.ExpiredIdTokenError,
             auth.RevokedIdTokenError,
         ) as error:
-            print(error)
             raise HTTPException(status_code=401, detail=error.default_message)
 
         if len(self.invariants) == 0:

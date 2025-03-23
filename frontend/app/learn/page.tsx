@@ -60,9 +60,7 @@ export default function Home() {
     }
 
     const handleVideoSelect = (selectedPrompt: string) => {
-        setPrompt(selectedPrompt);
-        // Optional: automatically send the prompt
-        // setTimeout(() => sendPrompt(), 100);
+        // TODO: send user to video
     };
 
     useEffect(() => {
@@ -138,7 +136,9 @@ export default function Home() {
                     ) : ( videoGenerationState === 2) ? (
                             <video controls>
                                 <source src={videoURLRef.current as string} type="video/mp4" />
-                            </video> ) : <p>Error</p>
+                            </video>
+                            
+                        ) : <p>Error</p>
                 }
             </div>
             <ChatBox></ChatBox>

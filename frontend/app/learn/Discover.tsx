@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { Search, Play, Clock, Bookmark, Filter, Mic, Sparkles } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Play, Clock, Bookmark } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
@@ -27,20 +28,28 @@ interface DiscoverSectionProps {
 
 const DiscoverSection = ({ onVideoSelect }: DiscoverSectionProps) => {
     const [activeSubject, setActiveSubject] = useState<string | null>(null);
+    const [videosLoading, setVideosLoading] = useState(true)
+    const filteredVideos = activeSubject
+        ? sampleVideos.filter(video => video.subject === activeSubject)
+        : sampleVideos;
 
-    // TODO: create useEffect functionality with loading screen
     // TODO: create backend api endpoint for videos to retrieve them for this, it should include the following stuff:
-        // request videos in batches of up to 6, with certain filters added
+    // request videos in batches of up to 6, with certain filters added
     // TODO: improve consistency of styles for buttons and stuff
-    // TODO: fix the pagination 
+
+    useEffect(() => {
+        const loadVideos = async () => {
+            // send request to backend and then set the messages state variable as needed
+            await new Promise((resolve) => setTimeout(resolve, 3000));
+            setVideosLoading(false)
+        }
+        loadVideos()
+    })
+
     const handleVideoClick = (title: string) => {
         onVideoSelect(`Show me a video about ${title}`);
     };
 
-    // Filter videos based on active subject
-    const filteredVideos = activeSubject
-        ? sampleVideos.filter(video => video.subject === activeSubject)
-        : sampleVideos;
 
     return (
         <div className="bg-zinc-900 rounded-lg p-6 mt-4">
@@ -50,7 +59,7 @@ const DiscoverSection = ({ onVideoSelect }: DiscoverSectionProps) => {
                 {/* Subject Categories */}
                 <div className="flex flex-wrap gap-2 mb-4">
                     {subjectCategories.map((subject) => (
-                        <Button variant="outline" key={subject} onClick={() => setActiveSubject(activeSubject === subject ? null : subject)}>
+                        <Button variant={activeSubject === subject ? "default" : "outline"} key={subject} onClick={() => setActiveSubject(activeSubject === subject ? null : subject)}>
                             {subject}
                         </Button>
 
@@ -75,40 +84,36 @@ const DiscoverSection = ({ onVideoSelect }: DiscoverSectionProps) => {
                         onClick={() => handleVideoClick(video.title)}
                     >
                         <AspectRatio ratio={16 / 9} className="bg-gray-100">
-                            <img
-                                src={video.thumbnail}
-                                alt={video.title}
-                                className="object-cover w-full h-full"
-                            />
-                            <div className="absolute inset-0 bg-black bg-opacity-20 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
-                                <Button size="icon" variant="ghost" className="h-12 w-12 rounded-full bg-white bg-opacity-80 hover:bg-opacity-100">
-                                    <Play className="h-6 w-6 text-blue-600" />
-                                </Button>
-                            </div>
+                            {videosLoading ? <Skeleton>
+
+                            </Skeleton> : <>
+                                <img
+                                    src={video.thumbnail}
+                                    alt={video.title}
+                                    className="object-cover w-full h-full"
+                                />
+                                <div className="absolute inset-0 bg-black bg-opacity-20 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
+                                    <Button size="icon" variant="ghost" className="h-12 w-12 rounded-full bg-white bg-opacity-80 hover:bg-opacity-100">
+                                        <Play className="h-6 w-6 text-blue-600" />
+                                    </Button>
+                                </div> </>
+                            }
                         </AspectRatio>
                         <CardHeader className="p-3 pb-0">
-                            <CardTitle className="text-base font-semibold line-clamp-2">{video.title}</CardTitle>
+                            {videosLoading ? <Skeleton className="h-5 w-[250px]" ></Skeleton> : <CardTitle className="text-base font-semibold line-clamp-2">{video.title}</CardTitle>}
                         </CardHeader>
                         <CardContent className="p-3 pt-2">
                             <div className="flex items-center text-sm text-gray-500 mb-1">
-                                <span className="bg-blue-100 text-blue-800 rounded-full px-2 py-0.5 text-xs">
-                                    {video.subject}
-                                </span>
+                                {videosLoading ? <Skeleton className="h-4 w-[120px]" /> :
+                                    <span className="bg-blue-100 text-blue-800 rounded-full px-2 py-0.5 text-xs">
+                                        {video.subject}
+                                    </span>
+                                }
                             </div>
                         </CardContent>
-                        <CardFooter className="p-3 pt-0 flex justify-between items-center text-sm text-gray-500">
-                            <div className="flex items-center gap-2">
-                                <Clock className="h-4 w-4" />
-                                <span>{video.duration}</span>
-                            </div>
-                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => {
-                                e.stopPropagation();
-                                // Handle bookmark functionality
-                            }}>
-                                <Bookmark className="h-4 w-4" />
-                            </Button>
-                        </CardFooter>
                     </Card>
+
+
                 ))}
             </div>
 

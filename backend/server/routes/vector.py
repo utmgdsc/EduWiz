@@ -8,7 +8,14 @@ from google.cloud.firestore import Client
 from google.cloud.firestore_v1.base_vector_query import DistanceMeasure
 from google.cloud.firestore_v1.vector import Vector
 
-router = APIRouter(prefix="vector", tags=["vector"])
+from server.lib.auth import FirebaseAuthMiddleware
+from server.lib.auth.invariant import email_is_verified
+
+router = APIRouter(
+    prefix="/vector",
+    tags=["vector"],
+    dependencies=[Depends(FirebaseAuthMiddleware(email_is_verified))],
+)
 
 
 class VectorSearch(pydantic.BaseModel):
@@ -20,7 +27,7 @@ class VectorSearch(pydantic.BaseModel):
     distance_measure: Literal["COSINE"] | Literal["EUCLIDIAN"] | Literal["DOT_PRODUCT"]
 
 
-async def firestore_client() -> AsyncGenerator[Client]:
+async def firestore_client() -> AsyncGenerator[Client, None]:
     client = firestore.client()
     yield client
     client.close()

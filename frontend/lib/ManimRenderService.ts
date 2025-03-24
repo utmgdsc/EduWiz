@@ -1,3 +1,4 @@
+import { User } from "firebase/auth";
 import {
   ref,
   onValue,
@@ -67,12 +68,17 @@ export const ManimRenderService = {
    * Submit a new video rendering job
    * @param prompt The text prompt for generating the video
    */
-  async submitRenderJob(prompt: string, db: Database): Promise<string> {
+  async submitRenderJob(
+    prompt: string,
+    user: User,
+    db: Database
+  ): Promise<string> {
     const jobid = await this.generateUniqueJobId(db);
 
     const response = await fetch(`${API_BASE_URL}/render`, {
       method: "POST",
       headers: {
+        Authorization: `Bearer ${await user.getIdToken(true)}}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ prompt, jobid }),
@@ -100,8 +106,12 @@ export const ManimRenderService = {
    * @returns A promise that resolves to a `Blob` containing the video data.
    * @throws An error if the request fails or the response is not successful.
    */
-  async getVideoData(jobId: string): Promise<Blob> {
-    const response = await fetch(`${API_BASE_URL}/render/${jobId}/video`);
+  async getVideoData(jobId: string, user: User): Promise<Blob> {
+    const response = await fetch(`${API_BASE_URL}/render/${jobId}/video`, {
+      headers: {
+        Authorization: `Bearer ${await user.getIdToken(true)}`,
+      },
+    });
 
     if (!response.ok)
       throw new Error(`Failed to fetch video data: ${response.status}`);

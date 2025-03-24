@@ -1,4 +1,3 @@
-from typing import AsyncIterable
 import aio_pika
 import asyncio
 import logging

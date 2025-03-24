@@ -51,6 +51,12 @@ class RenderManager:
         await self.send_status_update(job_id, "started_rendering")
         logger.info(f"Started rendering for job {job_id}")
 
+        # Initialize a list to collect error info for each scene
+        scene_errors: list[tuple[str | None, str]] = [
+            (None, code) for code in scene_codes
+        ]
+        has_errors = False
+
         try:
             # Create individual temp directories for each scene
             scenes_to_render = []
@@ -85,6 +91,7 @@ class RenderManager:
                 scene_file = scene_info["scene_file"]
                 media_dir = scene_info["media_dir"]
                 total_animations = scene_info.get("total_animations")
+                error_output = None
 
                 process = await asyncio.create_subprocess_exec(
                     "manim",
@@ -101,13 +108,16 @@ class RenderManager:
                 if idx == 0 and total_animations:
                     animation_regex = re.compile(r"Animation (\d+) :")
                     last_progress = 0
+                    stdout_lines = []
 
                     while True:
                         line = await process.stdout.readline()
                         if not line:
                             break
-                        line = line.decode("utf-8").strip()
-                        match = animation_regex.search(line)
+                        line_text = line.decode("utf-8").strip()
+                        stdout_lines.append(line_text)
+
+                        match = animation_regex.search(line_text)
                         if match:
                             current_animation = int(match.group(1)) + 1
                             progress = (current_animation / total_animations) * 100
@@ -117,44 +127,48 @@ class RenderManager:
                                 last_progress = new_progress
 
                     try:
-                        _, _ = await asyncio.wait_for(process.communicate(), timeout=60)
+                        _, stderr = await asyncio.wait_for(
+                            process.communicate(), timeout=120
+                        )
+                        stderr_text = stderr.decode("utf-8").strip()
                     except asyncio.TimeoutError:
                         process.kill()
                         await self.send_status_update(job_id, "error")
-                        raise RuntimeError(f"Rendering for scene {idx} timed out")
+                        error_output = f"Rendering for scene {idx} timed out"
+                        return RuntimeError(error_output)
 
                     await self.send_status_update(job_id, "merging")
                     logger.info(f"Scene {idx} has finished rendering")
+
+                    if process.returncode != 0:
+                        error_output = stderr_text
+                        return RuntimeError(error_output)
                 else:
                     try:
                         stdout, stderr = await asyncio.wait_for(
-                            process.communicate(), timeout=60
+                            process.communicate(), timeout=120
                         )
+                        stdout_text = stdout.decode("utf-8").strip()
+                        stderr_text = stderr.decode("utf-8").strip()
                         logger.info(f"Scene {idx} has finished rendering")
+
+                        if process.returncode != 0:
+                            error_output = stderr_text
+                            return RuntimeError(error_output)
                     except asyncio.TimeoutError:
                         process.kill()
                         logger.error(
-                            f"Scene {idx} rendering timed out after {60} seconds"
+                            f"Scene {idx} rendering timed out after {120} seconds"
                         )
                         await self.send_status_update(job_id, "error")
-                        raise RuntimeError(f"Render timed out for scene {idx}")
-
-                if process.returncode != 0:
-                    error_msg = (
-                        stderr.decode("utf-8").strip()
-                        if "stderr" in locals()
-                        else await process.stderr.read()
-                    )
-                    await self.send_status_update(job_id, "error")
-                    logger.error(f"Scene {idx} render error: {error_msg}")
-                    raise RuntimeError(f"Render failed for scene {idx}")
+                        error_output = f"Render timed out for scene {idx}"
+                        return RuntimeError(error_output)
 
                 # Get the rendered video
                 video_file = next(scene_info["scene_dir"].rglob("*.mp4"), None)
                 if not video_file:
-                    raise FileNotFoundError(
-                        f"No video file was produced for scene {idx}"
-                    )
+                    error_output = f"No video file was produced for scene {idx}"
+                    return FileNotFoundError(error_output)
 
                 return video_file
 
@@ -170,11 +184,22 @@ class RenderManager:
 
             logger.info("Finished rendering all scenes")
 
-            # Check for exceptions
+            await self.send_status_update(job_id, "rendering_complete")
+
+            # Check for exceptions and collect errors
             for i, result in enumerate(scene_videos):
                 if isinstance(result, Exception):
-                    await self.send_status_update(job_id, "error")
-                    raise RuntimeError(f"Scene {i} rendering failed: {str(result)}")
+                    has_errors = True
+                    error_msg = str(result)
+                    scene_errors[i] = (error_msg, scene_codes[i])
+                    logger.error(f"Scene {i} rendering failed: {error_msg}")
+
+            # If any errors occurred, update status and call error_handling
+            if has_errors:
+                await self.error_handler(job_id, scene_errors)
+                raise RuntimeError(
+                    "One or more scenes failed to render, retrying generation"
+                )
 
             # All videos rendered successfully, now merge them
             await self.send_status_update(job_id, "merging_videos")
@@ -217,7 +242,6 @@ class RenderManager:
                 await self.send_status_update(job_id, "error")
                 raise RuntimeError("Failed to merge videos")
 
-            await self.send_status_update(job_id, "rendering_complete")
             await self.send_status_update(job_id, "completed")
 
             return output_file
@@ -279,8 +303,10 @@ class RenderManager:
             routing_key="status_updates",
         )
 
-    async def error_handling(self, job_id: str, scenes: list[tuple[str | None, str]]):
+    async def error_handler(self, job_id: str, scenes: list[tuple[str | None, str]]):
         # Send it back to the AI to retry
         # The scenes parameter is a list of ALL scenes, even the scenes without errors. The tuple[0] is the error str or None, tuple[1] is the code for all scenes.
         # The scenes should be in the same order as they arrived
+
+        # await self.send_status_update(job_id, "retrying")
         pass

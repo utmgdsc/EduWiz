@@ -18,6 +18,7 @@ router = APIRouter(
 )
 
 
+# To be moved to designated location later
 class VectorSearch(pydantic.BaseModel):
     field: str
     collection: str

@@ -278,3 +278,9 @@ class RenderManager:
             ),
             routing_key="status_updates",
         )
+
+    async def error_handling(self, job_id: str, scenes: list[tuple[str | None, str]]):
+        # Send it back to the AI to retry
+        # The scenes parameter is a list of ALL scenes, even the scenes without errors. The tuple[0] is the error str or None, tuple[1] is the code for all scenes.
+        # The scenes should be in the same order as they arrived
+        pass

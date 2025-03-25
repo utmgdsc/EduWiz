@@ -10,7 +10,7 @@ def setup_logger():
 
     logging.basicConfig(
         format="%(name)s - %(levelname)s - %(asctime)s - %(message)s",
-        level=logging.INFO,  # Set root logger to ERROR
+        level=logging.INFO,
     )
 
     logger = logging.getLogger("eduwiz")

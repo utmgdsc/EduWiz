@@ -3,6 +3,11 @@ FROM manimcommunity/manim:stable
 
 WORKDIR /app
 
+# Install ffmpeg
+USER root
+RUN apt-get update && apt-get install -y ffmpeg && rm -rf /var/lib/apt/lists/*
+USER manimuser
+
 # Install additional Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
@@ -11,4 +16,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Run the renderer
-CMD ["python", "worker.py"]
+CMD ["python", "main.py"]

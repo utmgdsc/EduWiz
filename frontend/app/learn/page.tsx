@@ -2,7 +2,6 @@
 import { Button } from "@/components/ui/button"
 import React, { useEffect, useState, useRef } from "react";
 import { Textarea } from "@/components/ui/textarea"
-import AutoSearch from "./AutoSearch";
 import VideoLoadingScreen from "./VideoLoadingScreen";
 import { Sidesheet } from "@/components/Sidesheet";
 import { useRouter } from 'next/navigation'
@@ -11,13 +10,16 @@ import { toast } from "sonner";
 import { Send, Clapperboard, TriangleAlert } from 'lucide-react';
 import ChatBox from "./Chatbox";
 import DiscoverSection from "./Discover";
+import CommandBar from "./CommandBar";
 
 
 
 export default function Home() {
     const router = useRouter()
+    const [promptBoxFocused, setPromptBoxFocused] = useState(false)
 
     const [prompt, setPrompt] = useState("");
+    const [finalPrompt, setFinalPrompt] = useState<string>("")
     const jobIDRef = useRef<string | null>(null)
     const [videoGenerationState, setVideoGenerationState] = useState(0); // 0 = not started, 1 = generating, 2 = completed, -1 = error
     const jobStatusRef = useRef<string | null>(null)
@@ -27,9 +29,10 @@ export default function Home() {
     const videoURLRef = useRef<string | null>(null)
 
     const sendPrompt = async () => {
+        setFinalPrompt(prompt)
         try {
             // TODO: un comment lines below if they are commented
-            
+
             /*
             const id = await ManimRenderService.submitRenderJob(prompt)
             jobIDRef.current = id
@@ -84,62 +87,57 @@ export default function Home() {
     return (
         <main className="h-screen">
             <Sidesheet userID="asdfasdf"></Sidesheet>
-
-            {/*textbox and sent button*/}
             <div className="flex flex-col h-full justify-start" style={{ padding: '20px 20px 20px 20px', gap: "10px" }}>
-                <div className="flex flex-row items-stretch" style={{ gap: "10px" }}>
-                    <div>
-                        <Button className="h-full" onClick={() => {
-                            console.log("asdfds")
-                            window.location.reload()
-                            }}>
-                                <Clapperboard />
-                                New Video
-                        </Button>
+
+                {/* TODO: the focus behaviour is a bit buggy, figure out the issue and fix it*/}
+                <>
+                    {/* Background Blur Overlay */}
+                    {promptBoxFocused && (
+                        <div
+                            className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-md z-40"
+                            onClick={() => setPromptBoxFocused(false)} // Clicking outside closes focus
+                        ></div>
+                    )}
+
+                    {/* Floating CommandBar */}
+                    <div
+                        className={`self-center w-full flex justify-center transition-all duration-300 ${promptBoxFocused ? "absolute top-40 z-50 p-2" : ""
+                            }`}
+                        onFocus={() => setPromptBoxFocused(true)}
+                        onBlur={() => setPromptBoxFocused(false)}
+                    >
+                        <CommandBar onGenerate={() => { sendPrompt() }} prompt={prompt} setPrompt={setPrompt} />
                     </div>
-                    <Textarea
-                        className="font-mono"
-                        placeholder="What would you like to learn today?"
-                        value={prompt}
-                        onChange={(e) => setPrompt(e.target.value)}
-                        id="prompt-field"
-                        disabled={videoGenerationState !== 0}
-                        onKeyDown={(e) => {
-                            if (e.key == "Enter") {
-                                e.preventDefault();
-                                sendPrompt();
-                            }
-                        }}
-                    />
-                    <div>
-                        <Button className="h-full"
-                            onClick={sendPrompt} id="send-button"
-                            disabled={videoGenerationState !== 0}
-                        ><Send /></Button>
-                    </div>
-                </div>
+                </>
+
 
                 {/* video placeholder and search suggestions box*/}
-                {
-                    // TODO: work on discover page that shows up before all the other search stuff shows up
-                    (videoGenerationState === 0) ? (
-                        (prompt !== "") ? 
-                        <AutoSearch query={prompt} /> :
+                <div>
+                    {
+                        // TODO: work on discover page that shows up before all the other search stuff shows up
+                        (videoGenerationState === 0) ?
+                            <DiscoverSection onVideoSelect={handleVideoSelect} />
+                            : (
+                                <div className="flex flex-col items-center justify-center w-full">
+                                    <p className="p-10 flex items-center text-zinc-200 italic">
+                                        {finalPrompt}
+                                    </p>
+                                    {
+                                        (videoGenerationState == 1) ? (
+                                            <div className="h-full flex flex-col justify-center">
+                                                <VideoLoadingScreen loadingStatus={jobStatus} />
+                                            </div>
 
-                        <DiscoverSection onVideoSelect={handleVideoSelect} />
-
-                    ) : (videoGenerationState === 1) ? (
-                        <div className="h-full flex flex-col justify-center">
-                            <VideoLoadingScreen loadingStatus={jobStatus} />
-                        </div>
-                        
-                    ) : ( videoGenerationState === 2) ? (
-                            <video controls>
-                                <source src={videoURLRef.current as string} type="video/mp4" />
-                            </video>
-                            
-                        ) : <p>Error</p>
-                }
+                                        ) : (
+                                            <video controls>
+                                                <source src={videoURLRef.current as string} type="video/mp4" />
+                                            </video>
+                                        )
+                                    }
+                                </div>
+                            )
+                    }
+                </div>
             </div>
             <ChatBox></ChatBox>
         </main>

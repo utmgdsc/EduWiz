@@ -8,12 +8,12 @@ import { Pagination, PaginationContent, PaginationItem, PaginationLink, Paginati
 
 // Sample data for demonstration
 const sampleVideos = [
-    { id: 1, title: "Introduction to Machine Learning", subject: "Computer Science", duration: "10:25", views: 1250, thumbnail: "https://images.unsplash.com/photo-1544731612-de7f96afe55f?q=80&w=2070" },
-    { id: 2, title: "Understanding Photosynthesis", subject: "Biology", duration: "8:15", views: 980, thumbnail: "https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?q=80&w=2089" },
-    { id: 3, title: "World War II: Key Events", subject: "History", duration: "15:40", views: 2450, thumbnail: "https://images.unsplash.com/photo-1581850518616-bcb8077a2336?q=80&w=2070" },
-    { id: 4, title: "Solving Quadratic Equations", subject: "Mathematics", duration: "12:10", views: 1870, thumbnail: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=2070" },
-    { id: 5, title: "Chemical Reactions Explained", subject: "Chemistry", duration: "9:55", views: 1560, thumbnail: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?q=80&w=2070" },
-    { id: 6, title: "Introduction to Poetry", subject: "Literature", duration: "7:30", views: 920, thumbnail: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?q=80&w=2073" },
+    { id: 1, title: "Introduction to Machine Learning", subject: "Computer Science", thumbnail: "https://images.unsplash.com/photo-1544731612-de7f96afe55f?q=80&w=2070" },
+    { id: 2, title: "Understanding Photosynthesis", subject: "Biology", thumbnail: "https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?q=80&w=2089" },
+    { id: 3, title: "World War II: Key Events", subject: "History", thumbnail: "https://images.unsplash.com/photo-1581850518616-bcb8077a2336?q=80&w=2070" },
+    { id: 4, title: "Solving Quadratic Equations", subject: "Mathematics",thumbnail: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=2070" },
+    { id: 5, title: "Chemical Reactions Explained", subject: "Chemistry",  thumbnail: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?q=80&w=2070" },
+    { id: 6, title: "Introduction to Poetry", subject: "Literature",  thumbnail: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?q=80&w=2073" },
 ];
 
 // Popular subject categories
@@ -44,7 +44,7 @@ const DiscoverSection = ({ onVideoSelect }: DiscoverSectionProps) => {
             setVideosLoading(false)
         }
         loadVideos()
-    })
+    }, [])
 
     const handleVideoClick = (title: string) => {
         onVideoSelect(`Show me a video about ${title}`);

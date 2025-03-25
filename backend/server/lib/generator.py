@@ -13,7 +13,8 @@ from dotenv import load_dotenv
 # Globals
 load_dotenv()
 key = os.getenv("OPENAI_API_KEY")
-animator_script = ""
+animator_script = []
+index = 0
 
 
 # Parsing functions
@@ -33,22 +34,42 @@ def split_scenes(response):
     scenes = content.split("###NEWSCENE###")
     return scenes
 
+def codeCleaner(response):
+    return response.content
+
+async def run_animator_chain(scene, animator_prompt, animator):
+        chain = animator_prompt | animator | RunnableLambda(codeCleaner)
+        result = await chain.ainvoke({"script": scene})
+        return result + "\n\n ####END CODE#### The script associated with this is: " + scene
+
+async def run_checker_chain(code, checker_prompt, checker):
+        checkchain = checker_prompt | checker
+        result = await checkchain.ainvoke({"manim_code": code})
+        return result.content
+
 async def animate_scenes(scenes):
     animator_human_message = HumanMessagePromptTemplate.from_template("{script}")
     animator_system_message = SystemMessagePromptTemplate.from_template(get_prompt("./animator_prompt_scene.txt"))
     animator_prompt = ChatPromptTemplate([animator_system_message, animator_human_message])
-    animator = ChatOpenAI(model="o3-mini-2025-01-31", openai_api_key=key, reasoning_effort="low")
+    animator = ChatOpenAI(model="o3-mini-2025-01-31", openai_api_key=key)
 
-    chain = animator_prompt | animator
-    tasks = [chain.ainvoke({"script": scene}) for scene in scenes]
-    results = await asyncio.gather(*tasks)
+    checker_human_message = HumanMessagePromptTemplate.from_template("{manim_code}")
+    checker_system_message = SystemMessagePromptTemplate.from_template("You are a manim expert. Your job is to make sure that the manim code provided to you is clear, visible and valid. Make sure that none of the code overlaps, and that all of it fits within the bounds of the screen. None of the elements should linger on the screen longer than necessary, and must be faded properly. Make sure you return nothing except the code. The script will be given to you, make sure you omit it in your response.")
+    checker_prompt = ChatPromptTemplate([checker_system_message, checker_human_message])
+    checker = ChatOpenAI(model="o3-mini-2025-01-31", openai_api_key=key)
 
-    return [res.content for res in results]
+    animator_tasks = [run_animator_chain(scene, animator_prompt, animator) for scene in scenes]
+    animator_results = await asyncio.gather(*animator_tasks)
+
+    checker_tasks = [run_checker_chain(code, checker_prompt, checker) for code in animator_results]
+    checker_results = await asyncio.gather(*checker_tasks)
+
+    return [res for res in checker_results]
 
 # Prompting function
 async def ask(prompt):
     # Models
-    mathematician = ChatOpenAI(model="o3-mini-2025-01-31", openai_api_key=key, reasoning_effort="low")
+    mathematician = ChatOpenAI(model="o3-mini-2025-01-31", openai_api_key=key)
 
     # Mathematician prompt
     mathematician_human_message = HumanMessagePromptTemplate.from_template("{prompt}")
@@ -69,4 +90,3 @@ async def ask(prompt):
         return result
     except Exception as e:
         raise e
-

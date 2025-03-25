@@ -70,8 +70,3 @@ async def ask(prompt):
     except Exception as e:
         raise e
 
-
-if __name__ == "__main__":
-    res = asyncio.run(ask("explain max heap"))
-    for i in res:
-        print(i)

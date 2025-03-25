@@ -42,14 +42,11 @@ class RenderManager:
                 f"No write permission in output directory: {self.output_path}"
             )
 
-        logger.info("Renderer started successfully")
-
     async def _render_scene(self, job_id: str, scene_codes: list[str]) -> Path:
         base_temp_dir = self.temp_base / job_id
         base_temp_dir.mkdir(parents=True, exist_ok=True)
 
         await self.send_status_update(job_id, "started_rendering")
-        logger.info(f"Started rendering for job {job_id}")
 
         try:
             # Create individual temp directories for each scene
@@ -116,36 +113,16 @@ class RenderManager:
                                 await self.send_status_update(job_id, str(new_progress))
                                 last_progress = new_progress
 
-                    try:
-                        _, _ = await asyncio.wait_for(process.communicate(), timeout=60)
-                    except asyncio.TimeoutError:
-                        process.kill()
-                        await self.send_status_update(job_id, "error")
-                        raise RuntimeError(f"Rendering for scene {idx} timed out")
-
+                    # Make sure we read any remaining output so the process can complete
+                    _, _ = await process.communicate()
                     await self.send_status_update(job_id, "merging")
-                    logger.info(f"Scene {idx} has finished rendering")
                 else:
-                    try:
-                        stdout, stderr = await asyncio.wait_for(
-                            process.communicate(), timeout=60
-                        )
-                        logger.info(f"Scene {idx} has finished rendering")
-                    except asyncio.TimeoutError:
-                        process.kill()
-                        logger.error(
-                            f"Scene {idx} rendering timed out after {60} seconds"
-                        )
-                        await self.send_status_update(job_id, "error")
-                        raise RuntimeError(f"Render timed out for scene {idx}")
+                    # For other scenes, just wait for completion without tracking progress
+                    await process.wait()
 
                 if process.returncode != 0:
-                    error_msg = (
-                        stderr.decode("utf-8").strip()
-                        if "stderr" in locals()
-                        else await process.stderr.read()
-                    )
-                    await self.send_status_update(job_id, "error")
+                    stderr = await process.stderr.read()
+                    error_msg = stderr.decode("utf-8").strip()
                     logger.error(f"Scene {idx} render error: {error_msg}")
                     raise RuntimeError(f"Render failed for scene {idx}")
 
@@ -160,15 +137,10 @@ class RenderManager:
 
             # Render all scenes in parallel
             await self.send_status_update(job_id, "rendering_all_scenes")
-            logger.info(
-                f"Started rendering all {len(scenes_to_render)} scenes for job {job_id}"
-            )
             scene_videos = await asyncio.gather(
                 *[render_single_scene(scene_info) for scene_info in scenes_to_render],
                 return_exceptions=True,
             )
-
-            logger.info("Finished rendering all scenes")
 
             # Check for exceptions
             for i, result in enumerate(scene_videos):
@@ -188,8 +160,6 @@ class RenderManager:
             # Final output path
             output_file = self.output_path / f"{job_id}.mp4"
 
-            logger.info(f"Started merging scenes for job {job_id}")
-
             # Merge videos using ffmpeg
             merge_process = await asyncio.create_subprocess_exec(
                 "ffmpeg",
@@ -207,8 +177,6 @@ class RenderManager:
             )
 
             await merge_process.wait()
-
-            logger.info(f"Ended merging scenes for job {job_id}")
 
             if merge_process.returncode != 0:
                 stderr = await merge_process.stderr.read()
@@ -275,6 +243,7 @@ class RenderManager:
             aio_pika.Message(
                 body=json.dumps(message).encode(),
                 content_type="application/json",
+                delivery_mode=aio_pika.DeliveryMode.PERSISTENT,  # Makes it so that message is saved in case of errors
             ),
             routing_key="status_updates",
         )

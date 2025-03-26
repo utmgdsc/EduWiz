@@ -1,5 +1,5 @@
 import logging
-from fastapi import APIRouter, HTTPException, BackgroundTasks
+from fastapi import APIRouter, Depends, BackgroundTasks, HTTPException
 from fastapi.responses import FileResponse
 import os
 import uuid
@@ -8,21 +8,30 @@ from pathlib import Path
 import json
 import asyncio
 
+from server.lib.auth import FirebaseAuthMiddleware
+from server.lib.auth.invariant import email_is_verified
+
 from server.schemas.render import RenderRequest
 from server.services.rabbitmq import RabbitMQConnection
 from server.lib.generator import ask
 from server.services.status import send_status_update
 
-router = APIRouter(tags=["render"])
+router = APIRouter(
+    tags=["render"], dependencies=[Depends(FirebaseAuthMiddleware(email_is_verified))]
+)
 logger = logging.getLogger("eduwiz.routes.video")
 
 VIDEOS_DIR = Path(os.getenv("OUTPUT_PATH", "/shared/videos"))
 
 
 @router.post(
-    "/render", summary="Render a video with the given prompt and return the video file"
+    "/render",
+    summary="Render a video with the given prompt and return the video file",
 )
-async def render(data: RenderRequest, background_tasks: BackgroundTasks):
+async def render(
+    data: RenderRequest,
+    background_tasks: BackgroundTasks,
+):
     """
     Renders a video based on the provided prompt.
 
@@ -49,6 +58,7 @@ async def render(data: RenderRequest, background_tasks: BackgroundTasks):
 
 async def process_render_job(job_id: str, prompt: str):
     # Try to generate code the given prompt
+    logger.info(f"Received new job {job_id}")
 
     await send_status_update(job_id, "started_generation")
     try:
@@ -60,6 +70,7 @@ async def process_render_job(job_id: str, prompt: str):
         return
 
     await send_status_update(job_id, "ended_generation")
+    logger.info(f"Generation ended for job_id {job_id}")
 
     try:
         rabbitmq = await RabbitMQConnection.get_instance()

@@ -1,10 +1,20 @@
-"use client"
-import { Button } from "@/components/ui/button"
+"use client";
 import React, { useEffect, useState, useRef } from "react";
-import VideoLoadingScreen from "./VideoLoadingScreen";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { Send, Clapperboard, TriangleAlert } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { Sidesheet } from "@/components/Sidesheet";
-import { useRouter } from 'next/navigation'
+import AutoSearch from "./AutoSearch";
+
+import VideoLoadingScreen from "./VideoLoadingScreen";
+
+import { realtime } from "@/lib/firebase";
+import { S3_CONFIG, S3BucketService } from "@/lib/s3";
 import ManimRenderService from "@/lib/ManimRenderService";
+
 import { toast } from "sonner";
 import { House, CircleUser, LogOut, Settings } from 'lucide-react';
 import ChatBox from "./Chatbox";
@@ -25,60 +35,85 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
+import { useAuthorization } from "@/lib/context/auth";
 
 
 export default function Home() {
-    const [prompt, setPrompt] = useState("");
-    const [finalPrompt, setFinalPrompt] = useState<string>("")
-    const jobIDRef = useRef<string | null>(null)
-    const [videoGenerationState, setVideoGenerationState] = useState(0); // 0 = not started, 1 = generating, 2 = completed, -1 = error
-    const [jobStatus, setJobStatus] = useState<string | null>(null)
-    const unsubscribeJobStatus = useRef<() => void | null>(null)
+  const router = useRouter();
+  const { user } = useAuthorization();
 
-    const videoURLRef = useRef<string | null>(null)
+  const [videoURL, setVideoURL] = useState<string | null>(null);
+  const [prompt, setPrompt] = useState("");
+  const jobIDRef = useRef<string | null>(null);
+  const [videoGenerationState, setVideoGenerationState] = useState(0); // 0 = not started, 1 = generating, 2 = completed, -1 = error
+  const [jobStatus, setJobStatus] = useState<string | null>(null);
+  const unsubscribeJobStatus = useRef<() => void | null>(null);
+  
+  const videoURLRef = useRef<string | null>(null)
 
-    const sendPrompt = async () => {
-        setFinalPrompt(prompt)
-        try {
-            // un comment lines below if they are commented
-            const id = await ManimRenderService.submitRenderJob(prompt)
-            jobIDRef.current = id
-            
-            unsubscribeJobStatus.current = ManimRenderService.subscribeToJobStatus(id, (status) => {
-                // callback function for when status changes
-                setJobStatus(status.status as string)
-                if (ManimRenderService.isJobComplete(status.status as string)) {
-                    setVideoGenerationState(2)
-                    videoURLRef.current = ManimRenderService.getVideoUrl(jobIDRef.current as string)
-                    unsubscribeJobStatus.current!()
-                }
-                if (ManimRenderService.hasJobError(status.status as string)) {
-                    toast.error("Error generating video")
-                    setVideoGenerationState(0)
-                    unsubscribeJobStatus.current!()
-                }
-            })
-            setVideoGenerationState(1)
-        } catch (error) {
-            toast.error("Error generating video")
+  const s3Bucket = S3BucketService.fromConfig(S3_CONFIG, "uploads");
+
+  const sendPrompt = async () => {
+    if (!user) return;
+
+    try {
+      // TODO: un comment lines below if they are commented
+
+      const id = await ManimRenderService.submitRenderJob(
+        prompt,
+        user,
+        realtime
+      );
+      jobIDRef.current = id;
+
+      unsubscribeJobStatus.current = ManimRenderService.subscribeToJobStatus(
+        id,
+        realtime,
+        async (status) => {
+          // callback function for when status changes
+          setJobStatus(status.status as string);
+          if (ManimRenderService.isJobComplete(status.status as string)) {
+            setVideoGenerationState(2);
+
+            const videoData = await ManimRenderService.getVideoData(
+              jobIDRef.current as string,
+              user
+            );
+
+            const url = await s3Bucket.upload(videoData, "videos");
+            setVideoURL(url);
+
+            unsubscribeJobStatus.current!();
+          }
+          if (ManimRenderService.hasJobError(status.status as string)) {
+            toast.error("Error generating video");
             setVideoGenerationState(0);
-        } finally {
-            // ignore below lines, added here for testing purposes
-            // videoURLRef.current = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4"
-            // setVideoGenerationState(2);
+            unsubscribeJobStatus.current!();
+          }
         }
+      );
+      setVideoGenerationState(1);
+    } catch (error) {
+      toast.error("Error generating video");
+      setVideoGenerationState(0);
+    } finally {
+      // TODO: remove this, it is only here now for testing purposes
+      //videoURLRef.current = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4"
+      //setVideoGenerationState(2);
     }
+  };
+
 
     const handleVideoSelect = (selectedPrompt: string) => {
         // TODO: implement logic ot send user to a video
     };
 
-    useEffect(() => {
-        // setting up the page based on whether or not it's for an existing video or a new one
+  useEffect(() => {
+    // setting up the page based on whether or not it's for an existing video or a new one
 
-        const setupPage = async () => {
-            // TODO: setup page if a video id was already provided, load in that video
-            /*
+    const setupPage = async () => {
+      // TODO: setup page if a video id was already provided, load in that video
+      /*
             const validVideoID = await videoExists(videoID)
             if (validVideoID) {
 
@@ -87,9 +122,11 @@ export default function Home() {
             }
             // do nothing if there is no valid video id provided
             */
+
         }
         //setupPage();
     }, [])
+  
 
     return (
         <main className="h-screen">

@@ -1,13 +1,14 @@
 import aio_pika
-import logging
 import os
+import logging
 
-logger = logging.getLogger(__name__)
-
-PER_CONTAINER = 10
-
+logger = logging.getLogger("eduwiz.rabbitmq")
 
 class RabbitMQConnection:
+    """
+    Singleton class which handles connections to the RabbitMQ server and ensuring that the connection is always alive
+    """
+
     _instance = None
     _connection = None
     _channel = None
@@ -22,7 +23,7 @@ class RabbitMQConnection:
         return cls._instance
 
     async def connect(self):
-        """Establish connection to RabbitMQ"""
+        """Establishes a connection to RabbitMQ and deals with reconnecting when necessary"""
         try:
             if not self._connection or self._connection.is_closed:
                 logger.info(f"Connecting to RabbitMQ at {self.url}")
@@ -30,27 +31,24 @@ class RabbitMQConnection:
 
             if not self._channel or self._channel.is_closed:
                 self._channel = await self._connection.channel()
-                # To enable fair dispatching in round robin
-                await self._channel.set_qos(prefetch_count=PER_CONTAINER)
-                # Declare the render_jobs queue
-                await self._channel.declare_queue("render_jobs", durable=True)
-                await self._channel.declare_queue("status_updates")
-                logger.info("RabbitMQ channel established")
 
+                # Enables round-robin dispatching with JOB_LIMIT jobs per container.
+                await self._channel.declare_queue("render_jobs", durable=True)
+                logger.info("RabbitMQ channel established")
         except Exception as e:
-            logger.error(f"Failed to connect to RabbitMQ: {str(e)}")
+            logger.error(f"Failed to connect to RabbitMQ: {e}")
             self._connection = None
             self._channel = None
             raise
 
     async def get_channel(self):
-        """Get or create a channel"""
+        """Return the current channel, reconnecting if necessary."""
         if not self._channel or self._channel.is_closed:
             await self.connect()
         return self._channel
 
     async def close(self):
-        """Close connection and channel"""
+        """Gracefully close the channel and connection."""
         if self._channel and not self._channel.is_closed:
             await self._channel.close()
         if self._connection and not self._connection.is_closed:

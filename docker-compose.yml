@@ -17,7 +17,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - RABBITMQ_URL=${RABBITMQ_URL}
+      - RABBITMQ_URL=${RABBITMQ_URL:-amqp://guest:guest@rabbitmq:5672/}
       - CORS_ORIGINS=${CORS_ORIGINS}
       - SERVER_ENV=production
       - RUNNING_IN_DOCKER=true
@@ -31,6 +31,7 @@ services:
         condition: service_healthy
 
   renderer:
+    user: root
     build:
       context: ./renderer
       dockerfile: Dockerfile
@@ -48,7 +49,24 @@ services:
     security_opt:
       - no-new-privileges:true
 
+  seaweedFS:
+    image: chrislusf/seaweedfs
+    command: server -s3
+    ports:
+      - "8333:8333"
+    volumes:
+      - seaweedfs_data:/data
+    environment:
+      - WEED_FS_S3_DIR=/data
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - WEED_S3_CORS_ALLOW_ORIGIN=${CORS_ORIGINS}
+      - WEED_S3_CORS_ALLOW_METHODS="GET,POST,PUT,DELETE"
+      - WEED_S3_CORS_ALLOW_HEADERS="Authorization,Content-Type,X-Amz-Date,X-Amz-Content-Sha256,Content-Length"
+      - WEED_S3_CORS_MAX_AGE="3600"
+
 volumes:
+  seaweedfs_data:
   rendered_videos:
     driver: local
     driver_opts:

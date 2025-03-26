@@ -21,19 +21,6 @@ const CommandBar = ({ onGenerate, prompt, setPrompt }: { onGenerate: () => void,
     const [focus, setFocus] = useState(false)
     const [results, setResults] = useState<SearchResult[]>([]);
     const inputRef = useRef<HTMLInputElement | null>(null);
-    const [platform, setPlatform] = useState('');
-
-    useEffect(() => {
-        // Detect platform when the component mounts
-        const userPlatform = navigator.platform.toLowerCase();
-        if (userPlatform.includes('win')) {
-            setPlatform('Ctrl + K'); // Windows
-        } else if (userPlatform.includes('mac')) {
-            setPlatform('Cmd + K'); // macOS
-        } else {
-            setPlatform('Ctrl + K'); // linux
-        }
-    }, []);
 
     useEffect(() => {
         const updateSearchResults = async () => {

@@ -34,7 +34,7 @@ export default function RootLayout({
         <AuthorizationProvider>
           <Toaster position="top-right" />
           <div>{children}</div>
-          </AuthorizationProvider>
+        </AuthorizationProvider>
       </body>
     </html>
   );

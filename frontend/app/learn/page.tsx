@@ -6,10 +6,24 @@ import { Sidesheet } from "@/components/Sidesheet";
 import { useRouter } from 'next/navigation'
 import ManimRenderService from "@/lib/ManimRenderService";
 import { toast } from "sonner";
-import { House, CircleUser } from 'lucide-react';
+import { House, CircleUser, LogOut, Settings } from 'lucide-react';
 import ChatBox from "./Chatbox";
 import DiscoverSection from "./Discover";
 import CommandBar from "./CommandBar";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuPortal,
+    DropdownMenuSeparator,
+    DropdownMenuShortcut,
+    DropdownMenuSub,
+    DropdownMenuSubContent,
+    DropdownMenuSubTrigger,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 
 
@@ -50,8 +64,8 @@ export default function Home() {
             setVideoGenerationState(0);
         } finally {
             // ignore below lines, added here for testing purposes
-            //videoURLRef.current = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4"
-            //setVideoGenerationState(2);
+            // videoURLRef.current = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4"
+            // setVideoGenerationState(2);
         }
     }
 
@@ -83,12 +97,31 @@ export default function Home() {
             <div className="flex flex-col h-full justify-start" style={{ padding: '20px 20px 20px 20px', gap: "10px" }}>
 
                 <div className="flex items-center justify-between">
-                    <CommandBar onGenerate={() => { sendPrompt() }} prompt={prompt}setPrompt={setPrompt }/>
+                    <CommandBar onGenerate={() => { sendPrompt() }} prompt={prompt} setPrompt={setPrompt} />
                     <div className="flex items-center">
-                        <Button className="p-2 m-[10px]" variant="outline">
-                            <CircleUser />
-                        </Button>
-                        <Button className="p-2 m-[10px]" variant="outline" onClick={() => { window.location.reload()}}>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button className="p-2 m-[10px]" variant="outline">
+                                    <CircleUser />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-56 gap-3">
+                                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuGroup>
+                                    <DropdownMenuItem>
+                                        <Settings />
+                                        Settings
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem className="bg-red-500 mt-1">
+                                        <LogOut />
+                                        Logout
+                                    </DropdownMenuItem>
+                                </DropdownMenuGroup>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+
+                        <Button className="p-2 m-[10px]" variant="outline" onClick={() => { window.location.reload() }}>
                             <House />
                         </Button>
                     </div>

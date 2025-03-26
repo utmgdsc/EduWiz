@@ -49,7 +49,7 @@ export default function Home() {
     if (!user) return;
     try {
       // TODO: un comment lines below if they are commented
-    
+      setFinalPrompt(prompt)
       const id = await ManimRenderService.submitRenderJob(
         prompt,
         user,

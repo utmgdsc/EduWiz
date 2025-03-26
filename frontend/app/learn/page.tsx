@@ -1,13 +1,12 @@
 "use client"
 import { Button } from "@/components/ui/button"
 import React, { useEffect, useState, useRef } from "react";
-import { Textarea } from "@/components/ui/textarea"
 import VideoLoadingScreen from "./VideoLoadingScreen";
 import { Sidesheet } from "@/components/Sidesheet";
 import { useRouter } from 'next/navigation'
 import ManimRenderService from "@/lib/ManimRenderService";
 import { toast } from "sonner";
-import { Send, Clapperboard, TriangleAlert } from 'lucide-react';
+import { House, CircleUser } from 'lucide-react';
 import ChatBox from "./Chatbox";
 import DiscoverSection from "./Discover";
 import CommandBar from "./CommandBar";
@@ -15,14 +14,10 @@ import CommandBar from "./CommandBar";
 
 
 export default function Home() {
-    const router = useRouter()
-    const [promptBoxFocused, setPromptBoxFocused] = useState(false)
-
     const [prompt, setPrompt] = useState("");
     const [finalPrompt, setFinalPrompt] = useState<string>("")
     const jobIDRef = useRef<string | null>(null)
     const [videoGenerationState, setVideoGenerationState] = useState(0); // 0 = not started, 1 = generating, 2 = completed, -1 = error
-    const jobStatusRef = useRef<string | null>(null)
     const [jobStatus, setJobStatus] = useState<string | null>(null)
     const unsubscribeJobStatus = useRef<() => void | null>(null)
 
@@ -31,9 +26,7 @@ export default function Home() {
     const sendPrompt = async () => {
         setFinalPrompt(prompt)
         try {
-            // TODO: un comment lines below if they are commented
-
-            /*
+            // un comment lines below if they are commented
             const id = await ManimRenderService.submitRenderJob(prompt)
             jobIDRef.current = id
             
@@ -50,20 +43,20 @@ export default function Home() {
                     setVideoGenerationState(0)
                     unsubscribeJobStatus.current!()
                 }
-            })*/
+            })
             setVideoGenerationState(1)
         } catch (error) {
             toast.error("Error generating video")
             setVideoGenerationState(0);
         } finally {
-            // TODO: remove this, it is only here now for testing purposes
-            videoURLRef.current = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4"
-            setVideoGenerationState(2);
+            // ignore below lines, added here for testing purposes
+            //videoURLRef.current = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4"
+            //setVideoGenerationState(2);
         }
     }
 
     const handleVideoSelect = (selectedPrompt: string) => {
-        // TODO: send user to video
+        // TODO: implement logic ot send user to a video
     };
 
     useEffect(() => {
@@ -89,32 +82,21 @@ export default function Home() {
             <Sidesheet userID="asdfasdf"></Sidesheet>
             <div className="flex flex-col h-full justify-start" style={{ padding: '20px 20px 20px 20px', gap: "10px" }}>
 
-                {/* TODO: the focus behaviour is a bit buggy, figure out the issue and fix it*/}
-                <>
-                    {/* Background Blur Overlay */}
-                    {promptBoxFocused && (
-                        <div
-                            className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-md z-40"
-                            onClick={() => setPromptBoxFocused(false)} // Clicking outside closes focus
-                        ></div>
-                    )}
-
-                    {/* Floating CommandBar */}
-                    <div
-                        className={`self-center w-full flex justify-center transition-all duration-300 ${promptBoxFocused ? "absolute top-40 z-50 p-2" : ""
-                            }`}
-                        onFocus={() => setPromptBoxFocused(true)}
-                        onBlur={() => setPromptBoxFocused(false)}
-                    >
-                        <CommandBar onGenerate={() => { sendPrompt() }} prompt={prompt} setPrompt={setPrompt} />
+                <div className="flex items-center justify-between">
+                    <CommandBar onGenerate={() => { sendPrompt() }} prompt={prompt}setPrompt={setPrompt }/>
+                    <div className="flex items-center">
+                        <Button className="p-2 m-[10px]" variant="outline">
+                            <CircleUser />
+                        </Button>
+                        <Button className="p-2 m-[10px]" variant="outline" onClick={() => { window.location.reload()}}>
+                            <House />
+                        </Button>
                     </div>
-                </>
-
+                </div>
 
                 {/* video placeholder and search suggestions box*/}
                 <div>
                     {
-                        // TODO: work on discover page that shows up before all the other search stuff shows up
                         (videoGenerationState === 0) ?
                             <DiscoverSection onVideoSelect={handleVideoSelect} />
                             : (
@@ -139,7 +121,8 @@ export default function Home() {
                     }
                 </div>
             </div>
-            <ChatBox></ChatBox>
+            {(videoGenerationState === 2) && <ChatBox></ChatBox>}
+
         </main>
     );
 }

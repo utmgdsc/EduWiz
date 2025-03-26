@@ -4,13 +4,12 @@ import { MessageSquareText, X, Send, User, Bot } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Avatar } from "@/components/ui/avatar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 interface Message {
     id: number
     text: string
-    sender: "user" | "support"
+    sender: "user" | "bot"
 }
 
 const ChatBox = () => {
@@ -22,6 +21,7 @@ const ChatBox = () => {
     const [isOpen, setIsOpen] = useState(false)
     const [messages, setMessages] = useState<Message[]>([])
     const [newMessage, setNewMessage] = useState("")
+    const [botTyping, setBotTyping] = useState(false)
     const messagesEndRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
@@ -66,15 +66,27 @@ const ChatBox = () => {
     const handleSendMessage = async () => {
         if (newMessage.trim() === "") return
 
+        setBotTyping(true)
         // Add user message
         const userMessage: Message = {
             id: messages.length + 1,
             text: newMessage,
             sender: "user",
         }
-
         setMessages([...messages, userMessage])
         setNewMessage("")
+
+        // TODO: api request to get response for questino from ai
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        const reply: Message = {
+            id: messages.length + 2,
+            text: "replied!",
+            sender: "bot",
+        }
+        console.log(messages)
+        setMessages([...messages, userMessage, reply])
+
+        setBotTyping(false)
     }
 
     return (
@@ -84,13 +96,13 @@ const ChatBox = () => {
                 <PopoverTrigger asChild>
                     {true ? <button
                         className={`fixed bottom-0 right-0 transition-transform duration-200 ease-in-out z-50 p-4
-              ${showChatPrompt ? "translate-x-0" : "translate-x-full"}`}
+              `}
                     >
-                        <div className="w-[50px] h-[50px] flex items-center justify-center rounded-full bg-secondary hover:bg-background shadow-md">
+                        <div className="w-[50px] h-[50px] flex items-center justify-center rounded-full bg-secondary hover:bg-background border shadow-md">
                             <MessageSquareText />
                         </div>
                     </button> : null
-                }
+                    }
                 </PopoverTrigger>
                 <PopoverContent
                     className="w-[350px] h-[450px] p-0 border rounded-lg shadow-lg flex flex-col overflow-hidden mr-4"
@@ -129,12 +141,24 @@ const ChatBox = () => {
                                             : "bg-transparent"
                                             } p-3 shadow-sm`}
                                     >
-                                        <div className="flex items-center gap-2 mb-1">
-                                        </div>
                                         <p className="text-sm">{message.text}</p>
                                     </div>
                                 </div>
                             ))}
+
+                            {botTyping && <div className="flex justify-start">
+                                <div
+                                    className={`max-w-[80%] bg-transparent p-3 shadow-sm flex items-center gap-3`}
+                                >
+                                    <div className="flex space-x-1">
+                                        <span className="w-1 h-1 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0s' }}></span>
+                                        <span className="w-1 h-1 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></span>
+                                        <span className="w-1 h-1 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></span>
+                                    </div>
+                                </div>
+                            </div>}
+
+
                             <div ref={messagesEndRef} />
                         </div>
                     </ScrollArea>

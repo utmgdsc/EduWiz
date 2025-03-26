@@ -1,39 +1,28 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
-import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { Send, Clapperboard, TriangleAlert } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Sidesheet } from "@/components/Sidesheet";
-import AutoSearch from "./AutoSearch";
-
-import VideoLoadingScreen from "./VideoLoadingScreen";
-
-import { realtime } from "@/lib/firebase";
-import { S3_CONFIG, S3BucketService } from "@/lib/s3";
-import ManimRenderService from "@/lib/ManimRenderService";
 
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Sidesheet } from "@/components/Sidesheet";
 import { House, CircleUser, LogOut, Settings } from 'lucide-react';
-import ChatBox from "./Chatbox";
-import DiscoverSection from "./Discover";
-import CommandBar from "./CommandBar";
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuGroup,
     DropdownMenuItem,
     DropdownMenuLabel,
-    DropdownMenuPortal,
     DropdownMenuSeparator,
-    DropdownMenuShortcut,
-    DropdownMenuSub,
-    DropdownMenuSubContent,
-    DropdownMenuSubTrigger,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import ChatBox from "./Chatbox";
+import DiscoverSection from "./Discover";
+import CommandBar from "./CommandBar";
+import VideoLoadingScreen from "./VideoLoadingScreen";
+
+import { realtime } from "@/lib/firebase";
+import { S3_CONFIG, S3BucketService } from "@/lib/s3";
+import ManimRenderService from "@/lib/ManimRenderService";
 
 import { useAuthorization } from "@/lib/context/auth";
 
@@ -43,22 +32,24 @@ export default function Home() {
   const { user } = useAuthorization();
 
   const [videoURL, setVideoURL] = useState<string | null>(null);
+  const [finalPrompt, setFinalPrompt] = useState("")
   const [prompt, setPrompt] = useState("");
   const jobIDRef = useRef<string | null>(null);
   const [videoGenerationState, setVideoGenerationState] = useState(0); // 0 = not started, 1 = generating, 2 = completed, -1 = error
   const [jobStatus, setJobStatus] = useState<string | null>(null);
   const unsubscribeJobStatus = useRef<() => void | null>(null);
-  
+
+
   const videoURLRef = useRef<string | null>(null)
 
   const s3Bucket = S3BucketService.fromConfig(S3_CONFIG, "uploads");
 
   const sendPrompt = async () => {
+    
     if (!user) return;
-
     try {
       // TODO: un comment lines below if they are commented
-
+    
       const id = await ManimRenderService.submitRenderJob(
         prompt,
         user,

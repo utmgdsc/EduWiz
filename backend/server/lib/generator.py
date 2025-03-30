@@ -54,7 +54,7 @@ async def animate_scenes(scenes):
     animator = ChatOpenAI(model="o3-mini-2025-01-31", openai_api_key=key)
 
     checker_human_message = HumanMessagePromptTemplate.from_template("{manim_code}")
-    checker_system_message = SystemMessagePromptTemplate.from_template("You are a manim expert. Your job is to make sure that the manim code provided to you is clear, visible and valid. Make sure that none of the code overlaps, and that all of it fits within the bounds of the screen. Also ensure that all characters are valid ASCII. None of the elements should linger on the screen longer than necessary, and must be faded properly. Make sure you return nothing except the code. The script will be given to you, make sure you omit it in your response.")
+    checker_system_message = SystemMessagePromptTemplate.from_template("You are a manim expert. Your job is to make sure that the manim code provided to you is clear, visible and valid. Make sure that none of the code overlaps, and that all of it fits within the bounds of the screen. None of the elements should linger on the screen longer than necessary, and must be faded properly. Make sure you return nothing except the code. The script will be given to you, make sure you omit it in your response.")
     checker_prompt = ChatPromptTemplate([checker_system_message, checker_human_message])
     checker = ChatOpenAI(model="o3-mini-2025-01-31", openai_api_key=key)
 

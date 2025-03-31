@@ -90,7 +90,6 @@ async def send_status_update(job_id: str, status: str):
         aio_pika.Message(
             body=json.dumps(message).encode(),
             content_type="application/json",
-            delivery_mode=aio_pika.DeliveryMode.PERSISTENT,  # Makes it so that message is saved in case of errors
         ),
         routing_key="status_updates",
     )

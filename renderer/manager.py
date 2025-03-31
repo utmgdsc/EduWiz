@@ -120,8 +120,8 @@ class RenderManager:
                         match = animation_regex.search(line_text)
                         if match:
                             current_animation = int(match.group(1)) + 1
-                            progress = (current_animation / total_animations) * 100
-                            new_progress = int(progress // 10) * 10
+                            progress = min(100, (current_animation / total_animations) * 100)
+                            new_progress = min(100, int(progress // 10) * 10)
                             if new_progress > last_progress:
                                 await self.send_status_update(job_id, str(new_progress))
                                 last_progress = new_progress
@@ -308,5 +308,26 @@ class RenderManager:
         # The scenes parameter is a list of ALL scenes, even the scenes without errors. The tuple[0] is the error str or None, tuple[1] is the code for all scenes.
         # The scenes should be in the same order as they arrived
 
-        # await self.send_status_update(job_id, "retrying")
-        pass
+        await self.send_status_update(job_id, "retrying")
+        logger.info(f"Sending failed scenes for job {job_id} for retry")
+
+        try:
+            rabbitmq = await RabbitMQConnection.get_instance()
+            channel = await rabbitmq.get_channel()
+
+            # Create message with job_id and scenes with errors
+            message = {"job_id": job_id, "scenes": scenes}
+
+            # Publish to retry endpoint queue
+            await channel.default_exchange.publish(
+                aio_pika.Message(
+                    body=json.dumps(message).encode(),
+                    content_type="application/json",
+                ),
+                routing_key="retry_queue",
+            )
+
+            logger.info(f"Job {job_id} sent for retry")
+        except Exception as e:
+            logger.error(f"Failed to send job {job_id} for retry: {e}")
+            await self.send_status_update(job_id, "error")

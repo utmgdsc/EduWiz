@@ -98,7 +98,6 @@ async def process_render_job(job_id: str, prompt: str):
         await send_status_update(job_id, "error")
 
 
-## Temporary to be replaced with the firebase realtime db TODO
 @router.get("/render/{job_id}/video")
 async def get_video(job_id: str):
     """

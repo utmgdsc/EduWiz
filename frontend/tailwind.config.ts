@@ -9,6 +9,19 @@ export default {
   ],
   theme: {
     extend: {
+      animation: {
+        'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
+        'text-shadow-pulse': 'text-shadow-pulse 3s ease-in-out infinite',
+      },
+
+      dropShadow: {
+        'text-glow': '0 0 8px rgba(150, 150, 255, 0.5)',
+        'text-subtle': '0 0 3px rgba(100, 100, 200, 0.3)',
+      },
+  
+  
+
+
       fontFamily: {
         sans: "var(--font-geist-sans)",
         mono: "var(--font-geist-mono)",

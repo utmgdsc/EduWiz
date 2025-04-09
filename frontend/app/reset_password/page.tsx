@@ -48,7 +48,7 @@ export default function ResetPassword() {
           <h1 className="text-4xl text-muted-foreground font-semibold font-sans">
             Reset Password
           </h1>
-          <h3 className="text-muted-foreground">We will get you back in 🫡</h3>
+          <h3 className="text-muted-foreground">Enter your email</h3>
         </div>
         <form
           className="flex flex-col gap-4 sm:flex-row"

@@ -26,24 +26,24 @@ export default function AccountSettings() {
     setLoading(true);  // Show loading state
 
     try {
-      const currentUser = auth.currentUser;  // Get the current user from Firebase
+      const currentUser = auth.currentUser;  
 
-      // Update email if it has changed
+     
       if (email !== user.email) {
-        await currentUser?.updateEmail(email);  // Update email using Firebase Auth method
+        await currentUser?.updateEmail(email); 
         toast.success("Email updated successfully!");
       }
       
-      // Update profile if the display name has changed
+     
       if (name !== user.displayName) {
-        await currentUser?.updateProfile({ displayName: name });  // Update profile using Firebase Auth method
+        await currentUser?.updateProfile({ displayName: name }); 
         toast.success("Profile updated successfully!");
       }
 
       setLoading(false);
     } catch (error) {
       setLoading(false);
-      toast.error("Failed to update account: " + error.message);  // Handle errors gracefully
+      toast.error("Failed to update account: " + error.message);
     }
   };
 

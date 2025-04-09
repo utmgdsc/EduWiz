@@ -183,7 +183,7 @@ export default function LearnPage() {
                     )}
                 </div>
             </div>
-            {videoGenerationState === 2 && <ChatBox topic={finalPrompt} />}
+            {(videoGenerationState === 2) && <ChatBox></ChatBox>}
         </main>
     );
 }

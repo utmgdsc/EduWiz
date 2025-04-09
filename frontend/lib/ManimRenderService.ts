@@ -78,7 +78,7 @@ export const ManimRenderService = {
     const response = await fetch(`${API_BASE_URL}/render`, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${await user.getIdToken(true)}}`,
+        Authorization: `Bearer ${await user.getIdToken(false)}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ prompt, jobid }),
@@ -109,7 +109,7 @@ export const ManimRenderService = {
   async getVideoData(jobId: string, user: User): Promise<Blob> {
     const response = await fetch(`${API_BASE_URL}/render/${jobId}/video`, {
       headers: {
-        Authorization: `Bearer ${await user.getIdToken(true)}`,
+        Authorization: `Bearer ${await user.getIdToken(false)}`,
       },
     });
 

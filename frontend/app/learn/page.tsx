@@ -23,6 +23,7 @@ import VideoLoadingScreen from "./VideoLoadingScreen";
 import { realtime } from "@/lib/firebase";
 import { S3_CONFIG, S3BucketService } from "@/lib/s3";
 import ManimRenderService from "@/lib/ManimRenderService";
+import { useAuthorization } from "@/lib/context/auth";
 
 import { useAuthorization } from "@/lib/context/auth";
 
@@ -45,7 +46,6 @@ export default function Home() {
   const s3Bucket = S3BucketService.fromConfig(S3_CONFIG, "uploads");
 
   const sendPrompt = async () => {
-    
     if (!user) return;
     try {
       // TODO: un comment lines below if they are commented

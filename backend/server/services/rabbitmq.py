@@ -35,6 +35,8 @@ class RabbitMQConnection:
                 # Declare the render_jobs queue
                 await self._channel.declare_queue("render_jobs", durable=True)
                 await self._channel.declare_queue("status_updates")
+                # Declare the retry queue
+                await self._channel.declare_queue("retry_queue", durable=True)
                 logger.info("RabbitMQ channel established")
 
         except Exception as e:

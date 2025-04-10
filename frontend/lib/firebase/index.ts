@@ -25,24 +25,24 @@ const firestore = getFirestore(app);
 const realtime = getDatabase(app);
 const auth = getAuth(app);
 
-// Firestore Emulator Service
-if (process.env.NODE_ENV !== "production") {
-  connectFirestoreEmulator(
-    firestore,
-    "127.0.0.1",
-    firebaseLocal.emulators.firestore.port
-  );
-  connectDatabaseEmulator(
-    realtime,
-    "127.0.0.1",
-    firebaseLocal.emulators.database.port
-  );
-  connectAuthEmulator(
-    auth,
-    `http://localhost:${firebaseLocal.emulators.auth.port}`,
-    { disableWarnings: true }
-  );
-}
+//// Firestore Emulator Service
+//if (process.env.NODE_ENV !== "production") {
+//  connectFirestoreEmulator(
+//    firestore,
+//    "127.0.0.1",
+//    firebaseLocal.emulators.firestore.port
+//  );
+//  connectDatabaseEmulator(
+//    realtime,
+//    "127.0.0.1",
+//    firebaseLocal.emulators.database.port
+//  );
+//  connectAuthEmulator(
+//    auth,
+//    `http://localhost:${firebaseLocal.emulators.auth.port}`,
+//    { disableWarnings: true }
+//  );
+//}
 
 export default app;
 export { firestore, realtime, auth };

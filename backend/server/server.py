@@ -7,6 +7,7 @@ from server.logger import setup_logger
 from server.routes import health, video, vector
 from server.services.rabbitmq import RabbitMQConnection
 from server.services.status import listen_status_updates
+from server.services.retry_service import RetryService
 from server.lib.firebase import initialize_firebase
 
 
@@ -18,12 +19,19 @@ logger = logging.getLogger("eduwiz.server")
 async def lifespan(_: FastAPI):
     initialize_firebase()
     rabbit_conn = await RabbitMQConnection.get_instance()
-    rabbit_conn = rabbit_conn.connect()
+    await rabbit_conn.connect()
     logger.info("RabbitMQ connection initialized")
+    
+    # Start status updates listener
     asyncio.create_task(listen_status_updates())
+    
+    # Initialize the retry service
+    retry_service = await RetryService.get_instance()
+    logger.info("Retry service initialized")
+
     logger.info("App ready 🚀")
     yield
-    rabbit_conn.close()
+    await rabbit_conn.close()
 
 
 app = FastAPI(

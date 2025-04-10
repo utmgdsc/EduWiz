@@ -34,6 +34,9 @@ class RabbitMQConnection:
 
                 # Enables round-robin dispatching with JOB_LIMIT jobs per container.
                 await self._channel.declare_queue("render_jobs", durable=True)
+                # Declare the retry queue
+                await self._channel.declare_queue("retry_queue", durable=True)
+
                 logger.info("RabbitMQ channel established")
         except Exception as e:
             logger.error(f"Failed to connect to RabbitMQ: {e}")

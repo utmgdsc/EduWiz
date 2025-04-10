@@ -28,7 +28,7 @@ async def lifespan(_: FastAPI):
     # Initialize the retry service
     retry_service = await RetryService.get_instance()
     logger.info("Retry service initialized")
-    
+
     logger.info("App ready 🚀")
     yield
     await rabbit_conn.close()

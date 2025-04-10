@@ -1,13 +1,23 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
-import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { Send, Clapperboard, TriangleAlert } from "lucide-react";
 
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { Sidesheet } from "@/components/Sidesheet";
-import AutoSearch from "./AutoSearch";
+import { House, CircleUser, LogOut, Settings } from 'lucide-react';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import ChatBox from "./Chatbox";
+import DiscoverSection from "./Discover";
+import CommandBar from "./CommandBar";
 import VideoLoadingScreen from "./VideoLoadingScreen";
 
 import { realtime } from "@/lib/firebase";
@@ -15,25 +25,31 @@ import { S3_CONFIG, S3BucketService } from "@/lib/s3";
 import ManimRenderService from "@/lib/ManimRenderService";
 import { useAuthorization } from "@/lib/context/auth";
 
+import { useAuthorization } from "@/lib/context/auth";
+
+
 export default function Home() {
   const router = useRouter();
   const { user } = useAuthorization();
 
   const [videoURL, setVideoURL] = useState<string | null>(null);
+  const [finalPrompt, setFinalPrompt] = useState("")
   const [prompt, setPrompt] = useState("");
   const jobIDRef = useRef<string | null>(null);
   const [videoGenerationState, setVideoGenerationState] = useState(0); // 0 = not started, 1 = generating, 2 = completed, -1 = error
   const [jobStatus, setJobStatus] = useState<string | null>(null);
   const unsubscribeJobStatus = useRef<() => void | null>(null);
 
+
+  const videoURLRef = useRef<string | null>(null)
+
   const s3Bucket = S3BucketService.fromConfig(S3_CONFIG, "uploads");
 
   const sendPrompt = async () => {
     if (!user) return;
-
     try {
       // TODO: un comment lines below if they are commented
-
+      setFinalPrompt(prompt)
       const id = await ManimRenderService.submitRenderJob(
         prompt,
         user,
@@ -78,6 +94,11 @@ export default function Home() {
     }
   };
 
+
+    const handleVideoSelect = (selectedPrompt: string) => {
+        // TODO: implement logic ot send user to a video
+    };
+
   useEffect(() => {
     // setting up the page based on whether or not it's for an existing video or a new one
 
@@ -92,76 +113,77 @@ export default function Home() {
             }
             // do nothing if there is no valid video id provided
             */
-    };
-    //setupPage();
-  }, []);
 
-  return (
-    <main className="h-screen">
-      <Sidesheet userID="asdfasdf"></Sidesheet>
-
-      {/*textbox and sent button*/}
-      <div
-        className="flex flex-col h-full justify-start"
-        style={{ padding: "20px 20px 20px 20px", gap: "10px" }}
-      >
-        <div className="flex flex-row items-stretch" style={{ gap: "10px" }}>
-          <div>
-            <Button
-              className="h-full"
-              onClick={() => {
-                console.log("asdfds");
-                window.location.reload();
-              }}
-            >
-              <Clapperboard />
-              New Video
-            </Button>
-          </div>
-          <Textarea
-            className="font-mono"
-            placeholder="What would you like to learn today?"
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            id="prompt-field"
-            disabled={videoGenerationState !== 0}
-            onKeyDown={(e) => {
-              if (e.key == "Enter") {
-                e.preventDefault();
-                sendPrompt();
-              }
-            }}
-          />
-          <div>
-            <Button
-              className="h-full"
-              onClick={sendPrompt}
-              id="send-button"
-              disabled={videoGenerationState !== 0}
-            >
-              <Send />
-            </Button>
-          </div>
-        </div>
-
-        {/* video placeholder and search suggestions box*/}
-        {
-          // TODO: change loadingStatus to actually be the loading status here
-          videoGenerationState === 0 ? (
-            <AutoSearch query={prompt} />
-          ) : videoGenerationState === 1 ? (
-            <div className="h-full flex flex-col justify-center">
-              <VideoLoadingScreen loadingStatus={jobStatus} />
-            </div>
-          ) : videoGenerationState === 2 && videoURL ? (
-            <video controls>
-              <source src={videoURL} type="video/mp4" />
-            </video>
-          ) : (
-            <p>Error</p>
-          )
         }
-      </div>
-    </main>
-  );
+        //setupPage();
+    }, [])
+  
+
+    return (
+        <main className="h-screen">
+            <Sidesheet userID="asdfasdf"></Sidesheet>
+            <div className="flex flex-col h-full justify-start" style={{ padding: '20px 20px 20px 20px', gap: "10px" }}>
+
+                <div className="flex items-center justify-between">
+                    <CommandBar onGenerate={() => { sendPrompt() }} prompt={prompt} setPrompt={setPrompt} />
+                    <div className="flex items-center">
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button className="p-2 m-[10px]" variant="outline">
+                                    <CircleUser />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-56 gap-3">
+                                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuGroup>
+                                    <DropdownMenuItem>
+                                        <Settings />
+                                        Settings
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem className="bg-red-500 mt-1">
+                                        <LogOut />
+                                        Logout
+                                    </DropdownMenuItem>
+                                </DropdownMenuGroup>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+
+                        <Button className="p-2 m-[10px]" variant="outline" onClick={() => { window.location.reload() }}>
+                            <House />
+                        </Button>
+                    </div>
+                </div>
+
+                {/* video placeholder and search suggestions box*/}
+                <div>
+                    {
+                        (videoGenerationState === 0) ?
+                            <DiscoverSection onVideoSelect={handleVideoSelect} />
+                            : (
+                                <div className="flex flex-col items-center justify-center w-full">
+                                    <p className="p-10 flex items-center text-zinc-200 italic">
+                                        {finalPrompt}
+                                    </p>
+                                    {
+                                        (videoGenerationState == 1) ? (
+                                            <div className="h-full flex flex-col justify-center">
+                                                <VideoLoadingScreen loadingStatus={jobStatus} />
+                                            </div>
+
+                                        ) : (
+                                            <video controls>
+                                                <source src={videoURLRef.current as string} type="video/mp4" />
+                                            </video>
+                                        )
+                                    }
+                                </div>
+                            )
+                    }
+                </div>
+            </div>
+            {(videoGenerationState === 2) && <ChatBox></ChatBox>}
+
+        </main>
+    );
 }

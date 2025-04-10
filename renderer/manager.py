@@ -50,12 +50,13 @@ class RenderManager:
 
         await self.send_status_update(job_id, "started_rendering")
         logger.info(f"Started rendering for job {job_id}")
-
+        
         # Initialize a list to collect error info for each scene
         scene_errors: list[tuple[str | None, str]] = [
             (None, code) for code in scene_codes
         ]
         has_errors = False
+
 
         try:
             # Create individual temp directories for each scene
@@ -93,6 +94,7 @@ class RenderManager:
                 total_animations = scene_info.get("total_animations")
                 error_output = None
 
+
                 process = await asyncio.create_subprocess_exec(
                     "manim",
                     str(scene_file),
@@ -109,6 +111,7 @@ class RenderManager:
                     animation_regex = re.compile(r"Animation (\d+) :")
                     last_progress = 0
                     stdout_lines = []
+
 
                     while True:
                         line = await process.stdout.readline()
@@ -183,7 +186,7 @@ class RenderManager:
             )
 
             logger.info("Finished rendering all scenes")
-
+            
             await self.send_status_update(job_id, "rendering_complete")
 
             # Check for exceptions and collect errors
@@ -302,7 +305,7 @@ class RenderManager:
             ),
             routing_key="status_updates",
         )
-
+        
     async def error_handler(self, job_id: str, scenes: list[tuple[str | None, str]]):
         # Send it back to the AI to retry
         # The scenes parameter is a list of ALL scenes, even the scenes without errors. The tuple[0] is the error str or None, tuple[1] is the code for all scenes.

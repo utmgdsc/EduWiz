@@ -4,7 +4,6 @@ import {
     SheetDescription,
     SheetHeader,
     SheetTitle,
-    SheetTrigger,
 } from "@/components/ui/sheet"
 import PreviousChats from "./previousChats"
 import { Button } from "@/components/ui/button";
@@ -46,7 +45,6 @@ export function Sidesheet({ userID}: { userID: string}) {
                         <SheetTitle>Home</SheetTitle>
                     </SheetHeader>
 
-                    {/* TODO: add a list of */}
                     <div className="flex flex-col gap-3">
                         <div>
                             <Button className="h-full w-full justify-start bg-secondary text-foreground hover:bg-background border mt-2 mb-2">

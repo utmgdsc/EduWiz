@@ -137,7 +137,7 @@ export default function Home() {
                                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuGroup>
-                                    <DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => window.location.href = "/settings"}>
                                         <Settings />
                                         Settings
                                     </DropdownMenuItem>

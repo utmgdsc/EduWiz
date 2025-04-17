@@ -26,7 +26,6 @@ import DiscoverSection from "./Discover";
 import { realtime } from "@/lib/firebase";
 import { S3_CONFIG, S3BucketService } from "@/lib/s3";
 import ManimRenderService from "@/lib/ManimRenderService";
-
 import { useAuthorization } from "@/lib/context/auth";
 
 export default function LearnPage() {
@@ -57,11 +56,13 @@ export default function LearnPage() {
         }
     }, [searchParams]);
 
+
     const sendPrompt = async (promptValue = prompt) => {
         if (!user) {
             toast.error("Please sign in to generate videos");
             return;
         }
+
 
         try {
             setFinalPrompt(promptValue);
@@ -134,7 +135,9 @@ export default function LearnPage() {
                                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuGroup>
-                                    <DropdownMenuItem onSelect={() => router.push('/settings')}>
+
+                                <DropdownMenuItem onClick={() => window.location.href = "/settings"}>
+
                                         <Settings />
                                         Settings
                                     </DropdownMenuItem>

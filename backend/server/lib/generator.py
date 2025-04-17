@@ -63,6 +63,7 @@ async def animate_scenes(scenes):
 
     checker_tasks = [run_checker_chain(code, checker_prompt, checker) for code in animator_results]
     checker_results = await asyncio.gather(*checker_tasks)
+    
     return [res for res in checker_results]
 
 # Prompting function

@@ -47,7 +47,7 @@ export function Sidesheet({ userID}: { userID: string}) {
 
                     <div className="flex flex-col gap-3">
                         <div>
-                            <Button className="h-full w-full justify-start bg-secondary text-foreground hover:bg-background border mt-2 mb-2">
+                            <Button className="h-full w-full justify-start bg-secondary text-foreground hover:bg-background border mt-2 mb-2" onClick={() => window.location.href = "/settings"}> 
                                 <CircleUser />
                                 Account
                             </Button>

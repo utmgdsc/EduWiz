@@ -4,6 +4,7 @@ import logging
 
 logger = logging.getLogger("eduwiz.rabbitmq")
 
+
 class RabbitMQConnection:
     """
     Singleton class which handles connections to the RabbitMQ server and ensuring that the connection is always alive
@@ -33,9 +34,9 @@ class RabbitMQConnection:
                 self._channel = await self._connection.channel()
 
                 # Enables round-robin dispatching with JOB_LIMIT jobs per container.
-                await self._channel.declare_queue("render_jobs", durable=True)
+                await self._channel.declare_queue("render_jobs")
                 # Declare the retry queue
-                await self._channel.declare_queue("retry_queue", durable=True)
+                await self._channel.declare_queue("retry_queue")
 
                 logger.info("RabbitMQ channel established")
         except Exception as e:
@@ -58,3 +59,4 @@ class RabbitMQConnection:
             await self._connection.close()
         self._channel = None
         self._connection = None
+

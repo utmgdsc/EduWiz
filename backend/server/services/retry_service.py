@@ -35,7 +35,7 @@ class RetryService:
             channel = await rabbitmq.get_channel()
 
             # Declare the queue to make sure it exists
-            retry_queue = await channel.declare_queue("retry_queue", durable=True)
+            retry_queue = await channel.declare_queue("retry_queue")
 
             # Set up the message handler
             await retry_queue.consume(self._retry_message_handler)

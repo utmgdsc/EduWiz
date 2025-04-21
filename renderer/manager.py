@@ -50,13 +50,12 @@ class RenderManager:
 
         await self.send_status_update(job_id, "started_rendering")
         logger.info(f"Started rendering for job {job_id}")
-        
+
         # Initialize a list to collect error info for each scene
         scene_errors: list[tuple[str | None, str]] = [
             (None, code) for code in scene_codes
         ]
         has_errors = False
-
 
         try:
             # Create individual temp directories for each scene
@@ -94,7 +93,6 @@ class RenderManager:
                 total_animations = scene_info.get("total_animations")
                 error_output = None
 
-
                 process = await asyncio.create_subprocess_exec(
                     "manim",
                     str(scene_file),
@@ -112,7 +110,6 @@ class RenderManager:
                     last_progress = 0
                     stdout_lines = []
 
-
                     while True:
                         line = await process.stdout.readline()
                         if not line:
@@ -123,7 +120,9 @@ class RenderManager:
                         match = animation_regex.search(line_text)
                         if match:
                             current_animation = int(match.group(1)) + 1
-                            progress = min(100, (current_animation / total_animations) * 100)
+                            progress = min(
+                                100, (current_animation / total_animations) * 100
+                            )
                             new_progress = min(100, int(progress // 10) * 10)
                             if new_progress > last_progress:
                                 await self.send_status_update(job_id, str(new_progress))
@@ -186,7 +185,7 @@ class RenderManager:
             )
 
             logger.info("Finished rendering all scenes")
-            
+
             await self.send_status_update(job_id, "rendering_complete")
 
             # Check for exceptions and collect errors
@@ -276,7 +275,7 @@ class RenderManager:
         await rabbit_conn.connect()
         channel = await rabbit_conn.get_channel()
 
-        queue = await channel.declare_queue("render_jobs", durable=True)
+        queue = await channel.declare_queue("render_jobs")
 
         logger.info(f"Started render manager (job_limit={JOB_LIMIT})")
         logger.info(f"Using temp directory: {self.temp_base}")
@@ -305,7 +304,7 @@ class RenderManager:
             ),
             routing_key="status_updates",
         )
-        
+
     async def error_handler(self, job_id: str, scenes: list[tuple[str | None, str]]):
         # Send it back to the AI to retry
         # The scenes parameter is a list of ALL scenes, even the scenes without errors. The tuple[0] is the error str or None, tuple[1] is the code for all scenes.

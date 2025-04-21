@@ -11,7 +11,7 @@ async def listen_status_updates():
     """Listener for status updates, starts listening to the queue and calls process_status_update on any message"""
     rabbitmq = await RabbitMQConnection.get_instance()
     channel = await rabbitmq.get_channel()
-    queue = await channel.declare_queue("status_updates", durable=False)
+    queue = await channel.declare_queue("status_updates")
 
     logger.info("Status updates listener has started")
 

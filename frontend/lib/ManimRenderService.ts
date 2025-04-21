@@ -7,10 +7,9 @@ import {
   type Database,
   remove,
 } from "firebase/database";
-import { v4 as uuidv4 } from "uuid";
 
-// Base URL for API calls
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+import { v4 as uuidv4 } from "uuid";
+import { API } from "@/lib/api";
 
 // Types
 export interface RenderRequest {
@@ -55,7 +54,7 @@ export const ManimRenderService = {
    * Test the API connection with a simple health check
    */
   async healthCheck(): Promise<{ message: string }> {
-    const response = await fetch(`${API_BASE_URL}/health`);
+    const response = await fetch(API("health"));
 
     if (!response.ok) {
       throw new Error(`Health check failed: ${response.status}`);
@@ -71,11 +70,11 @@ export const ManimRenderService = {
   async submitRenderJob(
     prompt: string,
     user: User,
-    db: Database
+    db: Database,
   ): Promise<string> {
     const jobid = await this.generateUniqueJobId(db);
 
-    const response = await fetch(`${API_BASE_URL}/render`, {
+    const response = await fetch(API("render"), {
       method: "POST",
       headers: {
         Authorization: `Bearer ${await user.getIdToken(true)}}`,
@@ -96,7 +95,7 @@ export const ManimRenderService = {
    * @param jobId The job ID of the rendered video
    */
   getVideoUrl(jobId: string): string {
-    return `${API_BASE_URL}/render/${jobId}/video`;
+    return API("render", jobId, "video");
   },
 
   /**
@@ -107,7 +106,7 @@ export const ManimRenderService = {
    * @throws An error if the request fails or the response is not successful.
    */
   async getVideoData(jobId: string, user: User): Promise<Blob> {
-    const response = await fetch(`${API_BASE_URL}/render/${jobId}/video`, {
+    const response = await fetch(this.getVideoUrl(jobId), {
       headers: {
         Authorization: `Bearer ${await user.getIdToken(true)}`,
       },
@@ -139,7 +138,7 @@ export const ManimRenderService = {
   subscribeToJobStatus(
     jobId: string,
     db: Database,
-    callback: (status: JobStatus) => void
+    callback: (status: JobStatus) => void,
   ) {
     const jobRef = ref(db, `jobs/${jobId}`);
 

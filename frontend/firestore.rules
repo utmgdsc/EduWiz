@@ -1,0 +1,52 @@
+rules_version = '2';
+
+function isAuthenticated(request) {
+	return request.auth != null && request.auth.token.email_verified == true;
+}
+
+
+function isOwner(request, resource) {
+	return (
+  	(resource == null || request.auth.uid == resource.data.uid) && // The data they get is theirs
+    (request.resource == null || request.resource.data.uid == request.auth.uid)  // The data they write is theirs
+  );
+}
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /chat/{chatID} {
+
+    	/* Chat data invariants */
+      function isValidChat(request) {
+        return request.resource.data.uid == request.auth.uid
+          && request.resource.data.prompt is string
+          && (request.resource.data.video == null || request.resource.data.video is map)
+          && request.resource.data.created_at is timestamp;
+      }
+
+      allow read: if isAuthenticated(request)
+      	&& isOwner(request, resource);
+
+      allow update: if isAuthenticated(request)
+      	&& isValidChat(request)
+        && isOwner(request, resource)
+        && request.resource.data.created_at == resource.data.created_at;
+
+      allow create: if isAuthenticated(request)
+      	&& isOwner(request, resource)
+        && isValidChat(request);
+    }
+
+    match /video/{videoID} {
+    		function isValidVideo(request) {
+        	return request.resource.data.uid == request.auth.uid
+            && request.resource.data.video_url is string
+            && request.resource.data.context is string
+            && request.resource.data.created_at is timestamp;
+        }
+
+        allow read: if isAuthenticated(request);
+        allow write: if isValidVideo(request) && isOwner(request, resource)
+    }
+  }
+}

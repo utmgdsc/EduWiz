@@ -1,4 +1,4 @@
-Fix the code provided to you according to the error message provided. Here is some information about the program.
+Fix the code provided to you according to the error message provided. Here is some information about the program that might help you track the error.
 
 The most important custom written tool you have access to is the TextManager. It must be imported using "from text_manager import TextManager". You have access to the following functions:
 
@@ -32,6 +32,8 @@ The absolutely necessary imports are:
 from manim_voiceover import VoiceoverScene
 from text_manager import TextManager
 from manim import *
+
+If you dont see ANY mention of this textmanager in the code, completely ignore all that. Some animations are made without the use of it.
 
 Some other things to keep in minds are that every character in the code must be a valid ascii character. Check the entire code thoroughly for similar errors.
 

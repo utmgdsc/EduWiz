@@ -16,7 +16,7 @@ with self.voiceover(text="This text is written as I speak.") as tracker:
 
 
 #### TextManager Information ####
-The most important tool you have access to is the TextManager. You must import it using "from textmanager import TextManager". You have access to the following functions:
+The most important tool you have access to is the TextManager. You must import it using "from text_manager import TextManager". You have access to the following functions:
 
 def __init__(self, scene: Scene) -> None:
     """

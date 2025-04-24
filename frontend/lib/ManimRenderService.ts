@@ -30,27 +30,6 @@ export interface JobStatus {
 }
 
 export const ManimRenderService = {
-  async generateUniqueJobId(db: Database): Promise<string> {
-    let isUnique = false;
-    let newId = "";
-
-    while (!isUnique) {
-      // Generate a new UUID
-      newId = uuidv4();
-
-      // Check if this ID already exists in the database
-      const jobRef = ref(db, `jobs/${newId}`);
-      const snapshot = await get(jobRef);
-
-      // If the snapshot doesn't exist, we have a unique ID
-      if (!snapshot.exists()) {
-        isUnique = true;
-      }
-    }
-
-    return newId;
-  },
-
   /**
    * Test the API connection with a simple health check
    */
@@ -73,7 +52,7 @@ export const ManimRenderService = {
     user: User,
     db: Database
   ): Promise<string> {
-    const jobid = await this.generateUniqueJobId(db);
+    const jobid = uuidv4();
 
     const response = await fetch(`${API_BASE_URL}/render`, {
       method: "POST",

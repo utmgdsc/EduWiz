@@ -114,9 +114,3 @@ async def ask(prompt):
         return result
     except Exception as e:
         raise e
-
-if __name__ == "__main__":
-    answer = asyncio.run(ask("Explain what galois theory is"))
-    for i in range(len(answer)):
-        with open(f"video{i}.py", "w") as f:
-            f.write(answer[i])

@@ -1,8 +1,7 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
-
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
+
 import { Sidesheet } from "@/components/Sidesheet";
 import { House, CircleUser, LogOut, Settings } from 'lucide-react';
 import {
@@ -13,17 +12,21 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+
 import ChatBox from "./Chatbox";
-import DiscoverSection from "./Discover";
 import CommandBar from "./CommandBar";
+
 import VideoLoadingScreen from "./VideoLoadingScreen";
+import DiscoverSection from "./Discover";
 
 import { firestore, realtime } from "@/lib/firebase";
 import { S3_CONFIG, S3BucketService } from "@/lib/s3";
 import ManimRenderService from "@/lib/ManimRenderService";
-
 import { useAuthorization } from "@/lib/context/auth";
+
 import { createVideo } from "@/lib/firebase/video";
 import { Video, RENDER_STATUS, Chat, LLMMessage } from "@/lib/firebase/schema";
 import { CHAT_COLLECTION_NAME, createChat, getChat, updateChat } from "@/lib/firebase/chat";
@@ -101,6 +104,7 @@ export default function Home() {
             setVideoGenerationState(1);
         } catch (error) {
             toast.error("Error generating video");
+
             setVideoGenerationState(0);
         } finally {
             // below exist for testing purposes, ensure they are commented out before running
@@ -177,7 +181,6 @@ export default function Home() {
             <Sidesheet user={user!}></Sidesheet>
             
             <div className="flex flex-col h-full justify-start" style={{ padding: '20px 20px 20px 20px', gap: "10px" }}>
-
                 <div className="flex items-center justify-between">
                     <CommandBar onGenerate={() => { createNewChat() }} prompt={prompt} setPrompt={setPrompt} />
                     <div className="flex items-center">
@@ -191,7 +194,9 @@ export default function Home() {
                                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuGroup>
-                                    <DropdownMenuItem>
+
+                                <DropdownMenuItem onClick={() => window.location.href = "/settings"}>
+
                                         <Settings />
                                         Settings
                                     </DropdownMenuItem>
@@ -208,6 +213,7 @@ export default function Home() {
                         </Button>
                     </div>
                 </div>
+
 
                 {/* video placeholder and search suggestions box*/}
                 <div>
@@ -231,6 +237,8 @@ export default function Home() {
                                 </div>
                             )
                     }
+                        </div>
+                    )}
                 </div>
             </div>
             {(videoGenerationState === 2) && <ChatBox chatDocID={chatDocIDRef.current!}></ChatBox>}

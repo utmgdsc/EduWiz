@@ -10,7 +10,7 @@ import {
 import { v4 as uuidv4 } from "uuid";
 
 // Base URL for API calls
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
 // Types
 export interface RenderRequest {
@@ -30,27 +30,6 @@ export interface JobStatus {
 }
 
 export const ManimRenderService = {
-  async generateUniqueJobId(db: Database): Promise<string> {
-    let isUnique = false;
-    let newId = "";
-
-    while (!isUnique) {
-      // Generate a new UUID
-      newId = uuidv4();
-
-      // Check if this ID already exists in the database
-      const jobRef = ref(db, `jobs/${newId}`);
-      const snapshot = await get(jobRef);
-
-      // If the snapshot doesn't exist, we have a unique ID
-      if (!snapshot.exists()) {
-        isUnique = true;
-      }
-    }
-
-    return newId;
-  },
-
   /**
    * Test the API connection with a simple health check
    */
@@ -73,12 +52,14 @@ export const ManimRenderService = {
     user: User,
     db: Database
   ): Promise<string> {
-    const jobid = await this.generateUniqueJobId(db);
+    const jobid = uuidv4();
 
     const response = await fetch(`${API_BASE_URL}/render`, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${await user.getIdToken(true)}}`,
+
+        Authorization: `Bearer ${await user.getIdToken(true)}`,
+
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ prompt, jobid }),
@@ -109,7 +90,7 @@ export const ManimRenderService = {
   async getVideoData(jobId: string, user: User): Promise<Blob> {
     const response = await fetch(`${API_BASE_URL}/render/${jobId}/video`, {
       headers: {
-        Authorization: `Bearer ${await user.getIdToken(true)}`,
+        Authorization: `Bearer ${await user.getIdToken(false)}`,
       },
     });
 
@@ -119,16 +100,30 @@ export const ManimRenderService = {
     return await response.blob();
   },
 
-  // Delete job from realtime db
   /**
-   * Deletes a job from the database.
+   * Deletes a job from the backend server and database.
    * @param jobId - The unique identifier of the job to be deleted.
    * @param db - The database instance where the job is stored.
+   * @param user - The authenticated user making the request.
    * @returns A promise that resolves when the job has been successfully removed.
    */
-  async deleteJob(jobId: string, db: Database): Promise<void> {
-    const jobRef = ref(db, `jobs/${jobId}`);
-    await remove(jobRef);
+  async deleteJob(jobId: string, db: Database, user: User): Promise<void> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/render/${jobId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${await user.getIdToken(true)}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to delete job: ${response.status}`);
+      }
+    } catch (error) {
+      console.error("Backend job deletion failed, falling back to local cleanup:", error);
+      const jobRef = ref(db, `jobs/${jobId}`);
+      await remove(jobRef);
+    }
   },
 
   /**

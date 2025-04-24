@@ -26,7 +26,6 @@ def get_prompt(filepath):
 
 def split_scenes(response):
     content = response.content
-    print(content)
     anim_type = content[:4]
     scenes = content.split("###NEWSCENE###")
     return (scenes, anim_type)

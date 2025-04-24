@@ -135,7 +135,6 @@ class RenderManager:
                         stderr_text = stderr.decode("utf-8").strip()
                     except asyncio.TimeoutError:
                         process.kill()
-                        await self.send_status_update(job_id, "error")
                         error_output = f"Rendering for scene {idx} timed out"
                         return RuntimeError(error_output)
 
@@ -162,7 +161,6 @@ class RenderManager:
                         logger.error(
                             f"Scene {idx} rendering timed out after {120} seconds"
                         )
-                        await self.send_status_update(job_id, "error")
                         error_output = f"Render timed out for scene {idx}"
                         return RuntimeError(error_output)
 

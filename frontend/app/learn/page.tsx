@@ -32,6 +32,7 @@ export default function LearnPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { user } = useAuthorization();
+    const hasSearchedRef = useRef(false);
 
     const [videoURL, setVideoURL] = useState<string | null>(null);
     const [finalPrompt, setFinalPrompt] = useState("");
@@ -44,15 +45,16 @@ export default function LearnPage() {
 
     const s3Bucket = S3BucketService.fromConfig(S3_CONFIG, "uploads");
 
-    // Initialize with search query if provided
     useEffect(() => {
         const query = searchParams.get('query');
-        if (query) {
+        if (query && !hasSearchedRef.current) {
+            hasSearchedRef.current = true;
             setPrompt(query);
-            // Auto-trigger video generation if coming from landing page
+    
+            
             setTimeout(() => {
                 sendPrompt(query);
-            }, 500); // Small delay to ensure component is fully loaded
+            }, 500);
         }
     }, [searchParams]);
 
@@ -65,6 +67,7 @@ export default function LearnPage() {
 
 
         try {
+            console.log("SENDING PROMPT")
             setFinalPrompt(promptValue);
             const id = await ManimRenderService.submitRenderJob(
                 promptValue,

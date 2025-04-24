@@ -38,7 +38,7 @@ export default function Home() {
     const router = useRouter();
     const searchParams = useSearchParams()
     var chatParamID = searchParams.get("id")
-
+    const hasSearchedRef = useRef(false);
     const [prompt, setPrompt] = useState("");
     const jobIDRef = useRef<string | null>(null);
     const [jobStatus, setJobStatus] = useState<string | null>(null);
@@ -51,7 +51,18 @@ export default function Home() {
     const [finalPrompt, setFinalPrompt] = useState("")
 
     const s3Bucket = S3BucketService.fromConfig(S3_CONFIG, "uploads");
-
+    useEffect(() => {
+        const query = searchParams.get('query');
+        if (query && !hasSearchedRef.current) {
+            hasSearchedRef.current = true;
+            setPrompt(query);
+            setFinalPrompt(query);
+            setTimeout(() => {
+                sendPrompt();
+            }, 500);
+            
+        }
+    }, [searchParams]);
     const sendPrompt = async () => {
 
         if (!user) return;

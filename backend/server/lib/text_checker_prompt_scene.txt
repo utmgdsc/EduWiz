@@ -4,7 +4,7 @@ Your first priority is to ensure that only ASCII is used, and any other characte
 
 Ensure all math is in add_equation and all add_text is only text, or something like "This is an $x=y$ equation."
 
-The most important tool you have access to is the TextManager. It must be imported using "from textmanager import TextManager". You have access to the following functions:
+The most important tool you have access to is the TextManager. It must be imported using "from text_manager import TextManager". You have access to the following functions:
 
 def init(self, scene: Scene) -> None:
 """

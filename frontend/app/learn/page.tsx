@@ -14,7 +14,6 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
 
 import ChatBox from "./Chatbox";
 import CommandBar from "./CommandBar";
@@ -215,7 +214,7 @@ export default function Home() {
                 </div>
 
 
-                {/* video placeholder and search suggestions box*/}
+                {/* video placeholder and search suggestions box*/}                
                 <div>
                     {
                         (videoGenerationState === 0) ?
@@ -237,10 +236,9 @@ export default function Home() {
                                 </div>
                             )
                     }
-                        </div>
-                    )}
                 </div>
             </div>
+
             {(videoGenerationState === 2) && <ChatBox chatDocID={chatDocIDRef.current!}></ChatBox>}
 
         </main>

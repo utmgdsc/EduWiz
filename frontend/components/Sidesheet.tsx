@@ -10,9 +10,9 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "./ui/separator";
 import { SquarePen, CircleUser, ChevronRight } from 'lucide-react';
 import { useEffect, useState } from "react";
+import { User } from "firebase/auth";
 
-export function Sidesheet({ userID}: { userID: string}) {
-    userID = "asdfadsf"; // TODO: change this later
+export function Sidesheet({ user}: { user: User}) {
     const [showSidesheetPrompt, setShowSidesheetPrompt] = useState(false)
     const [isOpen, onOpenChange] = useState(false)
 
@@ -60,7 +60,7 @@ export function Sidesheet({ userID}: { userID: string}) {
                         <SheetDescription>
                             Previously Viewed
                         </SheetDescription>
-                        <PreviousChats userID={userID}></PreviousChats>
+                        <PreviousChats user={user}></PreviousChats>
                     </div>
                 </SheetContent>
             </Sheet>

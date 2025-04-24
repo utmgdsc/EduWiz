@@ -23,11 +23,11 @@ async def run_fixer_chain(scene, checker_prompt, checker):
 # retry function
 async def retry(scenes):
     # Models
-    fixer = ChatOpenAI(model="o3-mini-2025-01-31", openai_api_key=key, reasoning_effort="low")
+    fixer = ChatOpenAI(model="o3-mini-2025-01-31", openai_api_key=key, reasoning_effort="medium")
 
     # fixer prompt
     fixer_human_message = HumanMessagePromptTemplate.from_template("The code is: {code} ###END CODE### This code raises the error: {error}")
-    fixer_system_message = SystemMessagePromptTemplate.from_template("Fix the code provided to you according to the error message provided. Return nothing but the code")
+    fixer_system_message = SystemMessagePromptTemplate.from_template("Fix the code provided to you according to the error message provided. Check the code thoroughly for any repeats of this error. Return nothing but the code")
     fixer_prompt = ChatPromptTemplate([fixer_system_message, fixer_human_message])
 
     fix_tasks = [run_fixer_chain(scene, fixer_prompt, fixer) for scene in scenes]

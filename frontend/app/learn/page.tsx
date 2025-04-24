@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
-import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
 import { Sidesheet } from "@/components/Sidesheet";
@@ -23,54 +22,43 @@ import CommandBar from "./CommandBar";
 import VideoLoadingScreen from "./VideoLoadingScreen";
 import DiscoverSection from "./Discover";
 
-import { realtime } from "@/lib/firebase";
+import { firestore, realtime } from "@/lib/firebase";
 import { S3_CONFIG, S3BucketService } from "@/lib/s3";
 import ManimRenderService from "@/lib/ManimRenderService";
 import { useAuthorization } from "@/lib/context/auth";
 
-export default function LearnPage() {
-    const router = useRouter();
-    const searchParams = useSearchParams();
-    const { user } = useAuthorization();
-    const hasSearchedRef = useRef(false);
+import { createVideo } from "@/lib/firebase/video";
+import { Video, RENDER_STATUS, Chat, LLMMessage } from "@/lib/firebase/schema";
+import { CHAT_COLLECTION_NAME, createChat, getChat, updateChat } from "@/lib/firebase/chat";
+import { doc, DocumentReference, getDoc } from "firebase/firestore";
+import { useRouter, useSearchParams } from "next/navigation";
 
-    const [videoURL, setVideoURL] = useState<string | null>(null);
-    const [finalPrompt, setFinalPrompt] = useState("");
+export default function Home() {
+    const { user, loading: userLoading, SignOutUser } = useAuthorization();
+
+    const router = useRouter();
+    const searchParams = useSearchParams()
+    var chatParamID = searchParams.get("id")
+
     const [prompt, setPrompt] = useState("");
     const jobIDRef = useRef<string | null>(null);
-    const [videoGenerationState, setVideoGenerationState] = useState(0); // 0 = not started, 1 = generating, 2 = completed, -1 = error
     const [jobStatus, setJobStatus] = useState<string | null>(null);
     const unsubscribeJobStatus = useRef<() => void | null>(null);
-    const videoURLRef = useRef<string | null>(null);
+
+    const [videoGenerationState, setVideoGenerationState] = useState(0); // 0 = not started, 1 = generating, 2 = completed, -1 = error
+
+    const videoURLRef = useRef<string | null>(null)
+    const chatDocIDRef = useRef<null | string>(null)
+    const [finalPrompt, setFinalPrompt] = useState("")
 
     const s3Bucket = S3BucketService.fromConfig(S3_CONFIG, "uploads");
 
-    useEffect(() => {
-        const query = searchParams.get('query');
-        if (query && !hasSearchedRef.current) {
-            hasSearchedRef.current = true;
-            setPrompt(query);
-    
-            
-            setTimeout(() => {
-                sendPrompt(query);
-            }, 500);
-        }
-    }, [searchParams]);
+    const sendPrompt = async () => {
 
-
-    const sendPrompt = async (promptValue = prompt) => {
-        if (!user) {
-            toast.error("Please sign in to generate videos");
-            return;
-        }
-
-
+        if (!user) return;
         try {
-            console.log("SENDING PROMPT")
-            setFinalPrompt(promptValue);
             const id = await ManimRenderService.submitRenderJob(
-                promptValue,
+                finalPrompt,
                 user,
                 realtime
             );
@@ -80,27 +68,35 @@ export default function LearnPage() {
                 id,
                 realtime,
                 async (status) => {
-                    // Callback function for when status changes
+                    // callback function for when status changes
                     setJobStatus(status.status as string);
-                    
                     if (ManimRenderService.isJobComplete(status.status as string)) {
                         setVideoGenerationState(2);
 
+                        // getting video url, setting as current video
                         const videoData = await ManimRenderService.getVideoData(
                             jobIDRef.current as string,
                             user
                         );
-
                         const url = await s3Bucket.upload(videoData, "videos");
-                        setVideoURL(url);
-                        videoURLRef.current = url;
-
                         unsubscribeJobStatus.current!();
+                        videoURLRef.current = url
+
+                        // adding video to database (video collection and to chat document)
+                        const video: Omit<Video, "id"> = {
+                            video_url: url,
+                            context: prompt,
+                            created_at: new Date(),
+                            status: RENDER_STATUS.COMPLETE,
+                            embedding: [1, 2, 3, 4]
+                        }
+                        const videoDocRef = await createVideo(video)
+                        updateChat(chatDocIDRef.current!, { video: { id: videoDocRef.id, ...video } })  // adding video to the chat document
+
                     }
-                    
                     if (ManimRenderService.hasJobError(status.status as string)) {
                         toast.error("Error generating video");
-                        setVideoGenerationState(-1);
+                        setVideoGenerationState(0);
                         unsubscribeJobStatus.current!();
                     }
                 }
@@ -108,25 +104,85 @@ export default function LearnPage() {
             setVideoGenerationState(1);
         } catch (error) {
             toast.error("Error generating video");
-            setVideoGenerationState(-1);
+
+            setVideoGenerationState(0);
+        } finally {
+            // below exist for testing purposes, ensure they are commented out before running
+            
+            /*
+            var url = "asdf"
+            const video: Omit<Video, "id"> = {
+                video_url: url,
+                context: finalPrompt,
+                created_at: new Date(),
+                status: RENDER_STATUS.COMPLETE,
+                embedding: [1, 2, 3, 4]
+            }
+            const videoDocRef = await createVideo(video) // adding video to database
+
+            updateChat(chatDocIDRef.current!, { video: { id: videoDocRef.id, ...video } })  // adding video to the chat document
+            videoURLRef.current = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4"
+            setVideoGenerationState(2);*/
+            
         }
     };
 
+    const createNewChat = async () => {
+        if (!user) return;
+        
+        // creating chat
+        setFinalPrompt(prompt)
+        const chat: Omit<Chat, "id" | "video" | "created_at"> = {
+            user_id: user!.uid,
+            prompt: prompt,
+            conversation: []
+        }
+        chatDocIDRef.current = (await createChat(chat))!.id
+        await updateChat(chatDocIDRef.current, {id: chatDocIDRef.current})
+        await sendPrompt() // generate video
+    }
+
     const handleVideoSelect = (selectedPrompt: string) => {
-        setPrompt(selectedPrompt);
-        sendPrompt(selectedPrompt);
+        /* logic to send user to an existing video
+            first check if a chat exists with this video already, if so load in that chat
+            if no chat exists with this video, create a new chat with this video, send user to that chat
+        */
     };
+
+    useEffect(() => {
+        const setupPage = async () => {
+            chatParamID = searchParams.get("id")
+            if (chatParamID === null) return
+            const loadedChat = await getChat(chatParamID, user!.uid)
+            if (loadedChat === null) return
+
+            // if valid chat id provided
+            chatDocIDRef.current = chatParamID
+            setFinalPrompt(loadedChat.prompt)
+
+            // if video already exists in chat display it
+            if (loadedChat.video !== null){
+                setVideoGenerationState(2)
+                videoURLRef.current = loadedChat.video.video_url
+            }
+            // if video does not exist in the chat, start creating it
+            else{
+                await sendPrompt()
+            }
+        }
+        if (userLoading) return
+        if (!user) router.push("/login")
+        setupPage();
+    }, [searchParams, userLoading])
 
     return (
         <main className="h-screen">
-            <Sidesheet userID={user?.uid || ""}></Sidesheet>
+        
+            <Sidesheet user={user!}></Sidesheet>
+            
             <div className="flex flex-col h-full justify-start" style={{ padding: '20px 20px 20px 20px', gap: "10px" }}>
                 <div className="flex items-center justify-between">
-                    <CommandBar 
-                        onGenerate={() => sendPrompt()} 
-                        prompt={prompt} 
-                        setPrompt={setPrompt} 
-                    />
+                    <CommandBar onGenerate={() => { createNewChat() }} prompt={prompt} setPrompt={setPrompt} />
                     <div className="flex items-center">
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
@@ -144,7 +200,7 @@ export default function LearnPage() {
                                         <Settings />
                                         Settings
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem className="bg-red-500 mt-1">
+                                    <DropdownMenuItem className="bg-red-500 mt-1" onClick={SignOutUser}>
                                         <LogOut />
                                         Logout
                                     </DropdownMenuItem>
@@ -152,44 +208,41 @@ export default function LearnPage() {
                             </DropdownMenuContent>
                         </DropdownMenu>
 
-                        <Button 
-                            className="p-2 m-[10px]" 
-                            variant="outline" 
-                            onClick={() => { router.push('/') }}
-                        >
+                        <Button className="p-2 m-[10px]" variant="outline" onClick={() => { window.location.href = "/learn" }}>
                             <House />
                         </Button>
                     </div>
                 </div>
 
-                {/* Video section */}
-                <div className="flex-1">
-                    {videoGenerationState === 0 ? (
-                        <DiscoverSection onVideoSelect={handleVideoSelect} />
-                    ) : (
-                        <div className="flex flex-col items-center justify-center w-full">
-                            <p className="p-10 flex items-center text-zinc-200 italic">
-                                {finalPrompt}
-                            </p>
-                            {videoGenerationState === 1 ? (
-                                <div className="h-full flex flex-col justify-center">
-                                    <VideoLoadingScreen loadingStatus={jobStatus} />
+
+                {/* video placeholder and search suggestions box*/}
+                <div>
+                    {
+                        (videoGenerationState === 0) ?
+                            <DiscoverSection onVideoSelect={handleVideoSelect} />
+                            : (
+                                <div className="flex flex-col items-center justify-center w-full">
+                                    {
+                                        (videoGenerationState == 1) ? (
+                                            <div className="h-full flex flex-col justify-center">
+                                                <VideoLoadingScreen loadingStatus={jobStatus} />
+                                            </div>
+
+                                        ) : (
+                                            <video controls>
+                                                <source src={videoURLRef.current as string} type="video/mp4" />
+                                            </video>
+                                        )
+                                    }
                                 </div>
-                            ) : videoGenerationState === 2 ? (
-                                <video controls className="max-w-full max-h-[70vh]">
-                                    <source src={videoURLRef.current as string} type="video/mp4" />
-                                    Your browser does not support the video tag.
-                                </video>
-                            ) : (
-                                <div className="text-red-500 text-center p-8">
-                                    An error occurred while generating your video. Please try again.
-                                </div>
-                            )}
+                            )
+                    }
                         </div>
                     )}
                 </div>
             </div>
-            {(videoGenerationState === 2) && <ChatBox></ChatBox>}
+            {(videoGenerationState === 2) && <ChatBox chatDocID={chatDocIDRef.current!}></ChatBox>}
+
         </main>
     );
 }

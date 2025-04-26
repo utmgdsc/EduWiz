@@ -3,9 +3,11 @@ FROM manimcommunity/manim:stable
 
 WORKDIR /app
 
-# Install ffmpeg
+# Install ffmpeg and SoX
 USER root
-RUN apt-get update && apt-get install -y ffmpeg && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && \
+    apt-get install -y ffmpeg sox libsox-fmt-all && \
+    rm -rf /var/lib/apt/lists/*
 USER manimuser
 
 # Install additional Python dependencies

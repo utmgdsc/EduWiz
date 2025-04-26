@@ -6,29 +6,20 @@ import {
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
+import { useChats } from "@/hooks/useChats";
+import { User } from "@firebase/auth";
+import { Chat } from "@/lib/firebase/schema";
 
-interface Chat {
-    id: number,
-    title: string
-}
-const getUserPastChats = async (userID: string): Promise<Chat[]> => {
-    const s = { id: 12312, title: "Aerodynamics" };
-    const r = { id: 133, title: "Pascal's triangle" };
-    const t = { id: 9393, title: "Complex numbers" };
-    return [s, r, t];
-    // TODO: load past videos the user viewed here
-}
-
-const PreviousChats = ({ userID }: { userID: string }) => {
+const PreviousChats = ({ user}: { user: User }) => {
     const [previousChats, setPreviousChats] = useState<Chat[]>([]);
+    const {chats, loading, error} = useChats(user)
     const router = useRouter();
 
     useEffect(() => {
-        const updatePrevChats = async () => {
-            setPreviousChats(await getUserPastChats(userID));
+        if (loading === false && chats !== undefined){
+            setPreviousChats(chats!)
         }
-        updatePrevChats();
-    }, [])
+    }, [loading])
 
     return (
         <main className="h-full">
@@ -41,9 +32,9 @@ const PreviousChats = ({ userID }: { userID: string }) => {
                                     <Button
                                         className="h-full w-full justify-start bg-secondary text-foreground hover:bg-background border"
                                         onClick={() => {
-                                            router.push("/")
+                                            router.push(`/learn?id=${item.id}`)
                                         }}>
-                                        {item.title}
+                                        {item.prompt}
                                     </Button>
 
                                 }

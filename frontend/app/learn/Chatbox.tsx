@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { DocumentReference } from "firebase/firestore"
 
 interface Message {
     id: number
@@ -12,10 +13,8 @@ interface Message {
     sender: "user" | "bot"
 }
 
-const ChatBox = () => {
-    // TODO: plan out integrations with backend
-    // TODO: clean up code so it looks less AI generated
-
+const ChatBox = ({ chatDocID }: {chatDocID: string}) => {
+    
     const [chatLoading, setChatLoading] = useState(true)
     const [showChatPrompt, setShowChatPrompt] = useState(true)
     const [isOpen, setIsOpen] = useState(false)
@@ -24,11 +23,21 @@ const ChatBox = () => {
     const [botTyping, setBotTyping] = useState(false)
     const messagesEndRef = useRef<HTMLDivElement>(null)
 
+    // load chat data and create chat object
     useEffect(() => {
-        const loadChatData = async () => [
-            // send request to backend and then set the messages state variable as needed
+        const loadChatData = async () => {
+
+            // TODO: check if chat for this video already exists and load chat document if it does
+            // TODO: otherwise create a new document for this chat 
+
+            /*
+            const chat: Omit<Chat, "id" | "video" | "created_at"> = {
+                  user_id: string;
+                  prompt: string;
+                  conversation: Array<LLMMessage>;
+            }*/
             setChatLoading(false)
-        ]
+        }
         loadChatData()
     }, [])
 
@@ -40,11 +49,9 @@ const ChatBox = () => {
             // showing the chat open prompt if mouse is within 200px of the screens right and bottom
             if (e.clientX > screenWidth - 200 && e.clientY > screenHeight - 200 && !isOpen) {
                 setShowChatPrompt(true)
-                console.log("showoing chat prompt")
                 console.log(isOpen)
             } else {
                 setShowChatPrompt(false)
-                console.log("showoing chat prompt")
             }
         }
 
@@ -83,10 +90,10 @@ const ChatBox = () => {
             text: "replied!",
             sender: "bot",
         }
-        console.log(messages)
         setMessages([...messages, userMessage, reply])
-
         setBotTyping(false)
+
+        // TODO: update chat in database by setting LLM messages to the updates messages variable
     }
 
     return (

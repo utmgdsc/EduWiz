@@ -10,6 +10,10 @@ import {
   type DocumentReference,
   type QueryDocumentSnapshot,
   type Firestore,
+  getDoc,
+  query,
+  where,
+  getDocs,
 } from "firebase/firestore";
 
 const CHAT_COLLECTION_NAME = "chat";
@@ -46,4 +50,23 @@ async function updateChat(
   return await updateDoc(doc(db, collection_name, id), chat);
 }
 
-export { chatConverter, createChat, updateChat, CHAT_COLLECTION_NAME };
+async function getChat(chatID: string, userID: string) {
+    const chatQuery = query(
+        collection(firestore, CHAT_COLLECTION_NAME).withConverter(chatConverter),
+        where("id", "==", chatID),
+        where("user_id", "==", userID)
+      );
+    
+      const querySnapshot = await getDocs(chatQuery);
+    
+      if (!querySnapshot.empty) {
+        const chatDoc = querySnapshot.docs[0];
+        return chatDoc.data()
+      } else {
+        return null;
+      }
+  }
+
+
+
+export { chatConverter, createChat, updateChat, getChat, CHAT_COLLECTION_NAME };

@@ -67,6 +67,7 @@ export default function Home() {
 
         if (!user) return;
         try {
+            
             const id = await ManimRenderService.submitRenderJob(
                 prompt,
                 user,

@@ -68,7 +68,7 @@ export default function Home() {
         if (!user) return;
         try {
             const id = await ManimRenderService.submitRenderJob(
-                finalPrompt,
+                prompt,
                 user,
                 realtime
             );
@@ -123,7 +123,7 @@ export default function Home() {
             var url = "asdf"
             const video: Omit<Video, "id"> = {
                 video_url: url,
-                context: finalPrompt,
+                context: prompt,
                 created_at: new Date(),
                 status: RENDER_STATUS.COMPLETE,
                 embedding: [1, 2, 3, 4]

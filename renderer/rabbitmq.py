@@ -3,6 +3,7 @@ import os
 import logging
 
 logger = logging.getLogger("eduwiz.rabbitmq")
+JOB_LIMIT = 2
 
 
 class RabbitMQConnection:
@@ -33,7 +34,10 @@ class RabbitMQConnection:
             if not self._channel or self._channel.is_closed:
                 self._channel = await self._connection.channel()
 
-                # Enables round-robin dispatching with JOB_LIMIT jobs per container.
+                # To enable fair dispatching, limit to 1 job at a time
+                await self._channel.set_qos(prefetch_count=1)
+
+                # Enables round-robin dispatching with exactly 1 job per container.
                 await self._channel.declare_queue("render_jobs")
                 # Declare the retry queue
                 await self._channel.declare_queue("retry_queue")
@@ -59,4 +63,3 @@ class RabbitMQConnection:
             await self._connection.close()
         self._channel = None
         self._connection = None
-

@@ -172,13 +172,21 @@ class RenderManager:
 
                 return video_file
 
-            # Render all scenes in parallel
+            # Render scenes with parallelism limited to JOB_LIMIT
             await self.send_status_update(job_id, "rendering_all_scenes")
             logger.info(
-                f"Started rendering all {len(scenes_to_render)} scenes for job {job_id}"
+                f"Started rendering all {len(scenes_to_render)} scenes for job {job_id} with parallelism limit of {JOB_LIMIT}"
             )
+            
+            # Use a semaphore to limit concurrency
+            semaphore = asyncio.Semaphore(JOB_LIMIT)
+            
+            async def render_with_semaphore(scene_info):
+                async with semaphore:
+                    return await render_single_scene(scene_info)
+            
             scene_videos = await asyncio.gather(
-                *[render_single_scene(scene_info) for scene_info in scenes_to_render],
+                *[render_with_semaphore(scene_info) for scene_info in scenes_to_render],
                 return_exceptions=True,
             )
 
@@ -275,7 +283,7 @@ class RenderManager:
 
         queue = await channel.declare_queue("render_jobs")
 
-        logger.info(f"Started render manager (job_limit={JOB_LIMIT})")
+        logger.info(f"Started render manager (job_limit=1, scene_limit={JOB_LIMIT})")
         logger.info(f"Using temp directory: {self.temp_base}")
         logger.info(f"Using output directory: {self.output_path}")
 

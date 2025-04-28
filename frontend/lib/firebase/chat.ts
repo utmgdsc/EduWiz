@@ -51,22 +51,20 @@ async function updateChat(
 }
 
 async function getChat(chatID: string, userID: string) {
-    const chatQuery = query(
-        collection(firestore, CHAT_COLLECTION_NAME).withConverter(chatConverter),
-        where("id", "==", chatID),
-        where("user_id", "==", userID)
-      );
-    
-      const querySnapshot = await getDocs(chatQuery);
-    
-      if (!querySnapshot.empty) {
-        const chatDoc = querySnapshot.docs[0];
-        return chatDoc.data()
-      } else {
-        return null;
-      }
+  const chatQuery = query(
+    collection(firestore, CHAT_COLLECTION_NAME).withConverter(chatConverter),
+    where("id", "==", chatID),
+    where("user_id", "==", userID)
+  );
+
+  const querySnapshot = await getDocs(chatQuery);
+
+  if (!querySnapshot.empty) {
+    const chatDoc = querySnapshot.docs[0];
+    return chatDoc.data();
+  } else {
+    return null;
   }
-
-
+}
 
 export { chatConverter, createChat, updateChat, getChat, CHAT_COLLECTION_NAME };

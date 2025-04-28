@@ -5,7 +5,7 @@ export enum RENDER_STATUS {
 }
 
 export type LLMMessage = {
-  user: string;
+  type: "user" | "assistant" | "system";
   message: string;
 };
 

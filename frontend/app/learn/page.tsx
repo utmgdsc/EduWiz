@@ -213,7 +213,7 @@ export default function Home() {
                 </div>
             </div>
 
-            {videoGenerationState === 2 && <ChatBox chatDocID={chatDocIDRef.current!} />}
+            {videoGenerationState === 2 && <ChatBox chatDocID={chatDocIDRef.current!} userID={user!.uid}/>}
         </main>
     );
 }

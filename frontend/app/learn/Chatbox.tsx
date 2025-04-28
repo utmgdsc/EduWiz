@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { DocumentReference } from "firebase/firestore"
+import { getChat, updateChat } from "@/lib/firebase/chat"
+import { LLMMessage } from "@/lib/firebase/schema"
 
 interface Message {
     id: number
@@ -13,12 +15,11 @@ interface Message {
     sender: "user" | "bot"
 }
 
-const ChatBox = ({ chatDocID }: {chatDocID: string}) => {
+const ChatBox = ({ chatDocID, userID }: {chatDocID: string, userID: string}) => {
     
     const [chatLoading, setChatLoading] = useState(true)
-    const [showChatPrompt, setShowChatPrompt] = useState(true)
     const [isOpen, setIsOpen] = useState(false)
-    const [messages, setMessages] = useState<Message[]>([])
+    const [messages, setMessages] = useState<LLMMessage[]>([])
     const [newMessage, setNewMessage] = useState("")
     const [botTyping, setBotTyping] = useState(false)
     const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -27,40 +28,14 @@ const ChatBox = ({ chatDocID }: {chatDocID: string}) => {
     useEffect(() => {
         const loadChatData = async () => {
 
-            // TODO: check if chat for this video already exists and load chat document if it does
-            // TODO: otherwise create a new document for this chat 
-
-            /*
-            const chat: Omit<Chat, "id" | "video" | "created_at"> = {
-                  user_id: string;
-                  prompt: string;
-                  conversation: Array<LLMMessage>;
-            }*/
+            const loadedChat = await getChat(chatDocID, userID)
+            if (loadChatData === null) return
+            setMessages(loadedChat!.conversation)
             setChatLoading(false)
         }
         loadChatData()
     }, [])
 
-    useEffect(() => {
-        const handleMouseMove = (e: MouseEvent): void => {
-            const screenWidth = window.innerWidth
-            const screenHeight = window.innerHeight
-
-            // showing the chat open prompt if mouse is within 200px of the screens right and bottom
-            if (e.clientX > screenWidth - 200 && e.clientY > screenHeight - 200 && !isOpen) {
-                setShowChatPrompt(true)
-                console.log(isOpen)
-            } else {
-                setShowChatPrompt(false)
-            }
-        }
-
-        window.addEventListener("mousemove", handleMouseMove)
-
-        return () => {
-            window.removeEventListener("mousemove", handleMouseMove)
-        }
-    }, [])
 
     useEffect(() => {
         scrollToBottom()
@@ -75,25 +50,23 @@ const ChatBox = ({ chatDocID }: {chatDocID: string}) => {
 
         setBotTyping(true)
         // Add user message
-        const userMessage: Message = {
-            id: messages.length + 1,
-            text: newMessage,
-            sender: "user",
+        const userMessage: LLMMessage = {
+            user: "user",
+            message: newMessage,
         }
         setMessages([...messages, userMessage])
         setNewMessage("")
 
         // TODO: api request to get response for questino from ai
         await new Promise((resolve) => setTimeout(resolve, 2000));
-        const reply: Message = {
-            id: messages.length + 2,
-            text: "replied!",
-            sender: "bot",
+        const reply: LLMMessage = {
+            user: "bot",
+            message: "replied!"
         }
         setMessages([...messages, userMessage, reply])
         setBotTyping(false)
 
-        // TODO: update chat in database by setting LLM messages to the updates messages variable
+        await updateChat(chatDocID, {conversation: [...messages, userMessage, reply]}) // updating messages in database
     }
 
     return (
@@ -141,14 +114,14 @@ const ChatBox = ({ chatDocID }: {chatDocID: string}) => {
                                     strokeDasharray="300 1400" />
                             </svg> : null}
                             {messages.map((message) => (
-                                <div key={message.id} className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}>
+                                <div key={crypto.randomUUID()} className={`flex ${message.user === "user" ? "justify-end" : "justify-start"}`}>
                                     <div
-                                        className={`max-w-[80%] ${message.sender === "user"
+                                        className={`max-w-[80%] ${message.user === "user"
                                             ? "bg-primary text-primary-foreground rounded-tl-lg rounded-tr-lg rounded-bl-lg"
                                             : "bg-transparent"
                                             } p-3 shadow-sm`}
                                     >
-                                        <p className="text-sm">{message.text}</p>
+                                        <p className="text-sm">{message.message}</p>
                                     </div>
                                 </div>
                             ))}

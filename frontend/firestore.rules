@@ -1,0 +1,81 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // --- Helper functions ---
+
+    function isAuthenticated(request) {
+      return request.auth != null && request.auth.token.email_verified == true;
+    }
+
+    function isReadOwner(request, resource) {
+      return resource != null && request.auth.uid == resource.data.uid;
+    }
+
+    function isWriteOwner(request, resource) {
+      return (resource == null || request.auth.uid == resource.data.uid)
+          && (request.resource == null || request.resource.data.uid == request.auth.uid);
+    }
+
+    function isListOfMaps(listField) {
+      return listField.size() == 0 || listField[0] is map;
+    }
+
+    function isListOfNumbers(listField) {
+      return listField.size() == 0 || listField[0] is number;
+    }
+
+    function isValidChat(request, chatID) {
+      return request.resource.data.keys().hasOnly([
+              'id', 'uid', 'prompt', 'video', 'created_at', 'conversation'
+             ]) &&
+             request.resource.data.id == chatID &&
+             request.resource.data.uid == request.auth.uid &&
+             request.resource.data.prompt is string &&
+             (request.resource.data.video == null || request.resource.data.video is map) &&
+             request.resource.data.created_at is timestamp &&
+             (request.resource.data.conversation == null || (
+                request.resource.data.conversation is list &&
+                request.resource.data.conversation.size() <= 1000 &&
+                isListOfMaps(request.resource.data.conversation)
+             ));
+    }
+
+    function isValidVideo(request, videoID) {
+      return request.resource.data.keys().hasOnly([
+              'id', 'uid', 'video_url', 'context', 'created_at', 'status', 'embedding'
+             ]) &&
+             request.resource.data.id == videoID &&
+             request.resource.data.uid == request.auth.uid &&
+             request.resource.data.video_url is string &&
+             request.resource.data.context is string &&
+             request.resource.data.created_at is timestamp &&
+             (request.resource.data.status == null || request.resource.data.status is string) &&
+             (request.resource.data.embedding == null || (
+                request.resource.data.embedding is list &&
+                request.resource.data.embedding.size() <= 1536 &&
+                isListOfNumbers(request.resource.data.embedding)
+             ));
+    }
+
+    // --- Chat documents ---
+    match /chat/{chatID} {
+      allow read: if isAuthenticated(request) && isReadOwner(request, resource);
+      allow create: if isAuthenticated(request) && isValidChat(request, chatID);
+      allow update: if isAuthenticated(request) && isValidChat(request, chatID) &&
+                     isWriteOwner(request, resource) &&
+                     request.resource.data.created_at == resource.data.created_at;
+      allow delete: if isAuthenticated(request) && isReadOwner(request, resource);
+    }
+
+    // --- Video documents ---
+    match /video/{videoID} {
+      allow read: if isAuthenticated(request);
+      allow create: if isAuthenticated(request) && isValidVideo(request, videoID);
+      allow update: if isAuthenticated(request) && isValidVideo(request, videoID) &&
+                     isWriteOwner(request, resource);
+      allow delete: if isAuthenticated(request) && isReadOwner(request, resource);
+    }
+  }
+}

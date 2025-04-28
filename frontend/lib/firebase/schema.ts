@@ -11,7 +11,7 @@ export type LLMMessage = {
 
 export type Chat = {
   id: string;
-  user_id: string;
+  uid: string;
   prompt: string;
   conversation: Array<LLMMessage>;
   video: Video | null;

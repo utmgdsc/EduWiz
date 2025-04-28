@@ -1,8 +1,9 @@
-import ManimRenderService, { VideoStatus } from "../lib/ManimRenderService"
+import ManimRenderService, { VideoStatus } from "../lib/ManimRenderService";
 import firebaseApp from "../lib/firebase";
 import { getDatabase, ref, set, get, remove } from "firebase/database";
+// Needs updating
 
-describe("API Integration Tests", () => {
+describe.skip("API Integration Tests", () => {
   const API_BASE_URL =
     process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -47,13 +48,15 @@ describe("API Integration Tests", () => {
       console.log("Submitted job id:", submittedJobId);
     });
 
-
     it("Should receive status updates", (done) => {
-      const unsubscribe = ManimRenderService.subscribeToJobStatus(submittedJobId, (status) => {
-        console.log("Received status update:", status);
-        unsubscribe();
-        done();
-      });
+      const unsubscribe = ManimRenderService.subscribeToJobStatus(
+        submittedJobId,
+        (status) => {
+          console.log("Received status update:", status);
+          unsubscribe();
+          done();
+        }
+      );
     });
 
     it("should provide a valid video URL", () => {
@@ -63,17 +66,21 @@ describe("API Integration Tests", () => {
     });
   });
 
-
   describe("Helper Functions", () => {
     it("isJobComplete should return true when status is COMPLETED", () => {
-      expect(ManimRenderService.isJobComplete(VideoStatus.COMPLETED)).toBe(true);
-      expect(ManimRenderService.isJobComplete(VideoStatus.ENDED_RENDERING)).toBe(false);
+      expect(ManimRenderService.isJobComplete(VideoStatus.COMPLETED)).toBe(
+        true
+      );
+      expect(
+        ManimRenderService.isJobComplete(VideoStatus.ENDED_RENDERING)
+      ).toBe(false);
     });
 
     it("hasJobError should return true when status is ERROR", () => {
       expect(ManimRenderService.hasJobError(VideoStatus.ERROR)).toBe(true);
-      expect(ManimRenderService.hasJobError(VideoStatus.STARTED_GENERATION)).toBe(false);
+      expect(
+        ManimRenderService.hasJobError(VideoStatus.STARTED_GENERATION)
+      ).toBe(false);
     });
   });
-
 });

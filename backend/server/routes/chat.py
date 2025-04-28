@@ -1,6 +1,5 @@
 import pydantic
 import pathlib
-import functools
 
 from typing import Literal
 from fastapi import APIRouter, Depends
@@ -19,17 +18,14 @@ router = APIRouter(
 )
 
 
+def get_system_prompt() -> str:
+    with open(pathlib.Path(__file__).parent.parent / "lib" / "chat_system.txt") as f:
+        return f.read()
+
+
 async def get_llm() -> BaseChatModel:
     """Chosen language Model gpt-4o-mini for testing purposes"""
     return ChatOpenAI(model="gpt-4o-mini-2024-07-18")
-
-
-@functools.cache
-async def get_system_prompt() -> str:
-    with open(
-        pathlib.Path(__file__).parent.parent / "lib" / "chat_system.txt"
-    ) as f:
-        return f.read()
 
 
 class Message(pydantic.BaseModel):
@@ -44,15 +40,14 @@ class VideoChatContext(pydantic.BaseModel):
     messages: list[Message]
 
 
-# Create langchain helpers
-# Create streaming responses
 @router.post("/message_video", response_model=Message)
 async def message_video(
     chat_history: VideoChatContext,
     llm: BaseChatModel = Depends(get_llm),
-    system_prompt: str = Depends(get_system_prompt),
 ):
     """Respond to the user with chat context"""
+    system_prompt = get_system_prompt()
+
     system_message = Message(
         type="system",
         content=system_prompt.format(
@@ -66,4 +61,8 @@ async def message_video(
     )
 
     result = await llm.ainvoke(messages)
-    return result
+
+    return Message(
+        type="assistant",
+        content=result.content,
+    )

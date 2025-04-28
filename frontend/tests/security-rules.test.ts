@@ -4,12 +4,48 @@ import {
   assertSucceeds,
   RulesTestEnvironment,
 } from "@firebase/rules-unit-testing";
-
-import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
 import { readFileSync } from "fs";
 import path from "path";
 
 let testEnv: RulesTestEnvironment;
+
+const users = {
+  user1: { uid: "user1", claims: { email_verified: true } },
+  owner: { uid: "owner1", claims: { email_verified: true } },
+  attacker: { uid: "attacker1", claims: { email_verified: true } },
+  unauthenticated: null,
+};
+
+function getAuthedFirestore(user: { uid: string; claims: any } | null) {
+  if (!user) {
+    return testEnv.unauthenticatedContext().firestore();
+  }
+  return testEnv.authenticatedContext(user.uid, user.claims).firestore();
+}
+
+function as(userKey: keyof typeof users) {
+  return getAuthedFirestore(users[userKey]);
+}
+
+const validChat = (uid: string, id: string) => ({
+  id,
+  uid,
+  prompt: "Hello world",
+  video: null,
+  conversation: [],
+  created_at: new Date(),
+});
+
+const validVideo = (uid: string, id: string) => ({
+  id,
+  uid,
+  video_url: "https://example.com/video.mp4",
+  context: "Test context",
+  created_at: new Date(),
+  status: "rendered",
+  embedding: [0.1, 0.2, 0.3],
+});
 
 beforeAll(async () => {
   testEnv = await initializeTestEnvironment({
@@ -19,7 +55,7 @@ beforeAll(async () => {
       port: 8080,
       rules: readFileSync(
         path.resolve(__dirname, "../firestore.rules"),
-        "utf8",
+        "utf8"
       ),
     },
   });
@@ -33,288 +69,185 @@ beforeEach(async () => {
   await testEnv.clearFirestore();
 });
 
-describe('Chat Collection', () => {
-    // Test data
-    const validChatData = {
-      user_id: 'user123',
-      uid: 'user123',
-      prompt: 'Test prompt',
-      created_at: currentTimestamp
-    };
+// --- TESTS ---
 
-    const invalidChatData = {
-      uid: 'user123',
-      // Missing prompt field
-      created_at: currentTimestamp
-    };
-
-    const chatWithVideo = {
-      user_id: 'user123',
-      uid: 'user123',
-      prompt: 'Test with video',
-      video: { url: 'https://example.com/video.mp4' },
-      created_at: currentTimestamp
-    };
-
-    test('authenticated users can create valid chats', async () => {
-      // Setup authenticated context with verified email
-      const auth = testEnv.authenticatedContext('user123', { email_verified: true });
-
-      // Should succeed with valid data
-      await assertSucceeds(
-        auth.firestore()
-          .collection('chat')
-          .doc('chat1')
-          .set(validChatData)
-      );
-    });
-
-    test('authenticated users can create chat with video object', async () => {
-      const auth = testEnv.authenticatedContext('user123', { email_verified: true });
-
-      await assertSucceeds(
-        auth.firestore()
-          .collection('chat')
-          .doc('chat2')
-          .set(chatWithVideo)
-      );
-    });
-
-    test('unauthenticated users cannot create chats', async () => {
-      const unauth = testEnv.unauthenticatedContext();
-
-      await assertFails(
-        unauth.firestore()
-          .collection('chat')
-          .doc('chat3')
-          .set(validChatData)
-      );
-    });
-
-    test('users with unverified email cannot create chats', async () => {
-      const unverifiedUser = testEnv.authenticatedContext('user123', { email_verified: false });
-
-      await assertFails(
-        unverifiedUser.firestore()
-          .collection('chat')
-          .doc('chat4')
-          .set(validChatData)
-      );
-    });
-
-    test('users cannot create chats with invalid data structure', async () => {
-      const auth = testEnv.authenticatedContext('user123', { email_verified: true });
-
-      await assertFails(
-        auth.firestore()
-          .collection('chat')
-          .doc('chat5')
-          .set(invalidChatData)
-      );
-    });
-
-    test('users can read their own chats', async () => {
-      // Setup the document as admin first
-      const admin = testEnv.adminApp();
-      await admin.firestore()
-        .collection('chat')
-        .doc('chat6')
-        .set(validChatData);
-
-      // Owner should be able to read it
-      const owner = testEnv.authenticatedContext('user123', { email_verified: true });
-      await assertSucceeds(
-        owner.firestore()
-          .collection('chat')
-          .doc('chat6')
-          .get()
-      );
-    });
-
-    test('users cannot read others chats', async () => {
-      // Setup the document as admin first
-      const admin = testEnv.adminApp();
-      await admin.firestore()
-        .collection('chat')
-        .doc('chat7')
-        .set(validChatData);
-
-      // Non-owner shouldn't be able to read it
-      const nonOwner = testEnv.authenticatedContext('user456', { email_verified: true });
-      await assertFails(
-        nonOwner.firestore()
-          .collection('chat')
-          .doc('chat7')
-          .get()
-      );
-    });
-
-    test('users can update their own chats maintaining created_at', async () => {
-      // Setup the document as admin first
-      const admin = testEnv.adminApp();
-      await admin.firestore()
-        .collection('chat')
-        .doc('chat8')
-        .set(validChatData);
-
-      // Update with same timestamp
-      const owner = testEnv.authenticatedContext('user123', { email_verified: true });
-      await assertSucceeds(
-        owner.firestore()
-          .collection('chat')
-          .doc('chat8')
-          .update({
-            prompt: 'Updated prompt',
-            user_id: 'user123',
-            uid: 'user123',
-            created_at: currentTimestamp
-          })
-      );
-    });
-
-    test('users cannot update created_at timestamp', async () => {
-      // Setup the document as admin first
-      const admin = testEnv.adminApp();
-      await admin.firestore()
-        .collection('chat')
-        .doc('chat9')
-        .set(validChatData);
-
-      // Try to update with different timestamp
-      const owner = testEnv.authenticatedContext('user123', { email_verified: true });
-      await assertFails(
-        owner.firestore()
-          .collection('chat')
-          .doc('chat9')
-          .update({
-            prompt: 'Updated prompt',
-            user_id: 'user123',
-            uid: 'user123',
-            created_at: Timestamp.fromDate(new Date(Date.now() + 1000)) // Different timestamp
-          })
-      );
-    });
+describe("General Rules", () => {
+  it("denies unauthenticated read", async () => {
+    const db = as("unauthenticated");
+    const chatRef = doc(db, "chat/testChat");
+    await assertFails(getDoc(chatRef));
   });
 
-  // VIDEO COLLECTION TESTS
-  describe('Video Collection', () => {
-    // Test data
-    const validVideoData = {
-      uid: 'user123',
-      video_url: 'https://example.com/video.mp4',
-      context: 'Test video context',
-      created_at: currentTimestamp
+  it("denies unauthenticated write", async () => {
+    const db = as("unauthenticated");
+    const chatRef = doc(db, "chat/testChat");
+    await assertFails(
+      setDoc(chatRef, {
+        id: "testChat",
+        uid: "someone",
+        prompt: "hello",
+        created_at: new Date(),
+        conversation: [],
+        video: null,
+      })
+    );
+  });
+});
+
+describe("Chat Document Rules", () => {
+  it("allows owner to create valid chat", async () => {
+    const db = as("user1");
+    await assertSucceeds(
+      setDoc(doc(db, "chat/chat1"), validChat(users.user1.uid, "chat1"))
+    );
+  });
+
+  it("denies creating chat with wrong id", async () => {
+    const db = as("user1");
+    const invalidChat = validChat(users.user1.uid, "wrongId");
+    await assertFails(setDoc(doc(db, "chat/chat1"), invalidChat));
+  });
+
+  it("denies creating chat with extra fields", async () => {
+    const db = as("user1");
+    const invalidChat = {
+      ...validChat(users.user1.uid, "chat1"),
+      extraField: "bad",
     };
+    await assertFails(setDoc(doc(db, "chat/chat1"), invalidChat));
+  });
 
-    const invalidVideoData = {
-      uid: 'user123',
-      // Missing video_url
-      context: 'Test video context',
-      created_at: currentTimestamp
+  it("denies creating chat with non-list conversation", async () => {
+    const db = as("user1");
+    const invalidChat = {
+      ...validChat(users.user1.uid, "chat1"),
+      conversation: "notalist",
     };
+    await assertFails(setDoc(doc(db, "chat/chat1"), invalidChat));
+  });
 
-    test('authenticated users can create valid videos', async () => {
-      const auth = testEnv.authenticatedContext('user123', { email_verified: true });
+  it("allows owner to update their chat correctly", async () => {
+    const db = as("user1");
+    const ref = doc(db, "chat/chat1");
+    const data = validChat(users.user1.uid, "chat1");
+    await setDoc(ref, data);
 
-      await assertSucceeds(
-        auth.firestore()
-          .collection('video')
-          .doc('video1')
-          .set(validVideoData)
-      );
-    });
+    await assertSucceeds(
+      updateDoc(ref, { prompt: "New prompt", created_at: data.created_at })
+    );
+  });
 
-    test('users cannot create videos with invalid data', async () => {
-      const auth = testEnv.authenticatedContext('user123', { email_verified: true });
+  it("denies update that changes created_at", async () => {
+    const db = as("user1");
+    const ref = doc(db, "chat/chat1");
+    const data = validChat(users.user1.uid, "chat1");
+    await setDoc(ref, data);
 
-      await assertFails(
-        auth.firestore()
-          .collection('video')
-          .doc('video2')
-          .set(invalidVideoData)
-      );
-    });
+    await assertFails(updateDoc(ref, { created_at: new Date() }));
+  });
 
-    test('any authenticated user can read any video', async () => {
-      // Setup the document as admin first
-      const admin = testEnv.adminApp();
-      await admin.firestore()
-        .collection('video')
-        .doc('video3')
-        .set(validVideoData);
+  it("denies reading someone else's chat", async () => {
+    const ownerDb = as("owner");
+    const otherDb = as("user1");
 
-      // Owner should be able to read it
-      const owner = testEnv.authenticatedContext('user123', { email_verified: true });
-      await assertSucceeds(
-        owner.firestore()
-          .collection('video')
-          .doc('video3')
-          .get()
-      );
+    const ref = doc(ownerDb, "chat/chat1");
+    await setDoc(ref, validChat(users.owner.uid, "chat1"));
 
-      // Non-owner with verified email should also be able to read it
-      const nonOwner = testEnv.authenticatedContext('user456', { email_verified: true });
-      await assertSucceeds(
-        nonOwner.firestore()
-          .collection('video')
-          .doc('video3')
-          .get()
-      );
-    });
+    await assertFails(getDoc(doc(otherDb, "chat/chat1")));
+  });
 
-    test('unauthenticated users cannot read videos', async () => {
-      // Setup the document as admin first
-      const admin = testEnv.adminApp();
-      await admin.firestore()
-        .collection('video')
-        .doc('video4')
-        .set(validVideoData);
+  it("allows owner to delete their chat", async () => {
+    const db = as("user1");
+    const ref = doc(db, "chat/chat1");
 
-      // Unauthenticated user shouldn't be able to read it
-      const unauth = testEnv.unauthenticatedContext();
-      await assertFails(
-        unauth.firestore()
-          .collection('video')
-          .doc('video4')
-          .get()
-      );
-    });
+    await setDoc(ref, validChat(users.user1.uid, "chat1"));
+    await assertSucceeds(deleteDoc(ref));
+  });
 
-    test('users can only update their own videos', async () => {
-      // Setup the document as admin first
-      const admin = testEnv.adminApp();
-      await admin.firestore()
-        .collection('video')
-        .doc('video5')
-        .set(validVideoData);
+  it("denies non-owner deleting chat", async () => {
+    const ownerDb = as("owner");
+    const otherDb = as("user1");
 
-      // Owner should be able to update it
-      const owner = testEnv.authenticatedContext('user123', { email_verified: true });
-      await assertSucceeds(
-        owner.firestore()
-          .collection('video')
-          .doc('video5')
-          .update({
-            context: 'Updated context',
-            video_url: 'https://example.com/updated.mp4',
-            uid: 'user123',
-            created_at: currentTimestamp
-          })
-      );
+    const ref = doc(ownerDb, "chat/chat1");
+    await setDoc(ref, validChat(users.owner.uid, "chat1"));
 
-      // Non-owner shouldn't be able to update it
-      const nonOwner = testEnv.authenticatedContext('user456', { email_verified: true });
-      await assertFails(
-        nonOwner.firestore()
-          .collection('video')
-          .doc('video5')
-          .update({
-            context: 'Malicious update',
-            video_url: 'https://example.com/malicious.mp4',
-            uid: 'user456', // Trying to claim ownership
-            created_at: currentTimestamp
-          })
-      );
-    });
+    await assertFails(deleteDoc(doc(otherDb, "chat/chat1")));
+  });
+});
+
+describe("Video Document Rules", () => {
+  it("allows owner to create valid video", async () => {
+    const db = as("user1");
+    await assertSucceeds(
+      setDoc(doc(db, "video/video1"), validVideo(users.user1.uid, "video1"))
+    );
+  });
+
+  it("denies creating video with wrong id", async () => {
+    const db = as("user1");
+    const invalidVideo = validVideo(users.user1.uid, "wrongId");
+    await assertFails(setDoc(doc(db, "video/video1"), invalidVideo));
+  });
+
+  it("denies creating video with bad embedding", async () => {
+    const db = as("user1");
+    const invalidVideo = {
+      ...validVideo(users.user1.uid, "video1"),
+      embedding: ["bad", "data"],
+    };
+    await assertFails(setDoc(doc(db, "video/video1"), invalidVideo));
+  });
+
+  it("denies creating video with non-string status", async () => {
+    const db = as("user1");
+    const invalidVideo = {
+      ...validVideo(users.user1.uid, "video1"),
+      status: 123,
+    };
+    await assertFails(setDoc(doc(db, "video/video1"), invalidVideo));
+  });
+
+  it("allows any authenticated user to read video", async () => {
+    const ownerDb = as("owner");
+    const otherDb = as("user1");
+
+    await setDoc(
+      doc(ownerDb, "video/video1"),
+      validVideo(users.owner.uid, "video1")
+    );
+
+    await assertSucceeds(getDoc(doc(otherDb, "video/video1")));
+  });
+
+  it("denies non-owner updating video", async () => {
+    const ownerDb = as("owner");
+    const otherDb = as("user1");
+
+    await setDoc(
+      doc(ownerDb, "video/video1"),
+      validVideo(users.owner.uid, "video1")
+    );
+
+    await assertFails(
+      updateDoc(doc(otherDb, "video/video1"), { context: "hacked" })
+    );
+  });
+
+  it("allows owner to delete their video", async () => {
+    const db = as("user1");
+    const ref = doc(db, "video/video1");
+
+    await setDoc(ref, validVideo(users.user1.uid, "video1"));
+    await assertSucceeds(deleteDoc(ref));
+  });
+
+  it("denies non-owner deleting video", async () => {
+    const ownerDb = as("owner");
+    const otherDb = as("user1");
+
+    const ref = doc(ownerDb, "video/video1");
+    await setDoc(ref, validVideo(users.owner.uid, "video1"));
+
+    await assertFails(deleteDoc(doc(otherDb, "video/video1")));
   });
 });

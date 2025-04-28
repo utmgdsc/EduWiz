@@ -18,9 +18,7 @@ const users = {
 };
 
 function getAuthedFirestore(user: { uid: string; claims: any } | null) {
-  if (!user) {
-    return testEnv.unauthenticatedContext().firestore();
-  }
+  if (!user) return testEnv.unauthenticatedContext().firestore();
   return testEnv.authenticatedContext(user.uid, user.claims).firestore();
 }
 

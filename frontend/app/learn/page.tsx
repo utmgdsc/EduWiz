@@ -80,7 +80,6 @@ export default function Home() {
                 async (status) => {
                     setJobStatus(status.status as string);
                     if (ManimRenderService.isJobComplete(status.status as string)) {
-                        setVideoGenerationState(2);
 
                         const videoData = await ManimRenderService.getVideoData(
                             jobIDRef.current as string,
@@ -99,6 +98,7 @@ export default function Home() {
                         };
                         const videoDocRef = await createVideo(video);
                         await updateChat(chatDocIDRef.current!, { video: { id: videoDocRef.id, ...video } });
+                        setVideoGenerationState(2);
                     }
                     if (ManimRenderService.hasJobError(status.status as string)) {
                         toast.error("Error generating video");

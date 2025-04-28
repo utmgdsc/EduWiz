@@ -4,16 +4,15 @@ import {
     SheetDescription,
     SheetHeader,
     SheetTitle,
-    SheetTrigger,
 } from "@/components/ui/sheet"
 import PreviousChats from "./previousChats"
 import { Button } from "@/components/ui/button";
 import { Separator } from "./ui/separator";
 import { SquarePen, CircleUser, ChevronRight } from 'lucide-react';
 import { useEffect, useState } from "react";
+import { User } from "firebase/auth";
 
-export function Sidesheet({ userID}: { userID: string}) {
-    userID = "asdfadsf"; // TODO: change this later
+export function Sidesheet({ user}: { user: User}) {
     const [showSidesheetPrompt, setShowSidesheetPrompt] = useState(false)
     const [isOpen, onOpenChange] = useState(false)
 
@@ -46,10 +45,9 @@ export function Sidesheet({ userID}: { userID: string}) {
                         <SheetTitle>Home</SheetTitle>
                     </SheetHeader>
 
-                    {/* TODO: add a list of */}
                     <div className="flex flex-col gap-3">
                         <div>
-                            <Button className="h-full w-full justify-start bg-secondary text-foreground hover:bg-background border mt-2 mb-2">
+                            <Button className="h-full w-full justify-start bg-secondary text-foreground hover:bg-background border mt-2 mb-2" onClick={() => window.location.href = "/settings"}> 
                                 <CircleUser />
                                 Account
                             </Button>
@@ -62,7 +60,7 @@ export function Sidesheet({ userID}: { userID: string}) {
                         <SheetDescription>
                             Previously Viewed
                         </SheetDescription>
-                        <PreviousChats userID={userID}></PreviousChats>
+                        <PreviousChats user={user}></PreviousChats>
                     </div>
                 </SheetContent>
             </Sheet>

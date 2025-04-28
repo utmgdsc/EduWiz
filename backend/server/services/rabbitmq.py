@@ -33,8 +33,10 @@ class RabbitMQConnection:
                 # To enable fair dispatching in round robin
                 await self._channel.set_qos(prefetch_count=PER_CONTAINER)
                 # Declare the render_jobs queue
-                await self._channel.declare_queue("render_jobs", durable=True)
+                await self._channel.declare_queue("render_jobs")
                 await self._channel.declare_queue("status_updates")
+                # Declare the retry queue
+                await self._channel.declare_queue("retry_queue")
                 logger.info("RabbitMQ channel established")
 
         except Exception as e:

@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext } from "react";
+import { createContext, PropsWithChildren, useContext } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/lib/firebase";
 import {
@@ -10,7 +10,7 @@ import {
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  signInWithRedirect,
+  signInWithPopup,
   signOut,
 } from "firebase/auth";
 
@@ -22,7 +22,7 @@ interface AuthorizationContext {
   loading: boolean;
   SignUpUser: (email: string, password: string) => Promise<UserCredential>;
   SignInUser: (email: string, password: string) => Promise<UserCredential>;
-  SignInUserProvider: (provider: AuthProvider) => void;
+  SignInUserProvider: (provider: AuthProvider) => Promise<UserCredential>;
   SignOutUser: () => Promise<void>;
   providers: ProviderData[];
 }
@@ -33,10 +33,10 @@ type ProviderData = {
 };
 
 const UserAuthorization = createContext<AuthorizationContext>(
-  {} as AuthorizationContext
+  {} as AuthorizationContext,
 );
 
-function AuthorizationProvider({ children }: any) {
+function AuthorizationProvider({ children }: PropsWithChildren) {
   const [user, loading, error] = useAuthState(auth);
 
   const providers: ProviderData[] = [
@@ -54,8 +54,9 @@ function AuthorizationProvider({ children }: any) {
     return result;
   }
 
-  function SignInUserProvider(provider: AuthProvider) {
-    signInWithRedirect(auth, provider);
+  async function SignInUserProvider(provider: AuthProvider) {
+    const result = await signInWithPopup(auth, provider);
+    return result;
   }
 
   async function SignOutUser() {

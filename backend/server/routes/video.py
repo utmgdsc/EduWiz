@@ -36,10 +36,7 @@ VIDEOS_DIR = Path(os.getenv("OUTPUT_PATH", "/shared/videos"))
 async def render(
     data: RenderRequest,
     background_tasks: BackgroundTasks,
-<<<<<<< HEAD
-=======
     decoded_token: dict = Depends(FirebaseAuthMiddleware(email_is_verified)),
->>>>>>> origin/main
 ):
     """
     Renders a video based on the provided prompt.

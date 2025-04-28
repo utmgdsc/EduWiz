@@ -3,15 +3,15 @@ import React, { useEffect, useState, useRef } from "react";
 import { toast } from "sonner";
 
 import { Sidesheet } from "@/components/Sidesheet";
-import { House, CircleUser, LogOut, Settings } from 'lucide-react';
+import { House, CircleUser, LogOut, Settings } from "lucide-react";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuGroup,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 
@@ -32,188 +32,209 @@ import { createChat, getChat, updateChat } from "@/lib/firebase/chat";
 import { useRouter, useSearchParams } from "next/navigation";
 
 export default function Home() {
-    const { user, loading: userLoading, SignOutUser } = useAuthorization();
-    const router = useRouter();
-    const searchParams = useSearchParams();
+  const { user, loading: userLoading, SignOutUser } = useAuthorization();
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-    const hasSearchedRef = useRef(false);
-    const [prompt, setPrompt] = useState("");
-    const jobIDRef = useRef<string | null>(null);
-    const [jobStatus, setJobStatus] = useState<string | null>(null);
-    const unsubscribeJobStatus = useRef<() => void | null>(null);
-    const [videoGenerationState, setVideoGenerationState] = useState(0); // 0 = not started, 1 = generating, 2 = completed, -1 = error
-    const videoURLRef = useRef<string | null>(null);
-    const chatDocIDRef = useRef<null | string>(null);
-    const [finalPrompt, setFinalPrompt] = useState("");
+  const hasSearchedRef = useRef(false);
+  const [prompt, setPrompt] = useState("");
+  const jobIDRef = useRef<string | null>(null);
+  const [jobStatus, setJobStatus] = useState<string | null>(null);
+  const unsubscribeJobStatus = useRef<() => void | null>(null);
+  const [videoGenerationState, setVideoGenerationState] = useState(0); // 0 = not started, 1 = generating, 2 = completed, -1 = error
+  const videoURLRef = useRef<string | null>(null);
+  const chatDocIDRef = useRef<null | string>(null);
+  const [finalPrompt, setFinalPrompt] = useState("");
 
-    const s3Bucket = S3BucketService.fromConfig(S3_CONFIG, "uploads");
+  const s3Bucket = S3BucketService.fromConfig(S3_CONFIG, "uploads");
 
-    const promptRef = useRef<string>("");
+  const promptRef = useRef<string>("");
 
-    useEffect(() => {
-        const query = searchParams.get('query');
-        if (query && !hasSearchedRef.current) {
-            hasSearchedRef.current = true;
-            setPrompt(query);
-            setFinalPrompt(query);
-            promptRef.current = query;
-            setTimeout(() => {
-                sendPrompt();
-            }, 500);
-        }
-    }, [searchParams]);
+  useEffect(() => {
+    const query = searchParams.get("query");
+    if (query && !hasSearchedRef.current) {
+      hasSearchedRef.current = true;
+      setPrompt(query);
+      setFinalPrompt(query);
+      promptRef.current = query;
+      setTimeout(() => {
+        sendPrompt();
+      }, 500);
+    }
+  }, [searchParams]);
 
-    const sendPrompt = async () => {
-        if (!user) return;
-        try {
-            console.log(promptRef.current);
-            const id = await ManimRenderService.submitRenderJob(
-                promptRef.current,
-                user,
-                realtime
+  const sendPrompt = async () => {
+    if (!user) return;
+    try {
+      console.log(promptRef.current);
+      const id = await ManimRenderService.submitRenderJob(
+        promptRef.current,
+        user,
+        realtime
+      );
+      jobIDRef.current = id;
+
+      unsubscribeJobStatus.current = ManimRenderService.subscribeToJobStatus(
+        id,
+        realtime,
+        async (status) => {
+          setJobStatus(status.status as string);
+          if (ManimRenderService.isJobComplete(status.status as string)) {
+            const videoData = await ManimRenderService.getVideoData(
+              jobIDRef.current as string,
+              user
             );
-            jobIDRef.current = id;
+            const url = await s3Bucket.upload(videoData, "videos");
+            unsubscribeJobStatus.current!();
+            videoURLRef.current = url;
 
-            unsubscribeJobStatus.current = ManimRenderService.subscribeToJobStatus(
-                id,
-                realtime,
-                async (status) => {
-                    setJobStatus(status.status as string);
-                    if (ManimRenderService.isJobComplete(status.status as string)) {
-
-                        const videoData = await ManimRenderService.getVideoData(
-                            jobIDRef.current as string,
-                            user
-                        );
-                        const url = await s3Bucket.upload(videoData, "videos");
-                        unsubscribeJobStatus.current!();
-                        videoURLRef.current = url;
-
-                        const video: Omit<Video, "id"> = {
-                            video_url: url,
-                            context: promptRef.current,
-                            created_at: new Date(),
-                            status: RENDER_STATUS.COMPLETE,
-                            embedding: [1, 2, 3, 4],
-                        };
-                        const videoDocRef = await createVideo(video);
-                        await updateChat(chatDocIDRef.current!, { video: { id: videoDocRef.id, ...video } });
-                        setVideoGenerationState(2);
-                    }
-                    if (ManimRenderService.hasJobError(status.status as string)) {
-                        toast.error("Error generating video");
-                        setVideoGenerationState(0);
-                        unsubscribeJobStatus.current!();
-                    }
-                }
-            );
-            setVideoGenerationState(1);
-        } catch (error) {
+            const video: Omit<Video, "id"> = {
+              video_url: url,
+              context: promptRef.current,
+              created_at: new Date(),
+              status: RENDER_STATUS.COMPLETE,
+              embedding: [1, 2, 3, 4],
+            };
+            const videoDocRef = await createVideo(video);
+            await updateChat(chatDocIDRef.current!, {
+              video: { id: videoDocRef.id, ...video },
+            });
+            setVideoGenerationState(2);
+          }
+          if (ManimRenderService.hasJobError(status.status as string)) {
             toast.error("Error generating video");
             setVideoGenerationState(0);
+            unsubscribeJobStatus.current!();
+          }
         }
+      );
+      setVideoGenerationState(1);
+    } catch (error) {
+      toast.error("Error generating video");
+      setVideoGenerationState(0);
+    }
+  };
+
+  const createNewChat = async () => {
+    if (!user) return;
+
+    setFinalPrompt(prompt);
+    promptRef.current = prompt; // <-- update promptRef
+    const chat: Omit<Chat, "id" | "video" | "created_at"> = {
+      user_id: user!.uid,
+      prompt: prompt,
+      conversation: [],
     };
+    chatDocIDRef.current = (await createChat(chat))!.id;
+    await updateChat(chatDocIDRef.current, { id: chatDocIDRef.current });
+    await sendPrompt();
+  };
 
-    const createNewChat = async () => {
-        if (!user) return;
+  const handleVideoSelect = (selectedPrompt: string) => {
+    // handle selecting existing videos (not implemented here yet)
+  };
 
-        setFinalPrompt(prompt);
-        promptRef.current = prompt; // <-- update promptRef
-        const chat: Omit<Chat, "id" | "video" | "created_at"> = {
-            user_id: user!.uid,
-            prompt: prompt,
-            conversation: [],
-        };
-        chatDocIDRef.current = (await createChat(chat))!.id;
-        await updateChat(chatDocIDRef.current, { id: chatDocIDRef.current });
+  useEffect(() => {
+    const setupPage = async () => {
+      const chatParamID = searchParams.get("id");
+      if (chatParamID === null) return;
+      const loadedChat = await getChat(chatParamID, user!.uid);
+      if (loadedChat === null) return;
+
+      chatDocIDRef.current = chatParamID;
+      setFinalPrompt(loadedChat.prompt);
+      promptRef.current = loadedChat.prompt; // <-- update promptRef
+
+      if (loadedChat.video !== null) {
+        setVideoGenerationState(2);
+        videoURLRef.current = loadedChat.video.video_url;
+      } else {
         await sendPrompt();
+      }
     };
 
-    const handleVideoSelect = (selectedPrompt: string) => {
-        // handle selecting existing videos (not implemented here yet)
-    };
+    if (userLoading) return;
+    if (!user) router.push("/login");
+    setupPage();
+  }, [searchParams, userLoading]);
 
-    useEffect(() => {
-        const setupPage = async () => {
-            const chatParamID = searchParams.get("id");
-            if (chatParamID === null) return;
-            const loadedChat = await getChat(chatParamID, user!.uid);
-            if (loadedChat === null) return;
+  return (
+    <main className="h-screen">
+      <Sidesheet user={user!} />
 
-            chatDocIDRef.current = chatParamID;
-            setFinalPrompt(loadedChat.prompt);
-            promptRef.current = loadedChat.prompt; // <-- update promptRef
+      <div className="flex flex-col h-full justify-start p-5 gap-3">
+        <div className="flex items-center justify-between">
+          <CommandBar
+            onGenerate={createNewChat}
+            prompt={prompt}
+            setPrompt={setPrompt}
+          />
+          <div className="flex items-center">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button className="p-2 m-2" variant="outline">
+                  <CircleUser />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56 gap-3">
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DropdownMenuItem
+                    onClick={() => (window.location.href = "/settings")}
+                  >
+                    <Settings />
+                    Settings
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="bg-red-500 mt-1"
+                    onClick={SignOutUser}
+                  >
+                    <LogOut />
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-            if (loadedChat.video !== null) {
-                setVideoGenerationState(2);
-                videoURLRef.current = loadedChat.video.video_url;
-            } else {
-                await sendPrompt();
-            }
-        };
+            <Button
+              className="p-2 m-2"
+              variant="outline"
+              onClick={() => {
+                window.location.href = "/learn";
+              }}
+            >
+              <House />
+            </Button>
+          </div>
+        </div>
 
-        if (userLoading) return;
-        if (!user) router.push("/login");
-        setupPage();
-    }, [searchParams, userLoading]);
-
-    return (
-        <main className="h-screen">
-            <Sidesheet user={user!} />
-
-            <div className="flex flex-col h-full justify-start p-5 gap-3">
-                <div className="flex items-center justify-between">
-                    <CommandBar onGenerate={createNewChat} prompt={prompt} setPrompt={setPrompt} />
-                    <div className="flex items-center">
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button className="p-2 m-2" variant="outline">
-                                    <CircleUser />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent className="w-56 gap-3">
-                                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuGroup>
-                                    <DropdownMenuItem onClick={() => window.location.href = "/settings"}>
-                                        <Settings />
-                                        Settings
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem className="bg-red-500 mt-1" onClick={SignOutUser}>
-                                        <LogOut />
-                                        Logout
-                                    </DropdownMenuItem>
-                                </DropdownMenuGroup>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-
-                        <Button className="p-2 m-2" variant="outline" onClick={() => { window.location.href = "/learn" }}>
-                            <House />
-                        </Button>
-                    </div>
+        {/* Video Section */}
+        <div>
+          {videoGenerationState === 0 ? (
+            <DiscoverSection onVideoSelect={handleVideoSelect} />
+          ) : (
+            <div className="flex flex-col items-center justify-center w-full">
+              {videoGenerationState === 1 ? (
+                <div className="h-full flex flex-col justify-center">
+                  <VideoLoadingScreen loadingStatus={jobStatus} />
                 </div>
-
-                {/* Video Section */}
-                <div>
-                    {videoGenerationState === 0 ? (
-                        <DiscoverSection onVideoSelect={handleVideoSelect} />
-                    ) : (
-                        <div className="flex flex-col items-center justify-center w-full">
-                            {videoGenerationState === 1 ? (
-                                <div className="h-full flex flex-col justify-center">
-                                    <VideoLoadingScreen loadingStatus={jobStatus} />
-                                </div>
-                            ) : (
-                                <video controls>
-                                    <source src={videoURLRef.current as string} type="video/mp4" />
-                                </video>
-                            )}
-                        </div>
-                    )}
-                </div>
+              ) : (
+                <video controls>
+                  <source
+                    src={videoURLRef.current as string}
+                    type="video/mp4"
+                  />
+                </video>
+              )}
             </div>
+          )}
+        </div>
+      </div>
 
-            {videoGenerationState === 2 && <ChatBox chatDocID={chatDocIDRef.current!} userID={user!.uid}/>}
-        </main>
-    );
+      {videoGenerationState === 2 && (
+        <ChatBox chatDocID={chatDocIDRef.current!} userID={user!.uid} />
+      )}
+    </main>
+  );
 }

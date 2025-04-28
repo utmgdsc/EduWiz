@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from server.logger import setup_logger
-from server.routes import health, video, vector
+from server.routes import health, video, vector, chat
 from server.services.rabbitmq import RabbitMQConnection
 from server.services.status import listen_status_updates
 from server.services.retry_service import RetryService
@@ -50,3 +50,4 @@ app.add_middleware(
 app.include_router(health.router)
 app.include_router(video.router)
 app.include_router(vector.router)
+app.include_router(chat.router)

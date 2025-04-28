@@ -57,9 +57,7 @@ export const ManimRenderService = {
     const response = await fetch(`${API_BASE_URL}/render`, {
       method: "POST",
       headers: {
-
         Authorization: `Bearer ${await user.getIdToken(true)}`,
-
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ prompt, jobid }),
@@ -90,7 +88,7 @@ export const ManimRenderService = {
   async getVideoData(jobId: string, user: User): Promise<Blob> {
     const response = await fetch(`${API_BASE_URL}/render/${jobId}/video`, {
       headers: {
-        Authorization: `Bearer ${await user.getIdToken(false)}`,
+        Authorization: `Bearer ${await user.getIdToken(true)}`,
       },
     });
 
@@ -120,7 +118,10 @@ export const ManimRenderService = {
         throw new Error(`Failed to delete job: ${response.status}`);
       }
     } catch (error) {
-      console.error("Backend job deletion failed, falling back to local cleanup:", error);
+      console.error(
+        "Backend job deletion failed, falling back to local cleanup:",
+        error
+      );
       const jobRef = ref(db, `jobs/${jobId}`);
       await remove(jobRef);
     }

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import { Video } from "@/lib/firebase/schema";
 
 // Sample data for demonstration
 const sampleVideos = [
@@ -23,7 +24,7 @@ const subjectCategories = [
 ];
 
 interface DiscoverSectionProps {
-    onVideoSelect: (prompt: string) => void;
+    onVideoSelect: (video: Video) => void;
 }
 
 const DiscoverSection = ({ onVideoSelect }: DiscoverSectionProps) => {
@@ -46,8 +47,8 @@ const DiscoverSection = ({ onVideoSelect }: DiscoverSectionProps) => {
         loadVideos()
     }, [])
 
-    const handleVideoClick = (title: string) => {
-        onVideoSelect(`Show me a video about ${title}`);
+    const handleVideoClick = (video: Video) => {
+        onVideoSelect(video)
     };
 
 

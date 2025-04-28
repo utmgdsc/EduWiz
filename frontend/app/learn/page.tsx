@@ -31,6 +31,8 @@ import { Video, RENDER_STATUS, Chat } from "@/lib/firebase/schema";
 import { createChat, getChat, updateChat } from "@/lib/firebase/chat";
 import { useRouter, useSearchParams } from "next/navigation";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+
 export default function Home() {
   const { user, loading: userLoading, SignOutUser } = useAuthorization();
   const router = useRouter();
@@ -88,12 +90,20 @@ export default function Home() {
             unsubscribeJobStatus.current!();
             videoURLRef.current = url;
 
+            const embeddingResponse = await fetch(`${API_BASE_URL}/vector/embed`,{
+                method: "POST",
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ document: promptRef.current }),
+              });
+
+            const embedding = (await embeddingResponse.json()).embedding
+
             const video: Omit<Video, "id"> = {
               video_url: url,
               context: promptRef.current,
               created_at: new Date(),
               status: RENDER_STATUS.COMPLETE,
-              embedding: [1, 2, 3, 4],
+              embedding: embedding
             };
             const videoDocRef = await createVideo(video);
             await updateChat(chatDocIDRef.current!, {
@@ -115,23 +125,33 @@ export default function Home() {
     }
   };
 
-  const createNewChat = async () => {
+  const createNewChat = async (video?: Video) => {
     if (!user) return;
-
+  
     setFinalPrompt(prompt);
     promptRef.current = prompt; // <-- update promptRef
+
     const chat: Omit<Chat, "id" | "video" | "created_at"> = {
-      user_id: user!.uid,
+      user_id: user.uid,
       prompt: prompt,
       conversation: [],
     };
+  
     chatDocIDRef.current = (await createChat(chat))!.id;
-    await updateChat(chatDocIDRef.current, { id: chatDocIDRef.current });
-    await sendPrompt();
-  };
 
-  const handleVideoSelect = (selectedPrompt: string) => {
-    // handle selecting existing videos (not implemented here yet)
+    await updateChat(chatDocIDRef.current, { id: chatDocIDRef.current });
+    // sending the prompt if no video url is given, otherwise using the given video link
+    if (!video) {
+      await sendPrompt();
+      return
+    }
+    await updateChat(chatDocIDRef.current, { video: video })
+    videoURLRef.current = video.video_url
+    setVideoGenerationState(2)
+  }
+
+  const handleVideoSelect = (video: Video) => {
+    createNewChat(video)
   };
 
   useEffect(() => {
@@ -165,9 +185,10 @@ export default function Home() {
       <div className="flex flex-col h-full justify-start p-5 gap-3">
         <div className="flex items-center justify-between">
           <CommandBar
-            onGenerate={createNewChat}
+            onGenerate={(createNewChat)}
             prompt={prompt}
             setPrompt={setPrompt}
+            selectVideo={handleVideoSelect}
           />
           <div className="flex items-center">
             <DropdownMenu>

@@ -1,6 +1,7 @@
 import { Clapperboard } from "lucide-react"
 import { Command, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator, CommandShortcut } from "@/components/ui/command"
 import React, { useEffect, useState, useRef } from "react";
+import { Video } from "@/lib/firebase/schema";
 
 interface SearchResult {
     id: number,
@@ -8,18 +9,44 @@ interface SearchResult {
     date: Date
 }
 
-const getSearchResults = async (query: string): Promise<SearchResult[]> => {
-    // TODO: THESE ARE MOCK SEARCH RESULTS, THEY WILL NEED TO BE RETURNED
-    const s = { id: 12312, title: "Pythogorean theorem", date: new Date() };
-    const r = { id: 133, title: "Newton's first law", date: new Date() };
-    const t = { id: 9393, title: "Thermodynamics", date: new Date() };
-    return [s, r, t];
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+
+
+const getSearchResults = async (query: string): Promise<Video[]> => {
+
+    /* query for reference
+            limit=query.top_k,
+        vector_field=query.field,
+        query_vector=Vector(query.vector),
+        distance_measure=DistanceMeasure[query.distance_measure],
+        distance_threshold=query.threshold,
+    */
+
+    // vectorizing query
+    const vectorResponse = await fetch(`${API_BASE_URL}/vector/embed`,{
+            method: "POST",
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ document: query }),
+          });
+    const vector = (await vectorResponse.json()).embedding
+
+    // getting videos
+    const videosResponse = await fetch(`${API_BASE_URL}/vector/search`,{
+        method: "POST",
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            field: "embedding", vector: vector, distance_measure: 'EUCLIDEAN', collection: "video"
+          }),
+      });
+
+    // returning videos
+    return await videosResponse.json()
 }
 
-const CommandBar = ({ onGenerate, prompt, setPrompt }: { onGenerate: () => void, prompt: any, setPrompt: any }) => {
+const CommandBar = ({ onGenerate, prompt, setPrompt, selectVideo }: { onGenerate: () => void, prompt: any, setPrompt: any, selectVideo: any }) => {
     // TODO: the search result suggestions don't do anything at the moment, change that later
     const [focus, setFocus] = useState(false)
-    const [results, setResults] = useState<SearchResult[]>([]);
+    const [results, setResults] = useState<Video[]>([]);
     const inputRef = useRef<HTMLInputElement | null>(null);
 
     useEffect(() => {
@@ -81,8 +108,9 @@ const CommandBar = ({ onGenerate, prompt, setPrompt }: { onGenerate: () => void,
                                     <CommandGroup>
                                         {
                                             results.map((item, index) => (
-                                                <CommandItem key={index}>
-                                                    <span>{item.title}</span>
+                                                <CommandItem key={index} onSelect={() => {
+                                                    selectVideo(item)}}>
+                                                    <span>{item.context}</span>
                                                     <CommandShortcut>Enter</CommandShortcut>
                                                 </CommandItem>
                                             ))

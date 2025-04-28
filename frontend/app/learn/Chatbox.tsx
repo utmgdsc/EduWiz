@@ -58,7 +58,7 @@ const ChatBox = ({
     setBotTyping(true);
     // Add user message
     const userMessage: LLMMessage = {
-      user: "user",
+      type: "user",
       message: newMessage,
     };
     setMessages([...messages, userMessage]);
@@ -67,7 +67,7 @@ const ChatBox = ({
     // TODO: api request to get response for questino from ai
     await new Promise((resolve) => setTimeout(resolve, 2000));
     const reply: LLMMessage = {
-      user: "bot",
+      type: "assistant",
       message: "replied!",
     };
     setMessages([...messages, userMessage, reply]);
@@ -138,12 +138,12 @@ const ChatBox = ({
                 <div
                   key={crypto.randomUUID()}
                   className={`flex ${
-                    message.user === "user" ? "justify-end" : "justify-start"
+                    message.type === "user" ? "justify-end" : "justify-start"
                   }`}
                 >
                   <div
                     className={`max-w-[80%] ${
-                      message.user === "user"
+                      message.type === "user"
                         ? "bg-primary text-primary-foreground rounded-tl-lg rounded-tr-lg rounded-bl-lg"
                         : "bg-transparent"
                     } p-3 shadow-sm`}

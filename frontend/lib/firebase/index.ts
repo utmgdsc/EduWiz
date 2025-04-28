@@ -26,7 +26,7 @@ const realtime = getDatabase(app);
 const auth = getAuth(app);
 
 
-if (process.env.NODE_ENV !== "production") {
+if (process.env.NODE_ENV !== "production" || 1) {
   connectFirestoreEmulator(
    firestore,
   "127.0.0.1",

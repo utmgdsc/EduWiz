@@ -27,7 +27,7 @@ async def get_llm() -> BaseChatModel:
 @functools.cache
 async def get_system_prompt() -> str:
     with open(
-        pathlib.Path(__file__).parent / "lib" / "prompts" / "chat_system.txt"
+        pathlib.Path(__file__).parent.parent / "lib" / "chat_system.txt"
     ) as f:
         return f.read()
 

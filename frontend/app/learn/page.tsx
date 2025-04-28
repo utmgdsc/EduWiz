@@ -138,7 +138,7 @@ export default function Home() {
     const setupPage = async () => {
       const chatParamID = searchParams.get("id");
       if (chatParamID === null) return;
-      const loadedChat = await getChat(chatParamID, user!.uid);
+      const loadedChat = await getChat(chatParamID);
       if (loadedChat === null) return;
 
       chatDocIDRef.current = chatParamID;

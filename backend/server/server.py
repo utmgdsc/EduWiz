@@ -21,10 +21,10 @@ async def lifespan(_: FastAPI):
     rabbit_conn = await RabbitMQConnection.get_instance()
     await rabbit_conn.connect()
     logger.info("RabbitMQ connection initialized")
-    
+
     # Start status updates listener
     asyncio.create_task(listen_status_updates())
-    
+
     # Initialize the retry service
     retry_service = await RetryService.get_instance()
     logger.info("Retry service initialized")

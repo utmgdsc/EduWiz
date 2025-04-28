@@ -1,23 +1,18 @@
 import pydantic
 
-from typing import AsyncGenerator, Literal
 from fastapi import APIRouter, Depends
+from typing import AsyncGenerator, Literal
 
 from firebase_admin import firestore
 from google.cloud.firestore import Client
 from google.cloud.firestore_v1.base_vector_query import DistanceMeasure
 from google.cloud.firestore_v1.vector import Vector
 
-from server.lib.auth import FirebaseAuthMiddleware
-from server.lib.auth.invariant import email_is_verified
 
-router = APIRouter(
-    prefix="/vector",
-    tags=["vector"],
-    dependencies=[Depends(FirebaseAuthMiddleware(email_is_verified))],
-)
+router = APIRouter()
 
 
+# To be moved to designated location later
 class VectorSearch(pydantic.BaseModel):
     field: str
     collection: str

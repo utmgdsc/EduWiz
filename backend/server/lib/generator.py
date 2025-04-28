@@ -1,3 +1,4 @@
+from re import S
 from starlette.types import HTTPExceptionHandler
 from langchain_core.runnables import RunnableLambda
 import asyncio
@@ -8,14 +9,19 @@ from langchain.prompts import (
     HumanMessagePromptTemplate,
 )
 import os
+import logging
 from dotenv import load_dotenv
 
 # Globals
+debug = 0 # Enables debug logging
 load_dotenv()
 key = os.getenv("OPENAI_API_KEY")
 animator_script = []
 index = 0
 
+
+if debug:
+    logger = logging.getLogger(__name__)
 
 # Parsing functions
 def get_prompt(filepath):
@@ -27,6 +33,12 @@ def get_prompt(filepath):
 def split_scenes(response):
     content = response.content
     anim_type = content[:4]
+    content = content[4:].lstrip()
+    if content.startswith("###NEWSCENE###"):
+        content = content[14:]
+    if debug:
+        logger.info("Content:")
+        logger.info(content)
     scenes = content.split("###NEWSCENE###")
     return (scenes, anim_type)
 
@@ -57,10 +69,20 @@ async def animate_scenes(scenes):
 
     animator_tasks = [run_animator_chain(scene, animator_prompt, animator) for scene in scenes]
     animator_results = await asyncio.gather(*animator_tasks)
+    
+    if debug:
+        for i in animator_results:
+            logger.info("Animator_results:")
+            logger.info(i)
 
     checker_tasks = [run_checker_chain(code, checker_prompt, checker) for code in animator_results]
     checker_results = await asyncio.gather(*checker_tasks)
     
+    if debug:
+        for i in checker_results:
+            logger.info("Checker_results:")
+            logger.info(i)
+
     return [res for res in checker_results]
 
 async def animate_text_scenes(scenes):
@@ -76,9 +98,19 @@ async def animate_text_scenes(scenes):
 
     animator_tasks = [run_animator_chain(scene, animator_prompt, animator) for scene in scenes]
     animator_results = await asyncio.gather(*animator_tasks)
+    
+    if debug:
+       for i in animator_results:
+            logger.info("Animator_results:")
+            logger.info(i)
 
     checker_tasks = [run_checker_chain(code, checker_prompt, checker) for code in animator_results]
     checker_results = await asyncio.gather(*checker_tasks)
+
+    if debug:
+        for i in checker_results:
+            logger.info("Checker_results:")
+            logger.info(i)
     
     return [res for res in checker_results]
 
